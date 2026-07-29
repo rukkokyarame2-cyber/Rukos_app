@@ -3,265 +3,2260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>パチスロ ティアリスト</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  <title>スロット狙い目ティア管理アプリ</title>
+  
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
 
-    body {
-      background: #1a1a2e;
-      color: #eee;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 8px;
-      background: linear-gradient(90deg, #ffd700, #ff6b35);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    p.subtitle {
-      text-align: center;
-      color: #888;
-      margin-bottom: 28px;
-      font-size: 0.9rem;
-    }
-
-    .tier-list {
-      max-width: 860px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .tier-row {
-      display: flex;
-      align-items: stretch;
-      min-height: 110px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .tier-label {
-      width: 80px;
-      min-width: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #111;
-      user-select: none;
-    }
-
-    .tier-S .tier-label { background: #ff4d4d; }
-    .tier-A .tier-label { background: #ff9900; }
-    .tier-B .tier-label { background: #ffe600; }
-    .tier-C .tier-label { background: #66cc44; }
-    .tier-D .tier-label { background: #4488ff; }
-
-    .tier-drop {
-      flex: 1;
-      background: #16213e;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      padding: 8px;
-      border: 2px dashed transparent;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .tier-drop.drag-over {
-      border-color: #ffd700;
-      background: #1e2f5e;
-    }
-
-    .card {
-      width: 120px;
-      height: 90px;
-      border-radius: 6px;
-      overflow: hidden;
-      cursor: grab;
-      border: 2px solid transparent;
-      transition: transform 0.15s, border-color 0.15s;
-      flex-shrink: 0;
-    }
-
-    .card:active { cursor: grabbing; }
-    .card:hover { transform: scale(1.05); border-color: #ffd700; }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-
-    .card.dragging {
-      opacity: 0.4;
-      transform: scale(0.95);
-    }
-
-    .pool-section {
-      max-width: 860px;
-      margin: 20px auto 0;
-    }
-
-    .pool-label {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 8px;
-    }
-
-    .pool-drop {
-      min-height: 110px;
-      background: #0f3460;
-      border-radius: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      padding: 10px;
-      border: 2px dashed #334;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .pool-drop.drag-over {
-      border-color: #ffd700;
-      background: #1a4080;
-    }
-
-    .reset-btn {
-      display: block;
-      margin: 20px auto 0;
-      padding: 10px 32px;
-      background: linear-gradient(90deg, #ffd700, #ff6b35);
-      color: #111;
-      font-weight: 700;
-      font-size: 1rem;
-      border: none;
-      border-radius: 24px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .reset-btn:hover { opacity: 0.85; }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
+  <div id="root"></div>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.292.0",
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+      }
+    }
+  </script>
+  
+  <script type="text/babel" data-type="module">
+    import React, { useState, useMemo, useEffect, useRef } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { createClient } from '@supabase/supabase-js';
+    import { 
+      Search, Star, MessageSquare, Menu, Plus, Move, 
+      Check, X, Edit2, Trash2, Layout, History, ListPlus, Image as ImageIcon, ExternalLink, Download,
+      Trophy, List, User, Database, Calculator, BookOpen, LogOut, RefreshCw, UploadCloud,
+      Calendar, ChevronLeft, ChevronRight, ChevronDown, Clock, Coins
+    } from 'lucide-react';
 
-  <h1>パチスロ ティアリスト</h1>
-  <p class="subtitle">画像をドラッグ＆ドロップしてランク付けしよう</p>
+    const IS_ADMIN_MODE = false; 
+    const SUPABASE_URL = 'https://uiwzuwnycuwasqjnfbdq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs';
+    const WORKLOAD_STORAGE_KEY = 'slot_app_workload_v1';
+    const isSupabaseConfigured = () => (
+      SUPABASE_URL &&
+      SUPABASE_ANON_KEY &&
+      !SUPABASE_URL.includes('YOUR_') &&
+      !SUPABASE_ANON_KEY.includes('YOUR_')
+    );
+    const supabase = isSupabaseConfigured()
+      ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true,
+          },
+        })
+      : null;
+    const DEFAULT_MEMO_TEMPLATE = "【一言メモ】\n\n\n【狙い目ボーダー】\n";
 
-  <div class="tier-list" id="tierList">
-    <div class="tier-row tier-S">
-      <div class="tier-label">S</div>
-      <div class="tier-drop" data-tier="S"></div>
-    </div>
-    <div class="tier-row tier-A">
-      <div class="tier-label">A</div>
-      <div class="tier-drop" data-tier="A"></div>
-    </div>
-    <div class="tier-row tier-B">
-      <div class="tier-label">B</div>
-      <div class="tier-drop" data-tier="B"></div>
-    </div>
-    <div class="tier-row tier-C">
-      <div class="tier-label">C</div>
-      <div class="tier-drop" data-tier="C"></div>
-    </div>
-    <div class="tier-row tier-D">
-      <div class="tier-label">D</div>
-      <div class="tier-drop" data-tier="D"></div>
-    </div>
-  </div>
-
-  <div class="pool-section">
-    <div class="pool-label">未ランク機種</div>
-    <div class="pool-drop" id="pool"></div>
-  </div>
-
-  <button class="reset-btn" id="resetBtn">リセット</button>
-
-  <script>
-    const machines = [
-      { id: "animal",    src: "image_animal.jpg",    name: "アニマルスロット ドッチ" },
-      { id: "god",       src: "image_godkiseki.jpg", name: "ミリオンGOD 神々の奇跡" },
-      { id: "jormungand",src: "image_jormungand.jpg",name: "スマスロ ヨルムンガンド" },
-      { id: "yoshimune", src: "image_yoshimune .jpg",name: "真打 吉宗" },
+    // ユーザーの指示に従い更新されたデータ
+    const RUKO_OFFICIAL_DATA = [
+      {
+        "id": "r_comp",
+        "name": "コンプ対策",
+        "detail": "共通仕様",
+        "tier": "内部仕様",
+        "tag": "内部仕様",
+        "tagColor": "bg-gray-500",
+        "imageUrl": "",
+        "link": "",
+        "memo": "4月にコンプ規制明確化になってからの荒波機種について共通仕様/今後の新台もほぼ同じだと思う。\n\n・上位(切断)後の挙動\n→基本的には出玉冷遇で連チャンはほぼしない\n→その代わりに別仕様で部分的に打てる箇所有る場合多い(ミミズ挙動でコンプ防ぐ)\n\n・上位枚数の固定化\n→切断までは高確率で継続する代わりに、\n切断後に1000枚前後出して終了って台が多い\n→切断前の区間と合わせて6000枚前後に落ち着く\n\n・凹み優遇\n→単純に切断まで枚数が出ることが多いので凹んでれば凹んでるだけ強い。その代わりに朝2〜凹むまでが打つ意味の無い区間すぎる。\n→凹みが強いけど凹みすぎると良く無いって仕様はありそう。共通して-2000〜-4000が良さげ。"
+      },
+      {
+        "id": "r_sengoku6",
+        "name": "戦コレ6",
+        "detail": "示唆＆1周期狙い",
+        "tier": "A",
+        "tag": "ゾーン, 優遇",
+        "tagColor": "bg-cyan-400, bg-red-500",
+        "imageUrl": "image_sengoku6.jpg",
+        "link": "",
+        "memo": "基本方針💡\n「とにかく1周期打ち＆示唆狙いが甘いのでそれと他条件を複合させる。」\n\n※ただし、偶数ATを狙っている最中に次回モードB以上濃厚になっても捨てる。奇数周期のモードBに価値が無いのはリセットの割の低さから自明なので。\n\nパターン①\n前回1000～1800枚後：特殊モード狙い\n・上記条件を示唆を見ながら1周期打つ\n・前回が天国当選で落ちていた場合でも前々回が1000～1800枚後ならループ中の可能性があるので1周期目を打つ。\n\nやめどき\n・天国抜け後、B以上濃厚＆高シナリオ濃厚ではない場合。\n\nパターン②\nAT偶数回数目：シナリオ救済狙い\n・AT回数２,4,6,8回目の1周期を示唆を見ながら打つ\n※ただしそれまでの偶数回目のATが伸びていないことを確認すること。\n画像であれば4回目で伸びているので6回目、8回目は打てない。\n\nやめどき\n・偶数AT当選後、天国濃厚状態ではない場合\n・天国抜け後、B以上濃厚＆高シナリオ濃厚ではない場合。"
+      },
+      {
+        "id": "r_yabachiyo",
+        "name": "ヤバチヨ",
+        "detail": "凹み狙い",
+        "tier": "B",
+        "tag": "天井",
+        "tagColor": "bg-cyan-400",
+        "imageUrl": "image_yabachiyo.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n虹7モードがほとんど区間切断まで行く＆切断後がそんなに伸びないという仕様なので差枚凹みを打つのが良い。\n\n荒すぎる台なので生活向きではない。\n\n【狙い目ボーダー】\n差枚－2000枚以下\n積極：7チェ（目安170G～）\n慎重：13チェ（目安300G～）"
+      },
+      {
+        "id": "r_rioace2",
+        "name": "リオエース２",
+        "detail": "各種狙い目",
+        "tier": "C",
+        "tag": "天井, ゾーン",
+        "tagColor": "bg-cyan-400, bg-cyan-400",
+        "imageUrl": "image_rioace2.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・リセ区間に関してはボナスルー天井が7スから4スに短縮されているためそこを軸に\n・通常区間に関してはマギレコと同じでAT間2000をまたぐと穢れ獲得が大幅にあがるのでそれを軸に\n\n【狙い目ボーダー】\n・リセ→スルー天井を視野に\n0ス→220G～※天井500G＋α\n1～2ス→450G～※天井750G＋α\n3ス→320G～\n4ス→0G～\n\n・リセ以外→AT間2000踏めるかを視野に\nスルー不問:AT間2000G～ATまで\n6ス:320G～\n7ス:0G～\n\n・ゾーン狙い\n290～300ゾーン\n\n・エースモード狙い\nテイル/アリス/ノワール\n０G～\nナヴィ/ヴィヴィアン\n190G～\n\n・ヤメ時: 即ヤメ推奨"
+      },
+      {
+        "id": "r_bio_re3",
+        "name": "バイオハザードRE:3",
+        "detail": "各種狙い目",
+        "tier": "C",
+        "tag": "天井",
+        "tagColor": "bg-cyan-400",
+        "imageUrl": "image_biore3.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・連荘最後の1RBをスルーカウントしないよう注意\n・スルーで狙うよりAT間で狙うことのが多そう\n【狙い目ボーダー】\nCZポイント100以下想定\n・リセ\nAT間230G～※天井650G\n・リセ以外\nAT間570G～※天井1000G\n\n・スルー天井狙い\n4スルー～※天井6スルー\n\n・上位後0スNEポイント狙い\n０G～※NEポイント天井100pt\n実Gと液晶Gずれるので判別可能"
+      },
+      {
+        "id": "r_godkiseki",
+        "name": "Lゴッド軌跡",
+        "detail": "優遇天井狙い",
+        "tier": "A",
+        "tag": "優遇, 天井",
+        "tagColor": "bg-red-500, bg-cyan-400",
+        "imageUrl": "image_godkiseki.jpg",
+        "link": "https://note.com/ruko7613/n/n1c7e8a0e9876",
+        "memo": "【一言メモ】\n・かぐやと同じような優遇狙いが可能\n\n【狙い目ボーダー】\n・記事をご確認ください"
+      },
+      {
+        "id": "r_yoshimune",
+        "name": "真打吉宗",
+        "detail": "各種狙い目",
+        "tier": "C",
+        "tag": "天井, ゾーン",
+        "tagColor": "bg-cyan-400, bg-cyan-400",
+        "imageUrl": "image_yoshimune.jpg",
+        "link": "https://note.com/ruko7613/n/n22deefaed744#45ab1b79-c8ef-47f9-a637-f0f0dbcf5fde",
+        "memo": "【一言メモ】\n・真BB（上位）後の短縮天井狙いが拾えるが、履歴読みが簡単なので今だけだと思う\n→差枚1000枚以下の状態から打ち始めないと冷遇ひどいので注意\n・奇数ポイントで周期到達後は200pt以内で周期到達に期待できるので続行できる\n・2日目に稼働飛んでいたので打てるの今だけだと思う\n\n【狙い目ボーダー】\n・AT間（CZが進んでいない場合）※1500G天井\n810G～\n・リセAT間（CZが進んでいない場合）※999G天井\n310G～\n・真BB後AT間※700G天井\n差枚1000枚以下\n0G～\n差枚1001枚以上\n290G～\n\n・CZ間（1000G天井もしくは6周期）\n620G～もしくは5周期0pt～\n\n・ゾーン狙い\n前回奇数pt周期到達後\n→当該周期打つ（夜回りD狙い）"
+      },
+      {
+        "id": "r_yoshimune2",
+        "name": "真打吉宗",
+        "detail": "メニュー画面狙い",
+        "tier": "C",
+        "tag": "示唆狙い",
+        "tagColor": "bg-purple-500",
+        "imageUrl": "image_yoshimune.jpg",
+        "link": "https://note.com/ruko7613/n/n22deefaed744#45ab1b79-c8ef-47f9-a637-f0f0dbcf5fde",
+        "memo": "【一言メモ】\n・現時点では詳細が出ていないのでライバルが少ない\n・周期が変わるとメニュー画面も変わることがあるので要チェック格上げはあるが格下げはない\n\n【狙い目ボーダー】\nメニュー画面は背景で強弱が分かりそう\n白黒＜青＜緑＜ピンク？\n・1周期目に緑出て天井言ったのでB以上とかでは無さそう\n・ピンクは当該周期で当たった\n\n・背景緑\n3周期300pt～\n・背景ピンク\n当該CZまで\n\n青は打たない"
+      },
+      {
+        "id": "r_yoshimune3",
+        "name": "真打吉宗",
+        "detail": "天国狙い",
+        "tier": "A",
+        "tag": "ゾーン",
+        "tagColor": "bg-cyan-400",
+        "imageUrl": "image_yoshimune.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・差枚-3000枚以下の1周期を打てる。\n→差枚マイナスの際に１G連が獲得しやすいので1回目のBB後にまだ差枚マイナスなことに期待できるぐらい凹んでることが条件\n\n・天国示唆が全然でないので前任者気にしなくていい\n\n【狙い目ボーダー】\n差枚－3000枚以下\nAT後0G～1周期"
+      },
+      {
+        "id": "r_kabaneri",
+        "name": "カバネリ海門決戦",
+        "detail": "各種狙い目（3月3日更新）",
+        "tier": "C",
+        "tag": "ゾーン, 天井",
+        "tagColor": "bg-cyan-400, bg-cyan-400",
+        "imageUrl": "image_kabaneri.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・最近流行りのモンキー型の周期台なので同じように狙う。（示唆は集計します）\n・短縮時は1周期が減算区間だと想定されるので打たない。\n・ゾーン狙いはすでにRBやCZスルーしている可能性が高い2周期の方が甘くて拾いやすい\n\n【狙い目ボーダー】\n・周期狙い\n1周期滞在中の場合：110G～150ゾーン\n→短縮時は1周期辛いので打たない\n２周期滞在中の場合：\nRB0回：250G～300ゾーン\nRB1回以上：210G～300ゾーン\n\n・短縮周期天井狙い\n2周期～天井まで\n→短縮時は1周期辛いので抜けから打つ\n\n・上位STループ狙い\nサブ液晶が海門城の台をループ抜けまで。"
+      },
+      {
+        "id": "r_kabaneri2",
+        "name": "カバネリ海門決戦",
+        "detail": "上位STスタート狙い",
+        "tier": "B",
+        "tag": "天井",
+        "tagColor": "bg-cyan-400",
+        "imageUrl": "image_kabaneri2.jpg",
+        "link": "https://note.com/ruko7613/n/n74858edb21f3",
+        "memo": "【一言メモ】\n・最近流行りのモンキー型の周期台なので同じように狙う。（示唆は集計します）\n・6G以上のAT信号が海門回想若しくはEDボーナス\n・6G以上の信号から1300枚以上獲得後の初当たりで上位STが出てきやすい。\n\n【狙い目ボーダー】\n前回AT中に６g以上の信号＋1300枚以上出ていた場合\n0G~\n（暫定版）\n前回真景之以上だった場合\n0G~"
+      },
+      {
+        "id": "r4",
+        "name": "北斗転生２",
+        "detail": "シャッター判別",
+        "tier": "S",
+        "tag": "リセ, ゾーン, 差枚",
+        "tagColor": "bg-orange-400, bg-cyan-400, bg-yellow-400",
+        "imageUrl": "image_tensei2.jpg",
+        "link": "https://note.com/ruko7613/n/n8d8feeb888c9",
+        "memo": "【一言メモ】\n・ゾーン外でのフェイク前兆（主にG数前兆）発生で896あべし以内の当選濃厚\n40、168、296の前後８GでG数前兆が来るかで判別するのが基本だが、途中で捨てられている台はすでに判別済みの可能性高くて触れないので実質40あべしで判別するしかない。\n・リセでは０～３０あべし短縮されるが２０短縮の選択率が最も高い\n\n【狙い目ボーダー】\n※リセとAT後即やめ以外すべて拾えません\n０G～４１あべしまで打つ\n①G数前兆あり→ATまで\n②G数前兆なし→やめ\n\n天破で40あべし付近を飛ばしてしまった場合はほかのゾーン外前兆で判別してからやめ。\n\nAT後に関しては差枚－１０００枚以上凹んでいなければ同様に打つ。\n差枚切断が大事な台なので凹まない限りは追うこと。"
+      },
+      {
+        "id": "r_ghoul",
+        "name": "東京喰種",
+        "detail": "リセット０G～＆示唆打ち分け",
+        "tier": "S",
+        "tag": "リセ",
+        "tagColor": "bg-orange-400",
+        "imageUrl": "image_ghoul.jpg",
+        "link": "https://note.com/ruko7613/n/na6a453efe232",
+        "memo": "【一言メモ】\n・現時点のリセット狙いでは一番優先度高い。\n→示唆続行とベース込みで108％\n・なるべく周りの示唆も見ながらこなすように。\n→お年寄りより若者のが1スヤメしがち\n\n【狙い目ボーダー】\nリセ０Gから打ち、CZスルー時は示唆で押し引き。\n☆CZ失敗時のプッシュ\n・天国準備以上なら続行\n\n☆CZ失敗後１G目のアイキャッチ\n・金木なら100ゾーンまで打てる\n※金木がAor天国示唆で朝２でAに移行する可能性が低いため実質天国示唆となっている\n\nその後は100ゾーン当選×金木アイキャッチが続く限りゾーン狙いを実行する。\n\n・やめどき\nAT後は引き戻し15Gまで見てやめ"
+      },
+      {
+        "id": "r2",
+        "name": "東京喰種",
+        "detail": "穢れ（内部ポイント）＆モード看破",
+        "tier": "A",
+        "tag": "穢れ",
+        "tagColor": "bg-purple-500",
+        "imageUrl": "image_ghoul.jpg",
+        "link": "https://note.com/ruko7613/n/n039708015839",
+        "memo": "【一言メモ】\n・内部ポイントを正確に履歴読みできている人が少なくライバルがあまりいないので半年以上ずっと拾えている。\n\n・前回AT前のCZ当選ゲームや当該示唆などボーダー調整要素多いので細かいところは打感を身に着けて判断するように。\n\n・穢れの開放期待度は\n9pt～12ptが各20％前後\n8ptと13ptが各10％前後\n7pt以下はほぼ0％\n13pt以降もほぼなく20ptぐらいまで来るとたまに開放する←狙えはしない\n\n・差枚は1500枚以上へこみがボーダー凹んでいればいるほど強い\n\n\n【狙い目ボーダー】\nAT駆け抜け後;内部ポイント9pt若しくは10pt～\n\n※解放の振り分けが9pt～12ptに固まっているので自分でCZをスルーするたびに抽選を受けられる9ptなどが強いのであって12ptからだと12ptのにしか抽選を受けられないので弱い。\n\n☆50G示唆\n・2.4.6→即やめ\n・喰うか喰われるか→天国ゾーン抜けやめ\n・デフォルト→続行\n☆前回モード\nAT後も前回モード高い後の方が高モード来やすいので、前回AT前がCZ当選300G以下のものの方が強い。"
+      },
+      {
+        "id": "r6",
+        "name": "ヴヴヴ２",
+        "detail": "優遇モード狙い",
+        "tier": "C",
+        "tag": "優遇",
+        "tagColor": "bg-red-500",
+        "imageUrl": "image_vvv2.jpg",
+        "link": "https://note.com/ruko7613/n/na215bab10457",
+        "memo": "【一言メモ】\nもうあまり拾える機会は無くなってしまったが拾えた時のリターンがでかすぎるので必ずこまめに島チェック\n\n【狙い目ボーダー】\n記事をご確認ください"
+      },
+      {
+        "id": "r8",
+        "name": "ゴッドイー夕ー",
+        "detail": "差枚狙い",
+        "tier": "C",
+        "tag": "差枚",
+        "tagColor": "bg-yellow-400",
+        "imageUrl": "image_godeater.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・いまだにコンスタントに拾える\n・特に露骨な冷遇挙動もなく、切断ライン付近を長く打てる展開にもなりやすく仕事量積みやすい\n\n【狙い目ボーダー】\n・上位後天井狙い\n差枚＋1500枚以上　\n０G～\n差枚＋1000枚以上\n100ゾーン抜け～\n\n・非短縮後ゾーン狙い\n差枚＋1000枚以上\n０G～100ゾーンまで\n☆セリフ示唆\n300ゾーンで当たる場合はレンのセリフなど示唆が頻発するのでこの際は100抜けから300ゾーンまで打つ"
+      },
+      {
+        "id": "r10",
+        "name": "攻殻機動隊",
+        "detail": "優遇狙い",
+        "tier": "C",
+        "tag": "優遇",
+        "tagColor": "bg-red-500",
+        "imageUrl": "image_kidoutai.jpg",
+        "link": "https://note.com/ruko7613/n/n1b6fdee4cd68",
+        "memo": "【一言メモ】\n・優遇があるので今は拾えるが台数も少なく尻すぼみしていきそう\n\n【狙い目ボーダー】\n記事の方からご確認ください。"
+      },
+      {
+        "id": "r12",
+        "name": "かぐや様",
+        "detail": "優遇狙い",
+        "tier": "C",
+        "tag": "優遇",
+        "tagColor": "bg-red-500",
+        "imageUrl": "image_kaguya.jpg",
+        "link": "https://note.com/ruko7613/n/nd89bca90807e",
+        "memo": "【一言メモ】\n・SANKYOの区間管理が露骨に表れている台なので優遇狙いが効く\n・優遇だからといってつっぱするのではボーダーを下げてヒット＆アウェイすること\n→北斗やトラブルが優遇だからと言って０から打たないのと同じ\n\n【狙い目ボーダー】\n・前回、前々回がBB3～４連\n当該チャンス目8回～\n※BBの強さ１G連＞＞＞引き戻し\n\nその他優遇挙動など詳しい内容は記事参照\n\n・やめどき\nCZ失敗時は即やめ。\n優遇狙いの場合ボナ後引き戻しは基本的に全て見る。"
+      },
+      {
+        "id": "r13",
+        "name": "炎炎ノ消防隊",
+        "detail": "スルー狙い",
+        "tier": "C",
+        "tag": "スルー",
+        "tagColor": "bg-orange-400",
+        "imageUrl": "image_enen2.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・炎炎ループ間天井2000Gとは別にスルー天井があるのでそちらも覚えておく\n※5スルー後の次がエピソードボーナス\n・原作ファンの多い機種なのでスロット詳しくない人も打つ場合があるので拾いやすい部類\n\n【狙い目ボーダー】\n・3スルー以下\nループ間1200G～\n・4スルー以降\nループ間問わず当該０G～\n\n・やめどき\nストック潜伏確認してやめ"
+      },
+      {
+        "id": "r14",
+        "name": "アズールレーン",
+        "detail": "優遇狙い",
+        "tier": "C",
+        "tag": "優遇",
+        "tagColor": "bg-red-500",
+        "imageUrl": "image_azul.jpg",
+        "link": "https://note.com/ruko7613/n/n78bb47200866",
+        "memo": "【一言メモ】\n・2000枚以上凹み時に0ス天井選択率上昇\n・シンプルながらライバル少なくて拾える\n\n【狙い目ボーダー】\n・差枚マイナス2000枚以上\nAT後0スをボーナス当選まで"
+      },
+      {
+        "id": "r15",
+        "name": "モンキーターン",
+        "detail": "リセット狙い",
+        "tier": "C",
+        "tag": "リセ",
+        "tagColor": "bg-orange-400",
+        "imageUrl": "image_monkey.jpg",
+        "link": "",
+        "memo": "【一言メモ】\n・リセット時はATまで打っても102％は出るが、1周期抜けまでに示唆なしの場合がくっと期待値が下がるのでそこで押し引きする\n\n【狙い目ボーダー】\n・リセ０G～1周期まで\nなにかしらの示唆出たらATまで続行\n①ライバルメットに変化\n②アイテム獲得\n③舟券青島（青でも可）\n④予想屋赤\n\n※1.2.4は大体天井なので釣られて続行しないように　"
+      },
+      {
+        "id": "r16",
+        "name": "モンスターハンターライズ",
+        "detail": "MMモード狙い",
+        "tier": "その他狙い目",
+        "tag": "MMモード",
+        "tagColor": "bg-purple-600",
+        "imageUrl": "image_monhan.jpg",
+        "link": "https://note.com/ruko7613/n/nd3699b73db3c",
+        "memo": "【一言メモ】\nMMモードに期待値が詰まっている\n\n【狙い目ボーダー】\n記事からご確認ください"
+      },
+      {
+        "id": "r17",
+        "name": "からくりサーカス",
+        "detail": "鳴海ステージ狙い",
+        "tier": "その他狙い目",
+        "tag": "優遇, ゾーン",
+        "tagColor": "bg-red-500, bg-cyan-400",
+        "imageUrl": "image_karakuri.jpg",
+        "link": "https://note.com/ruko7613/n/n2854687b16fd",
+        "memo": "【一言メモ】\n・AT後かCZ後に開始ステージ鳴海ならA200かB以上なので打てるが、すでに全員知っているのでふつうは拾えないので記事の要領で工夫する\n\n【狙い目ボーダー】\n記事をご確認ください"
+      },
+      {
+        "id": "r18",
+        "name": "北斗の拳",
+        "detail": "各種天井狙い",
+        "tier": "その他狙い目",
+        "tag": "優遇, 天井",
+        "tagColor": "bg-red-500, bg-cyan-400",
+        "imageUrl": "image_hokuto.jpg",
+        "link": "https://note.com/ruko7613/n/n038a57fcc1ea",
+        "memo": "【一言メモ】\n・直近1300G～1600Gの差枚で状態が3種類（優遇・通常・冷遇）に分かれるので各種状態ごとにボーダーを変える\n\n【狙い目ボーダー】\n・優遇状態（直近差枚マイナス700枚以上）\n430G～\n・通常状態（直近差枚－700～＋700枚）\n530G～\n・冷遇状態（直近差枚プラス700枚以上）\n650G～\n・リセット\n90G～\n\n・ゾーン狙い\n優遇状態の即やめ台を天国チェック\n20Gまでに状態判別して通常以下ならやめること"
+      },
+      {
+        "id": "r19",
+        "name": "沖ドキDUOアンコール",
+        "detail": "チャンスモードゾーン狙い",
+        "tier": "B",
+        "tag": "リセ",
+        "tagColor": "bg-orange-400",
+        "imageUrl": "image_okidokiduo.jpg",
+        "link": "https://note.com/ruko7613/n/n1171ffbdcba5",
+        "memo": "【一言メモ】\n・稼働は少なく、通常のハイエナは厳しい\n・リセット区間は甘く少しでも触られていれば打てるのでほぼそれだけ\n・投資がだいぶかかる台なので等価か持ち玉余裕あるときのみ打つ\n\n【狙い目ボーダー】\n・朝一０スの台を100G～160Gまで\n・この区間に当選した場合はそのまま天国か5スルーまで打つ\n・5スルーした時点で通常モードB以上かドキハナB以上の示唆が出てなければやめ。示唆ありなら天国まで。"
+      }
     ];
 
-    let draggedCard = null;
+    const TIER_CONFIG = [
+      { id: '内部仕様', label: '内部仕様について', bg: 'bg-gradient-to-r from-pink-500 to-rose-600' },
+      { id: 'S', label: 'S', bg: 'bg-gradient-to-r from-red-400 to-red-600' },
+      { id: 'A', label: 'A', bg: 'bg-gradient-to-r from-orange-400 to-orange-500' },
+      { id: 'B', label: 'B', bg: 'bg-gradient-to-r from-yellow-400 to-yellow-500' },
+      { id: 'C', label: 'C', bg: 'bg-gradient-to-r from-green-400 to-green-500' },
+      { id: 'その他狙い目', label: 'その他狙い目', bg: 'bg-gradient-to-r from-gray-400 to-gray-600' },
+    ];
 
-    function createCard(machine) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.draggable = true;
-      card.dataset.id = machine.id;
-      card.title = machine.name;
+    const TARGET_TIME_SLOTS = [
+      { id: 'morning', label: '午前中' },
+      { id: 'afternoon', label: '12～17時' },
+      { id: 'evening', label: '17～20時' },
+      { id: 'late', label: '20時～閉店' },
+    ];
 
-      const img = document.createElement("img");
-      img.src = machine.src;
-      img.alt = machine.name;
-      card.appendChild(img);
+    const TARGET_TIME_SLOT_OPTIONS = [
+      { id: 'all', label: '通常順' },
+      ...TARGET_TIME_SLOTS,
+    ];
 
-      card.addEventListener("dragstart", (e) => {
-        draggedCard = card;
-        setTimeout(() => card.classList.add("dragging"), 0);
-        e.dataTransfer.effectAllowed = "move";
+    const TARGET_TIME_SLOT_MAP = {
+      r_sengoku6: ['afternoon', 'evening', 'late'],
+      r_yabachiyo: ['evening', 'late'],
+      r_rioace2: ['morning', 'afternoon', 'evening', 'late'],
+      r_bio_re3: ['morning', 'afternoon', 'evening'],
+      r_godkiseki: ['afternoon', 'evening', 'late'],
+      r_yoshimune: ['afternoon', 'evening', 'late'],
+      r_yoshimune2: ['afternoon', 'evening'],
+      r_yoshimune3: ['afternoon', 'evening', 'late'],
+      r_kabaneri: ['afternoon', 'evening', 'late'],
+      r_kabaneri2: ['afternoon', 'evening', 'late'],
+      r4: ['morning', 'afternoon', 'evening', 'late'],
+      r_ghoul: ['morning', 'afternoon'],
+      r2: ['afternoon', 'evening', 'late'],
+      r6: ['evening', 'late'],
+      r8: ['afternoon', 'evening', 'late'],
+      r10: ['afternoon', 'evening'],
+      r12: ['evening', 'late'],
+      r13: ['evening', 'late'],
+      r14: ['evening', 'late'],
+      r15: ['morning'],
+      r16: ['afternoon', 'evening'],
+      r17: ['afternoon', 'evening', 'late'],
+      r18: ['morning', 'afternoon', 'evening'],
+      r19: ['morning'],
+    };
+
+    const normalizeTimeSlots = (slots) => {
+      const slotSet = new Set(Array.isArray(slots) ? slots : []);
+      return TARGET_TIME_SLOTS.map(slot => slot.id).filter(id => slotSet.has(id));
+    };
+
+    const inferTargetTimeSlots = (item) => {
+      const text = `${item.name || ''} ${item.detail || ''} ${item.tag || ''} ${item.memo || ''}`;
+      const slots = new Set();
+      if (/リセ|朝一|朝イチ|0G|０G/.test(text)) slots.add('morning');
+      if (/示唆|周期|ゾーン|メニュー|天国/.test(text)) {
+        slots.add('afternoon');
+        slots.add('evening');
+      }
+      if (/天井|優遇|差枚|凹み|穢れ|スルー|上位/.test(text)) {
+        slots.add('evening');
+        slots.add('late');
+      }
+      if (slots.size === 0 && item.tier !== '内部仕様') {
+        slots.add('afternoon');
+        slots.add('evening');
+      }
+      return normalizeTimeSlots([...slots]);
+    };
+
+    const getTargetTimeSlots = (item) => normalizeTimeSlots(
+      item.timeSlots && item.timeSlots.length
+        ? item.timeSlots
+        : (TARGET_TIME_SLOT_MAP[item.id] || inferTargetTimeSlots(item))
+    );
+
+    const getTargetTimeLabel = (slotId) => (
+      TARGET_TIME_SLOTS.find(slot => slot.id === slotId)?.label || slotId
+    );
+
+    const TIER_MACHINE_ALIAS_MAP = {
+      "戦コレ6": ["戦国コレクション６", "戦コレ６", "戦国コレクション6"],
+      "リオエース２": ["スマスロスーパーリオエース2", "リオエース2", "スーパーリオエース2"],
+      "バイオハザードRE:3": ["スマスロ バイオハザードRE:3", "バイオRE3", "バイオRE:3"],
+      "Lゴッド軌跡": ["スマスロ ミリオンゴッド-神々の軌跡-", "ミリオンゴッド", "神々の軌跡"],
+      "真打吉宗": ["真打 吉宗", "吉宗"],
+      "カバネリ海門決戦": ["スマスロ 甲鉄城のカバネリ 海門決戦", "甲鉄城のカバネリ 海門決戦", "カバネリ"],
+      "北斗転生２": ["スマスロ 北斗の拳 転生の章2", "北斗の拳 転生の章2", "北斗転生2"],
+      "東京喰種": ["L 東京喰種", "喰種"],
+      "ヴヴヴ２": ["Lパチスロ 革命機ヴァルヴレイヴ2（Lヴヴヴ2）", "ヴァルヴレイヴ2", "ヴヴヴ2"],
+      "ゴッドイー夕ー": ["スマスロ ゴッドイーター リザレクション", "ゴッドイーター", "ゴッドイーターリザレクション"],
+      "攻殻機動隊": ["スマスロ 攻殻機動隊"],
+      "かぐや様": ["パチスロ かぐや様は告らせたい"],
+      "炎炎ノ消防隊": ["Lパチスロ 炎炎ノ消防隊", "Lパチスロ 炎炎ノ消防隊2", "炎炎ノ消防隊2"],
+      "アズールレーン": ["L アズールレーン THE ANIMATION", "アズレン"],
+      "モンキーターン": ["スマスロモンキーターンV", "モンキーターンV"],
+      "モンスターハンターライズ": ["スマスロ モンスターハンターライズ", "モンハンライズ"],
+      "からくりサーカス": ["パチスロ からくりサーカス", "Lパチスロ からくりサーカス2", "からくり2"],
+      "北斗の拳": ["スマスロ北斗の拳"],
+      "沖ドキDUOアンコール": ["スマスロ 沖ドキ!DUO アンコール", "沖ドキ!DUO アンコール"],
+    };
+
+    const SMART_SLOT_MACHINE_OPTIONS = [
+      { name: "Ｌ ULTRAMAN 最終決戦", maker: "オッケー.", introducedAt: "2026.7.6", aliases: [] },
+      { name: "Lパチスロ からくりサーカス2", maker: "ジェイビー", introducedAt: "2026.7.6", aliases: ["からくりサーカス2", "からくり2"] },
+      { name: "L南国育ちSPECIAL", maker: "アムテックス", introducedAt: "2026.7.6", aliases: ["南国育ちSPECIAL"] },
+      { name: "ヤバチバ", maker: "ネット", introducedAt: "2026.7.6", aliases: [] },
+      { name: "ローティス", maker: "北電子", introducedAt: "2026.7.6", aliases: [] },
+      { name: "戦国コレクション６", maker: "コナミアミューズメント", introducedAt: "2026.7.6", aliases: ["戦コレ6", "戦コレ６", "戦国コレクション6"] },
+      { name: "スマート沖スロ　ダークハイビ", maker: "ピーセカンド", introducedAt: "2026.6.22", aliases: ["ダークハイビ"] },
+      { name: "Ｌ戦国乙女５ 業火を穿つ宿焔の双刃", maker: "オリンピア", introducedAt: "2026.6.8", aliases: ["戦国乙女5", "戦国乙女５"] },
+      { name: "スマスロ BIRDIE WING -Golf Girls' Story-(バーディーウィング)", maker: "ユニバーサルブロス", introducedAt: "2026.6.8", aliases: ["バーディーウィング", "BIRDIE WING"] },
+      { name: "スロット ソードアート・オンラインⅡ", maker: "パオン・ディーピー", introducedAt: "2026.6.8", aliases: ["SAO2", "SAOⅡ"] },
+      { name: "Ｌタクトオーパス デスティニー", maker: "アムテックス", introducedAt: "2026.5.11", aliases: ["タクトオーパス"] },
+      { name: "スマスロ バイオハザードRE:3", maker: "エンターライズ", introducedAt: "2026.5.11", aliases: ["バイオハザードRE:3", "バイオRE3"] },
+      { name: "スマスロ ビッグドリーム THE GOLDEN PUSHER", maker: "銀座", introducedAt: "2026.5.11", aliases: ["ビッグドリーム"] },
+      { name: "スマスロスーパーリオエース2", maker: "山佐ネクスト", introducedAt: "2026.5.11", aliases: ["リオエース2", "リオエース２", "スーパーリオエース2"] },
+      { name: "Lパチスロ 機動戦士ガンダムユニコーン 覚醒DRIVE", maker: "ビスティ", introducedAt: "2026.4.20", aliases: ["ガンダムユニコーン 覚醒DRIVE", "ユニコーン"] },
+      { name: "アニマルスロットドッチ", maker: "北電子", introducedAt: "2026.4.20", aliases: [] },
+      { name: "スマスロ ミリオンゴッド-神々の軌跡-", maker: "ミズホ", introducedAt: "2026.4.20", aliases: ["Lゴッド軌跡", "ミリオンゴッド", "神々の軌跡"] },
+      { name: "L虚構推理", maker: "ディ・ライト", introducedAt: "2026.4.6", aliases: ["虚構推理"] },
+      { name: "スマスロヨルムンガンド", maker: "山佐ネクスト", introducedAt: "2026.4.6", aliases: ["ヨルムンガンド"] },
+      { name: "真打 吉宗", maker: "大都技研", introducedAt: "2026.4.6", aliases: ["真打吉宗", "吉宗"] },
+      { name: "Lアクダマドライブ", maker: "サンスリー", introducedAt: "2026.3.2", aliases: ["アクダマドライブ"] },
+      { name: "スマスロ 甲鉄城のカバネリ 海門決戦", maker: "タイヨーエレック", introducedAt: "2026.3.2", aliases: ["カバネリ海門決戦", "カバネリ"] },
+      { name: "Lパチスロ 炎炎ノ消防隊2", maker: "SANKYO", introducedAt: "2026.2.2", aliases: ["炎炎ノ消防隊2", "炎炎"] },
+      { name: "Lパチスロうみねこのなく頃に2", maker: "オーイズミ", introducedAt: "2026.2.2", aliases: ["うみねこのなく頃に2"] },
+      { name: "Ｌ範馬刃牙", maker: "オリンピア", introducedAt: "2026.2.2", aliases: ["範馬刃牙", "刃牙"] },
+      { name: "スマスロ ゴブリンスレイヤーⅡ", maker: "JFJ", introducedAt: "2026.2.2", aliases: ["ゴブリンスレイヤー2", "ゴブスレ2"] },
+      { name: "スマスロ 攻殻機動隊", maker: "サミー", introducedAt: "2026.2.2", aliases: ["攻殻機動隊"] },
+      { name: "スマスロ 北斗の拳 転生の章2", maker: "銀座", introducedAt: "2026.1.5", aliases: ["北斗転生２", "北斗転生2"] },
+      { name: "スマスロ鉄拳6", maker: "山佐", introducedAt: "2026.1.5", aliases: ["鉄拳6", "鉄拳６"] },
+      { name: "L 無職転生 ～異世界行ったら本気だす～", maker: "ニューギン", introducedAt: "2025.12.22", aliases: ["無職転生"] },
+      { name: "スマスロ 沖ドキ!DUO アンコール", maker: "メーシー", introducedAt: "2025.12.22", aliases: ["沖ドキDUOアンコール"] },
+      { name: "スマスロ 秘宝伝", maker: "パオン・ディーピー", introducedAt: "2025.12.22", aliases: ["秘宝伝"] },
+      { name: "スマスロ 化物語", maker: "銀座", introducedAt: "2025.12.8", aliases: ["化物語"] },
+      { name: "プリズムナナ", maker: "カルミナ", introducedAt: "2025.12.8", aliases: [] },
+      { name: "銀河英雄伝説 Die Neue These (ディ ノイエ テーゼ)", maker: "グレードワン", introducedAt: "2025.12.8", aliases: ["銀河英雄伝説"] },
+      { name: "バーニングエクスプレス", maker: "北電子", introducedAt: "2025.12.1", aliases: [] },
+      { name: "スマスロネオプラネット", maker: "セブンリーグ", introducedAt: "2025.11.17", aliases: ["ネオプラネット"] },
+      { name: "L 絶対衝激Ⅳ", maker: "アイドル", introducedAt: "2025.11.4", aliases: ["絶対衝激4", "絶対衝激Ⅳ"] },
+      { name: "Lパチスロ 革命機ヴァルヴレイヴ2（Lヴヴヴ2）", maker: "SANKYO", introducedAt: "2025.11.4", aliases: ["ヴヴヴ２", "ヴヴヴ2", "ヴァルヴレイヴ2"] },
+      { name: "スマスロ とある科学の超電磁砲２", maker: "藤商事", introducedAt: "2025.11.4", aliases: ["超電磁砲2", "レールガン2"] },
+      { name: "L 荒野のコトブキ飛行隊", maker: "スパイキー", introducedAt: "2025.10.20", aliases: ["荒野のコトブキ飛行隊"] },
+      { name: "Ｌ主役は銭形５", maker: "オリンピア", introducedAt: "2025.10.6", aliases: ["主役は銭形5", "銭形5"] },
+      { name: "スマスロ バベル", maker: "ユニバーサルブロス", introducedAt: "2025.10.6", aliases: ["バベル"] },
+      { name: "スマスロ 新鬼武者3", maker: "レオスター", introducedAt: "2025.10.6", aliases: ["新鬼武者3"] },
+      { name: "スマスロ ドルアーガの塔", maker: "ミズホ", introducedAt: "2025.9.8", aliases: ["ドルアーガの塔"] },
+      { name: "スマスロ 東京リベンジャーズ(リベスロ)", maker: "サミー", introducedAt: "2025.9.8", aliases: ["東京リベンジャーズ", "リベスロ"] },
+      { name: "L アズールレーン THE ANIMATION", maker: "京楽産業.", introducedAt: "2025.8.4", aliases: ["アズールレーン", "アズレン"] },
+      { name: "Ｌ ダーリン・イン・ザ・フランキス", maker: "スパイキー", introducedAt: "2025.8.4", aliases: ["ダリフラ"] },
+      { name: "L咲-Saki-頂上決戦", maker: "三洋物産", introducedAt: "2025.8.4", aliases: ["咲", "Saki"] },
+      { name: "パチスロ 転生したら剣でした", maker: "グレードワン", introducedAt: "2025.8.4", aliases: ["転剣"] },
+      { name: "わたしの幸せな結婚", maker: "KPE", introducedAt: "2025.7.7", aliases: [] },
+      { name: "Ｌ 絶対衝激～PLATONIC HEART～", maker: "スパイキー", introducedAt: "2025.6.16", aliases: ["絶対衝激"] },
+      { name: "L ULTRAMAN", maker: "京楽産業.", introducedAt: "2025.6.2", aliases: ["ULTRAMAN"] },
+      { name: "LB パチスロ1000ちゃんA", maker: "オーイズミラボ", introducedAt: "2025.6.2", aliases: ["1000ちゃん"] },
+      { name: "LBジャックポット", maker: "ヤーマ", introducedAt: "2025.6.2", aliases: ["ジャックポット"] },
+      { name: "ＬＢプレミアムうまい棒", maker: "オリンピアエステート", introducedAt: "2025.6.2", aliases: ["うまい棒"] },
+      { name: "いざ！番長", maker: "サボハニ", introducedAt: "2025.6.2", aliases: ["いざ番長"] },
+      { name: "スマスロ ギルティクラウン2", maker: "アクロス", introducedAt: "2025.6.2", aliases: ["ギルティクラウン2", "ギルクラ2"] },
+      { name: "スマスロ デビル メイ クライ5 スタイリッシュトライブ", maker: "アデリオン", introducedAt: "2025.6.2", aliases: ["DMC5", "デビルメイクライ5"] },
+      { name: "スマスロニューパルサーBT", maker: "山佐", introducedAt: "2025.6.2", aliases: ["ニューパルサーBT"] },
+      { name: "LToLOVEるダークネス TRANCE ver.8.7", maker: "オリンピアエステート", introducedAt: "2025.5.19", aliases: ["ToLOVEる", "とらぶる"] },
+      { name: "花笠", maker: "ネット", introducedAt: "2025.5.19", aliases: [] },
+      { name: "Ｌパチスロ 機動戦士ガンダムSEED", maker: "ビスティ", introducedAt: "2025.5.7", aliases: ["ガンダムSEED"] },
+      { name: "スマスロ ようこそ実力至上主義の教室へ", maker: "DAXEL", introducedAt: "2025.5.7", aliases: ["よう実"] },
+      { name: "スマスロ 緑ドン VIVA!情熱南米編 REVIVAL", maker: "ユニバーサルブロス", introducedAt: "2025.5.7", aliases: ["緑ドン"] },
+      { name: "L 麻雀物語", maker: "オリンピアエステート", introducedAt: "2025.4.21", aliases: ["麻雀物語"] },
+      { name: "スマスロ アイドルマスター ミリオンライブ！ ネクストプロローグ", maker: "山佐", introducedAt: "2025.4.21", aliases: ["アイドルマスター", "ミリオンライブ"] },
+      { name: "吉宗", maker: "サボハニ", introducedAt: "2025.4.21", aliases: [] },
+      { name: "Lうしおととら白面決戦VH", maker: "アイドル", introducedAt: "2025.4.7", aliases: ["うしおととら"] },
+      { name: "Lゴジラ", maker: "ニューギン", introducedAt: "2025.4.7", aliases: ["ゴジラ"] },
+      { name: "スマート沖スロ　アメイジングライブ", maker: "パイオニア", introducedAt: "2025.4.7", aliases: ["アメイジングライブ"] },
+      { name: "スマスロ マギアレコード 魔法少女まどか☆マギカ外伝", maker: "ミズホ", introducedAt: "2025.4.7", aliases: ["マギレコ", "まどマギ外伝"] },
+      { name: "L 仮面ライダー電王", maker: "SUN SUN SUN", introducedAt: "2025.3.3", aliases: ["電王"] },
+      { name: "L少女☆歌劇 レヴュースタァライト -The SLOT-", maker: "オーイズミ", introducedAt: "2025.3.3", aliases: ["レヴュースタァライト"] },
+      { name: "Sister Quest(シスタークエスト)", maker: "カルミナ", introducedAt: "2025.3.3", aliases: ["シスタークエスト"] },
+      { name: "スマスロ バイオハザード5", maker: "エンターライズ", introducedAt: "2025.3.3", aliases: ["バイオハザード5", "バイオ5"] },
+      { name: "てぃだどんどん", maker: "パオン・ディーピー", introducedAt: "2025.3.3", aliases: [] },
+      { name: "回胴黙示録カイジ 狂宴", maker: "ロデオ", introducedAt: "2025.3.3", aliases: ["カイジ"] },
+      { name: "L 東京喰種", maker: "スパイキー", introducedAt: "2025.2.3", aliases: ["東京喰種", "喰種"] },
+      { name: "Lパチスロ ありふれた職業で世界最強", maker: "ジェイビー", introducedAt: "2025.2.3", aliases: ["ありふれ"] },
+      { name: "スマスロ シャーマンキング", maker: "エレコ", introducedAt: "2025.2.3", aliases: ["シャーマンキング"] },
+      { name: "スマスロスーパーブラックジャック", maker: "セブンリーグ", introducedAt: "2025.2.3", aliases: ["スーパーブラックジャック", "SBJ"] },
+      { name: "A-SLOT+ ディスクアップ ULTRAREMIX", maker: "タイヨーエレック", introducedAt: "2025.1.20", aliases: ["ディスクアップ"] },
+      { name: "L にゃんこ大戦争 超神速", maker: "京楽産業.", introducedAt: "2025.1.20", aliases: ["にゃんこ大戦争"] },
+      { name: "L 島娘", maker: "オリンピア", introducedAt: "2025.1.20", aliases: ["島娘"] },
+      { name: "Ｌパチスロ シン・エヴァンゲリオン", maker: "ビスティ", introducedAt: "2025.1.20", aliases: ["シンエヴァ", "エヴァンゲリオン"] },
+      { name: "スマート沖スロ スターハナハナ", maker: "パイオニア", introducedAt: "2025.1.20", aliases: ["スターハナハナ"] },
+      { name: "七つの魔剣が支配する", maker: "KPE", introducedAt: "2025.1.20", aliases: ["ななつま"] },
+      { name: "L サラリーマン金太郎", maker: "EXCITE", introducedAt: "2025.1.6", aliases: ["金太郎"] },
+      { name: "チバリヨ2プラス", maker: "オーゼキ", introducedAt: "2025.1.6", aliases: ["チバリヨ2+"] },
+      { name: "Lスーパービンゴネオ", maker: "ベルコ", introducedAt: "2024.12.16", aliases: ["ビンゴ"] },
+      { name: "Lパチスロ ダンベル何キロ持てる？", maker: "SANKYO", introducedAt: "2024.12.16", aliases: ["ダンベル"] },
+      { name: "スマスロ 一方通行 とある魔術の禁書目録", maker: "オレンジ", introducedAt: "2024.12.16", aliases: ["一方通行", "アクセラレータ"] },
+      { name: "Lルパン三世 大航海者の秘宝", maker: "平和", introducedAt: "2024.12.2", aliases: ["ルパン三世"] },
+      { name: "L犬夜叉2", maker: "エフ", introducedAt: "2024.12.2", aliases: ["犬夜叉2"] },
+      { name: "スマスロ 聖戦士ダンバイン", maker: "銀座", introducedAt: "2024.12.2", aliases: ["ダンバイン"] },
+      { name: "桃太郎電鉄 ～パチスロも定番！～", maker: "KPE", introducedAt: "2024.12.2", aliases: ["桃鉄"] },
+      { name: "Lダブルアタック2 withOZS-1000＆RAPHAEL", maker: "オーイズミ", introducedAt: "2024.11.18", aliases: ["ダブルアタック2"] },
+      { name: "スマート沖スロ　超華祭", maker: "パイオニア", introducedAt: "2024.11.18", aliases: ["超華祭"] },
+      { name: "スマスロ モンスターハンターライズ", maker: "アデリオン", introducedAt: "2024.11.18", aliases: ["モンスターハンターライズ", "モンハンライズ"] },
+      { name: "L 新・必殺仕置人 回胴 CRASH SPEC", maker: "京楽産業.", introducedAt: "2024.11.5", aliases: ["必殺仕置人"] },
+      { name: "Lバンドリ！", maker: "オリンピアエステート", introducedAt: "2024.11.5", aliases: ["バンドリ"] },
+      { name: "スロット Re:ゼロから始める異世界生活 Season2", maker: "パオン・ディーピー", introducedAt: "2024.10.21", aliases: ["リゼロ2", "Re:ゼロ"] },
+      { name: "L 真・一騎当千", maker: "Daiichi", introducedAt: "2024.10.7", aliases: ["一騎当千"] },
+      { name: "スマスロ 鬼武者3", maker: "アデリオン", introducedAt: "2024.10.7", aliases: ["鬼武者3"] },
+      { name: "今日から俺は!! パチスロ編", maker: "ファイトクラブ", introducedAt: "2024.10.7", aliases: ["今日から俺は"] },
+      { name: "スマスロ頭文字D 2nd", maker: "ロデオ", introducedAt: "2024.10.2", aliases: ["頭文字D2", "イニD2"] },
+      { name: "A-SLOT+ この素晴らしい世界に祝福を!", maker: "ロデオ", introducedAt: "2024.9.2", aliases: ["このすば"] },
+      { name: "Lパチスロ閃乱カグラ2 SHINOVI MASTER", maker: "オーイズミラボ", introducedAt: "2024.9.2", aliases: ["閃乱カグラ2"] },
+      { name: "パチスロ L黄門ちゃま天", maker: "オリンピア", introducedAt: "2024.9.2", aliases: ["黄門ちゃま天"] },
+      { name: "パチスロ かぐや様は告らせたい", maker: "SANKYO", introducedAt: "2024.9.2", aliases: ["かぐや様"] },
+      { name: "L D4DJ Pachi-Slot Mix", maker: "京楽産業.", introducedAt: "2024.8.5", aliases: ["D4DJ"] },
+      { name: "Lワンパンマン", maker: "EXCITE", introducedAt: "2024.8.5", aliases: ["ワンパンマン"] },
+      { name: "スマスロ ゲゲゲの鬼太郎 覚醒", maker: "JFJ", introducedAt: "2024.8.5", aliases: ["ゲゲゲの鬼太郎"] },
+      { name: "スマスロ トロピカーナ", maker: "ミズホ", introducedAt: "2024.8.5", aliases: ["トロピカーナ"] },
+      { name: "スマスロ ゴッドイーター リザレクション", maker: "セブンリーグ", introducedAt: "2024.7.22", aliases: ["ゴッドイー夕ー", "ゴッドイーター"] },
+      { name: "スロット ゾンビランドサガ", maker: "大都技研", introducedAt: "2024.7.22", aliases: ["ゾンビランドサガ"] },
+      { name: "賞金首Angel", maker: "ネット", introducedAt: "2024.7.22", aliases: ["賞金首"] },
+      { name: "L アカメが斬る! 2", maker: "新日テクノロジー", introducedAt: "2024.7.8", aliases: ["アカメが斬る2"] },
+      { name: "Lパチスロ戦姫絶唱シンフォギア 正義の歌", maker: "ジェイビー", introducedAt: "2024.7.8", aliases: ["シンフォギア"] },
+      { name: "スマスロ真・北斗無双", maker: "ロデオ", introducedAt: "2024.7.8", aliases: ["北斗無双"] },
+      { name: "L ToLOVEるダークネス", maker: "オリンピアエステート", introducedAt: "2024.6.3", aliases: ["ToLOVEる", "とらぶる"] },
+      { name: "L聖闘士星矢 海皇覚醒 CUSTOM EDITION", maker: "サンスリー", introducedAt: "2024.6.3", aliases: ["聖闘士星矢", "星矢"] },
+      { name: "スマスロ ストリートファイターＶ 挑戦者の道", maker: "エンターライズ", introducedAt: "2024.6.3", aliases: ["ストリートファイターV", "ストV"] },
+      { name: "スマスロ痛いのは嫌なので防御力に極振りしたいと思います。", maker: "ロデオ", introducedAt: "2024.6.3", aliases: ["防振り"] },
+      { name: "Lウルトラマンティガ", maker: "京楽産業.", introducedAt: "2024.5.7", aliases: ["ティガ"] },
+      { name: "Lパチスロ 炎炎ノ消防隊", maker: "ジェイビー", introducedAt: "2024.5.7", aliases: ["炎炎ノ消防隊", "炎炎"] },
+      { name: "スマスロ交響詩篇エウレカセブン4 HI-EVOLUTION", maker: "銀座", introducedAt: "2024.5.7", aliases: ["エウレカセブン4", "エウレカ4"] },
+      { name: "押忍！番長４", maker: "大都技研", introducedAt: "2024.4.22", aliases: ["番長4"] },
+      { name: "Lうる星やつら", maker: "EXCITE", introducedAt: "2024.4.8", aliases: ["うる星やつら"] },
+      { name: "スマスロ ゴールデンカムイ", maker: "銀座", introducedAt: "2024.4.8", aliases: ["ゴールデンカムイ"] },
+      { name: "スマスロ ストライク・ザ・ブラッド", maker: "エンターライズ", introducedAt: "2024.4.8", aliases: ["ストブラ"] },
+      { name: "忍魂参 〜奥義皆伝ノ章〜", maker: "大都技研", introducedAt: "2024.3.18", aliases: ["忍魂参"] },
+      { name: "L南国育ち", maker: "オリンピアエステート", introducedAt: "2024.3.4", aliases: ["南国育ち"] },
+      { name: "スマスロキングパルサー", maker: "セブンリーグ", introducedAt: "2024.3.4", aliases: ["キンパル"] },
+      { name: "チバリヨ2", maker: "オーゼキ", introducedAt: "2024.3.4", aliases: ["チバリヨ"] },
+      { name: "GⅠ優駿倶楽部黄金", maker: "コナミアミューズメント", introducedAt: "2024.2.5", aliases: ["G1優駿倶楽部黄金", "まこまこ"] },
+      { name: "Lゴジラ対エヴァンゲリオン", maker: "ビスティ", introducedAt: "2024.2.5", aliases: ["ゴジエヴァ"] },
+      { name: "Lストライクウィッチーズ2", maker: "サンスリー", introducedAt: "2024.2.5", aliases: ["ストパン2"] },
+      { name: "Lパチスロガールズ&パンツァー 最終章", maker: "平和", introducedAt: "2024.2.5", aliases: ["ガルパン"] },
+      { name: "Sky Love(スカイラブ)", maker: "ネット", introducedAt: "2024.2.5", aliases: ["スカイラブ"] },
+      { name: "スマスロ コードギアス 反逆のルルーシュ/復活のルルーシュ", maker: "サミー", introducedAt: "2024.2.5", aliases: ["コードギアス", "ギアス"] },
+      { name: "スロット冴えない彼女の育てかた", maker: "サボハニ", introducedAt: "2024.2.5", aliases: ["冴えカノ"] },
+      { name: "L 仮面ライダー 7RIDERS", maker: "SUN SUN SUN", introducedAt: "2024.1.9", aliases: ["仮面ライダー"] },
+      { name: "Lパチスロ マクロスフロンティア4", maker: "SANKYO", introducedAt: "2024.1.9", aliases: ["マクロスF4"] },
+      { name: "スマスロ バイオハザード™ ヴィレッジ", maker: "アデリオン", introducedAt: "2024.1.9", aliases: ["バイオハザードヴィレッジ", "バイオヴィレッジ"] },
+      { name: "吉宗ＲＩＳＩＮＧ", maker: "サボハニ", introducedAt: "2024.1.9", aliases: ["吉宗ライジング"] },
+      { name: "スマスロバジリスク～甲賀忍法帖～絆2 天膳 BLACK EDITION", maker: "エレコ", introducedAt: "2023.12.18", aliases: ["バジリスク天膳", "天膳"] },
+      { name: "Lパチスロ花の慶次〜佐渡攻めの章〜", maker: "EXCITE", introducedAt: "2023.12.4", aliases: ["花の慶次"] },
+      { name: "Lラブ嬢3〜Wご指名はいかがですか？〜", maker: "アムテックス", introducedAt: "2023.12.4", aliases: ["ラブ嬢3"] },
+      { name: "Lリングにかけろ1V", maker: "エフ", introducedAt: "2023.12.4", aliases: ["リンかけ"] },
+      { name: "スマスロモンキーターンV", maker: "山佐", introducedAt: "2023.12.4", aliases: ["モンキーターン", "モンキーターンV"] },
+      { name: "マジカルハロウィン8", maker: "コナミアミューズメント", introducedAt: "2023.12.4", aliases: ["マジハロ8"] },
+      { name: "パチスロ ケンガンアシュラ", maker: "ネット", introducedAt: "2023.11.20", aliases: ["ケンガンアシュラ"] },
+      { name: "Lとある魔術の禁書目録", maker: "JFJ", introducedAt: "2023.11.6", aliases: ["禁書目録", "インデックス"] },
+      { name: "Lパチスロひぐらしのなく頃に", maker: "ディ・ライト", introducedAt: "2023.11.6", aliases: ["ひぐらし"] },
+      { name: "L大工の源さん 超夢源", maker: "サンスリー", introducedAt: "2023.11.6", aliases: ["源さん"] },
+      { name: "スマスロ劇場版 魔法少女まどか☆マギカ[前編]始まりの物語／[後編]永遠の物語f-フォルテ-", maker: "メーシー", introducedAt: "2023.11.6", aliases: ["まどマギフォルテ", "まどマギ"] },
+      { name: "Ｌエヴァンゲリオン～未来への創造～", maker: "ビスティ", introducedAt: "2023.10.2", aliases: ["エヴァンゲリオン"] },
+      { name: "スマスロ転生したらスライムだった件", maker: "山佐", introducedAt: "2023.10.2", aliases: ["転スラ"] },
+      { name: "戦国コレクション５超極楽LOOP", maker: "コナミアミューズメント", introducedAt: "2023.9.19", aliases: ["戦コレ5"] },
+      { name: "麻雀格闘倶楽部 覚醒", maker: "コナミアミューズメント", introducedAt: "2023.9.19", aliases: ["麻雀格闘倶楽部"] },
+      { name: "L009 RE:CYBORG", maker: "ニューギン", introducedAt: "2023.9.4", aliases: ["009"] },
+      { name: "L戦国乙女4 戦乱に閃く炯眼の軍師", maker: "オリンピアエステート", introducedAt: "2023.9.4", aliases: ["戦国乙女4"] },
+      { name: "Lパチスロ乃木坂46", maker: "SUN SUN SUN", introducedAt: "2023.8.7", aliases: ["乃木坂46"] },
+      { name: "スマスロ 戦国BASARA GIGA", maker: "エンターライズ", introducedAt: "2023.8.7", aliases: ["戦国BASARA"] },
+      { name: "スマスロキン肉マン〜7人の悪魔超人編〜", maker: "セブンリーグ", introducedAt: "2023.8.7", aliases: ["キン肉マン"] },
+      { name: "防空少女ラブキューレ2〜極限の共鳴〜", maker: "KPE", introducedAt: "2023.8.7", aliases: ["ラブキューレ2"] },
+      { name: "スマスロ バイオハザード:ヴェンデッタ", maker: "ロデオ", introducedAt: "2023.7.24", aliases: ["バイオハザードヴェンデッタ", "バイオヴェンデッタ"] },
+      { name: "パチスロ からくりサーカス", maker: "SANKYO", introducedAt: "2023.7.3", aliases: ["からくりサーカス"] },
+      { name: "Lベルセルク無双", maker: "EXCITE", introducedAt: "2023.6.5", aliases: ["ベルセルク無双"] },
+      { name: "ぱちスロ にゃんこ大戦争 BIGBANG", maker: "京楽産業.", introducedAt: "2023.6.5", aliases: ["にゃんこ大戦争"] },
+      { name: "スロット ソードアート・オンライン", maker: "大都技研", introducedAt: "2023.5.15", aliases: ["SAO"] },
+      { name: "L主役は銭形4", maker: "オリンピア", introducedAt: "2023.5.8", aliases: ["主役は銭形4", "銭形4"] },
+      { name: "Lゴブリンスレイヤー", maker: "オレンジ", introducedAt: "2023.4.17", aliases: ["ゴブリンスレイヤー"] },
+      { name: "スマスロ北斗の拳", maker: "タイヨーエレック", introducedAt: "2023.4.3", aliases: ["北斗の拳"] },
+      { name: "ＨＥＹ！エリートサラリーマン鏡", maker: "パオン・ディーピー", introducedAt: "2022.12.5", aliases: ["鏡", "サラリーマン鏡"] },
+      { name: "Lバキ 強くなりたくば喰らえ！！！", maker: "オリンピア", introducedAt: "2022.11.21", aliases: ["バキ"] },
+      { name: "スマスロリノヘブン", maker: "山佐", introducedAt: "2022.11.21", aliases: ["リノヘブン"] },
+      { name: "パチスロ 革命機ヴァルヴレイヴ", maker: "SANKYO", introducedAt: "2022.11.21", aliases: ["ヴァルヴレイヴ", "ヴヴヴ"] },
+    ];
+
+    const normalizeMachineText = (value) => (value || "")
+      .toString()
+      .toLowerCase()
+      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
+      .replace(/[‐‑‒–—―ー－\-~〜～・･\s　!！?？()（）[\]【】「」『』™]/g, "");
+
+    const uniqueValues = (values) => {
+      const seen = new Set();
+      return values.filter(value => {
+        const key = normalizeMachineText(value);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
+
+    const SAMMY_MAKER_ALIASES = ["銀座", "ロデオ", "タイヨーエレック"];
+    const MACHINE_DISPLAY_PRIORITY = ["北斗転生２", "東京喰種", "Lゴッド軌跡"];
+    const CALENDAR_WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+    const TARGET_PRESETS = [
+      {
+        id: "hokuto-tensei",
+        machineMatchers: ["北斗転生２", "北斗転生2", "スマスロ 北斗の拳 転生の章2"],
+        targets: [
+          { label: "AT後シャッター", payoutRate: "106" },
+          { label: "リセシャッター", payoutRate: "107.5" },
+        ],
+      },
+    ];
+
+    const normalizeMachineMaker = (maker) => (
+      SAMMY_MAKER_ALIASES.includes(maker) ? "サミー" : (maker || "")
+    );
+
+    const machinePriority = (option) => {
+      const searchText = normalizeMachineText([option.name, ...(option.aliases || [])].join(" "));
+      const index = MACHINE_DISPLAY_PRIORITY.findIndex(name => searchText.includes(normalizeMachineText(name)));
+      return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+    };
+
+    const findTargetPreset = (machineName) => {
+      const normalizedMachineName = normalizeMachineText(machineName);
+      return TARGET_PRESETS.find(preset => (
+        preset.machineMatchers.some(matcher => normalizedMachineName.includes(normalizeMachineText(matcher)))
+      ));
+    };
+
+    const calculateWorkValue = (payoutRate, playTime) => {
+      const rate = parseFloat(payoutRate) || 100;
+      const time = parseFloat(playTime) || 0;
+      const hourlyWage = (rate - 100) * 500;
+      return Math.round(hourlyWage * (time / 60));
+    };
+
+    const EMPTY_WORKLOAD_FORM = {
+      machineName: '',
+      payoutRate: '105',
+      playTime: '60',
+      playCount: '800',
+      memo: '',
+    };
+
+    const readLocalWorkloadBackup = () => {
+      try {
+        const saved = localStorage.getItem(WORKLOAD_STORAGE_KEY);
+        if (!saved) return {};
+        const parsed = JSON.parse(saved);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+      } catch (e) {
+        console.error("仕事量データ読み込みエラー:", e);
+        return {};
+      }
+    };
+
+    const hasLocalWorkloadBackup = () => (
+      Object.values(readLocalWorkloadBackup()).some(items => Array.isArray(items) && items.length > 0)
+    );
+
+    const normalizeWorkloadRow = (row) => ({
+      id: row.id,
+      date: row.date,
+      machineName: row.machine_name || '',
+      payoutRate: row.payout_rate === null || row.payout_rate === undefined ? '' : row.payout_rate.toString(),
+      playTime: row.play_time === null || row.play_time === undefined ? '' : row.play_time.toString(),
+      playCount: row.play_count === null || row.play_count === undefined ? '' : row.play_count.toString(),
+      memo: row.memo || '',
+      workValue: Number(row.work_value) || 0,
+      createdAt: row.created_at,
+    });
+
+    const addMachineOption = (list, index, option) => {
+      const aliases = uniqueValues([...(option.aliases || []), option.detail, option.tag].filter(Boolean));
+      const dedupeAliases = uniqueValues(option.dedupeAliases || []);
+      const keys = uniqueValues([option.name, ...dedupeAliases]);
+      const duplicate = keys.map(normalizeMachineText).find(key => index.has(key));
+      const maker = normalizeMachineMaker(option.maker);
+
+      if (duplicate) {
+        const existing = index.get(duplicate);
+        existing.aliases = uniqueValues([...existing.aliases, option.name, ...aliases].filter(Boolean));
+        existing.dedupeAliases = uniqueValues([...(existing.dedupeAliases || []), ...dedupeAliases]);
+        if ((!existing.maker || existing.maker === "Tier表") && maker) existing.maker = maker;
+        if (!existing.introducedAt && option.introducedAt) existing.introducedAt = option.introducedAt;
+        uniqueValues([existing.name, ...(existing.dedupeAliases || [])])
+          .map(normalizeMachineText)
+          .forEach(key => index.set(key, existing));
+        return;
+      }
+
+      const nextOption = {
+        name: option.name,
+        maker,
+        introducedAt: option.introducedAt || "",
+        aliases,
+        dedupeAliases,
+      };
+      list.push(nextOption);
+      keys.map(normalizeMachineText).forEach(key => index.set(key, nextOption));
+    };
+
+    const buildMachineOptions = (rukoItems) => {
+      const list = [];
+      const index = new Map();
+
+      rukoItems
+        .filter(item => item && item.name && item.tier !== "内部仕様" && item.name !== "コンプ対策")
+        .forEach(item => {
+          const officialAliases = TIER_MACHINE_ALIAS_MAP[item.name] || [];
+          addMachineOption(list, index, {
+            name: item.name,
+            maker: "",
+            introducedAt: "",
+            aliases: [...officialAliases, item.detail, item.tag].filter(Boolean),
+            dedupeAliases: officialAliases.slice(0, 1),
+          });
+        });
+
+      SMART_SLOT_MACHINE_OPTIONS.forEach(option => addMachineOption(list, index, option));
+      return list
+        .map((option, order) => ({ ...option, order }))
+        .sort((a, b) => machinePriority(a) - machinePriority(b) || a.order - b.order);
+    };
+
+    const COLUMN_DATA = [
+      {
+        id: 'c1',
+        title: '6.5号機・スマスロの「有利区間切断」について',
+        date: '2026/06/15',
+        category: '立ち回り',
+        content: '最近の機種は有利区間切断時の恩恵が強い傾向にあります。特に差枚数で大きくマイナスになっている台からの切断は、恩恵（上位ATや特化ゾーン）を得られる確率が高まるため、狙い目の一つとなります。ただし、切断条件は機種によって異なり、差枚数だけでなく、特定ゲーム数や特定フラグが契機になることもあるため、機種ごとの解析をしっかり確認することが重要です。'
+      },
+      {
+        id: 'c2',
+        title: 'エナ専のメンタル管理術',
+        date: '2026/05/20',
+        category: 'コラム',
+        content: '期待値稼働において最も重要なのは「ブレないメンタル」です。下振れが続くと、ついボーダーを下げてしまったり、オカルトに頼りたくなったりしますが、そこをグッと堪えて機械のように期待値を積み続けることが最終的なプラスに繋がります。下振れは必ず起こるものとして受け入れ、資金管理を徹底しましょう。'
+      },
+      {
+        id: 'c3',
+        title: '朝イチのリセット狙い、どう立ち回る？',
+        date: '2026/04/10',
+        category: '立ち回り',
+        content: '朝イチは恩恵のある機種から狙うのが基本です。喰種やモンキーなど、リセット恩恵が強い機種はライバルも多いですが、優先して確保したいところです。もし取れなかった場合は、リセット確率が高く、かつ恩恵がある程度見込める機種などをフォローしていく形になります。店舗の傾向（全リセ、ランダム、据え置きメイン）を把握することも必須です。'
+      }
+    ];
+
+    const CardImage = ({ url, name, tag, tagColor, hasLink }) => {
+      const [error, setError] = useState(false);
+      const [retryIndex, setRetryIndex] = useState(0);
+
+      const variants = useMemo(() => {
+        if (!url) return [];
+        if (url.startsWith('http') || url.startsWith('data:')) return [url];
+        const cleanName = url.replace(/^\.\//, '').replace(/^\//, '');
+        return [cleanName, `./${cleanName}`, `/${cleanName}`];
+      }, [url]);
+
+      const currentUrl = variants[retryIndex];
+      const handleError = () => {
+        if (retryIndex < variants.length - 1) setRetryIndex(prev => prev + 1);
+        else setError(true);
+      };
+
+      const safeTag = tag || "";
+      const tagsArray = Array.isArray(safeTag) ? safeTag : safeTag.toString().split(',');
+
+      return (
+        <div className="h-28 relative overflow-hidden bg-neutral-900 flex flex-col justify-end">
+          {currentUrl && !error ? (
+            <img 
+              key={currentUrl} src={currentUrl} alt={name || "image"} 
+              className="absolute inset-0 w-full h-full object-cover opacity-90 transition-opacity duration-300"
+              onError={handleError}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center opacity-20">
+              <ImageIcon size={32} className="text-gray-400" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+          
+          {hasLink && (
+            <div className="absolute top-1 left-1 bg-black/60 p-1 rounded-md z-20">
+              <ExternalLink size={12} className="text-white" />
+            </div>
+          )}
+
+          <div className="relative z-10 px-2 pb-1">
+            <p className="text-[10px] text-white font-black leading-tight drop-shadow-md truncate">{name}</p>
+            {safeTag && safeTag.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {tagsArray.map((t, idx) => {
+                  const colors = tagColor ? tagColor.split(',') : [];
+                  const color = colors[idx] ? colors[idx].trim() : (colors[0] || 'bg-white');
+                  return (
+                    <div key={idx} className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold text-black shadow-sm ${color}`}>
+                      {t.trim()}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [activeTab, setActiveTab] = useState('ruko'); 
+      
+      const [rukoItems, setRukoItems] = useState(() => {
+        let items = RUKO_OFFICIAL_DATA;
+        try {
+          const saved = localStorage.getItem('slot_app_rukoItems_v58');
+          if (saved) {
+            const parsed = JSON.parse(saved); 
+            if(Array.isArray(parsed)) items = parsed;
+          }
+        } catch (e) { console.error("データ読み込みエラー:", e); }
+        return items
+          .filter(item => item)
+          .map(item => ({
+            ...item,
+            memo: item.memo || DEFAULT_MEMO_TEMPLATE,
+            timeSlots: getTargetTimeSlots(item),
+          }));
       });
 
-      card.addEventListener("dragend", () => {
-        card.classList.remove("dragging");
-        draggedCard = null;
-      });
+      useEffect(() => {
+        try {
+          localStorage.setItem('slot_app_rukoItems_v58', JSON.stringify(rukoItems));
+        } catch (e) { console.warn("保存できませんでした", e); }
+      }, [rukoItems]);
 
-      return card;
-    }
+      const [isEditing, setIsEditing] = useState(false);
+      const [draggedItemId, setDraggedItemId] = useState(null);
+      const [dragOverTier, setDragOverTier] = useState(null);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [targetTimeSort, setTargetTimeSort] = useState('all');
+      const [showToast, setShowToast] = useState(null);
 
-    function setupDropZone(zone) {
-      zone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        zone.classList.add("drag-over");
-      });
+      const [detailModalConfig, setDetailModalConfig] = useState({ isOpen: false, item: null });
+      const [isMemoEditing, setIsMemoEditing] = useState(false);
+      const [editingMemoText, setEditingMemoText] = useState('');
 
-      zone.addEventListener("dragleave", (e) => {
-        if (!zone.contains(e.relatedTarget)) {
-          zone.classList.remove("drag-over");
+      const [modalConfig, setModalConfig] = useState({ isOpen: false, mode: 'add', itemId: null });
+      const [formData, setFormData] = useState({ name: '', detail: '', tag: '', imageUrl: '', link: '', memo: '' });
+
+      const [currentDate, setCurrentDate] = useState(new Date());
+      const [session, setSession] = useState(null);
+      const [authLoading, setAuthLoading] = useState(!!supabase);
+      const [authSubmitting, setAuthSubmitting] = useState(false);
+      const [authMode, setAuthMode] = useState('login');
+      const [authForm, setAuthForm] = useState({ email: '', password: '' });
+      const [authError, setAuthError] = useState('');
+      const [authMessage, setAuthMessage] = useState('');
+      const [workloadLoading, setWorkloadLoading] = useState(false);
+      const [workloadError, setWorkloadError] = useState('');
+      const [monthWorkloads, setMonthWorkloads] = useState([]);
+      const [workloadSaving, setWorkloadSaving] = useState(false);
+      const [deletingWorkloadId, setDeletingWorkloadId] = useState(null);
+      const [isMigratingWorkloads, setIsMigratingWorkloads] = useState(false);
+      const [hasLocalBackup, setHasLocalBackup] = useState(() => hasLocalWorkloadBackup());
+
+      const [isWorkloadModalOpen, setIsWorkloadModalOpen] = useState(false);
+      const [workloadForm, setWorkloadForm] = useState(EMPTY_WORKLOAD_FORM);
+      const [isMachineDropdownOpen, setIsMachineDropdownOpen] = useState(false);
+      const [activeMachineOptionIndex, setActiveMachineOptionIndex] = useState(0);
+      const [selectedTargetLabel, setSelectedTargetLabel] = useState('');
+
+      const machineOptions = useMemo(() => buildMachineOptions(rukoItems), [rukoItems]);
+      const targetPreset = useMemo(() => findTargetPreset(workloadForm.machineName), [workloadForm.machineName]);
+      const workloadPreviewValue = useMemo(
+        () => calculateWorkValue(workloadForm.payoutRate, workloadForm.playTime),
+        [workloadForm.payoutRate, workloadForm.playTime]
+      );
+
+      const filteredMachineOptions = useMemo(() => {
+        const query = normalizeMachineText(workloadForm.machineName);
+        const matchedOptions = query
+          ? machineOptions.filter(option => (
+              normalizeMachineText([
+                option.name,
+                option.maker,
+                option.introducedAt,
+                ...(option.aliases || [])
+              ].join(' ')).includes(query)
+            ))
+          : machineOptions;
+
+        return matchedOptions.slice(0, 8);
+      }, [machineOptions, workloadForm.machineName]);
+
+      useEffect(() => {
+        setActiveMachineOptionIndex(0);
+        setSelectedTargetLabel('');
+      }, [workloadForm.machineName]);
+
+      useEffect(() => {
+        if (!isWorkloadModalOpen) setIsMachineDropdownOpen(false);
+      }, [isWorkloadModalOpen]);
+
+      const selectMachineOption = (option) => {
+        setWorkloadForm(prev => ({ ...prev, machineName: option.name }));
+        setIsMachineDropdownOpen(false);
+        setActiveMachineOptionIndex(0);
+      };
+
+      const applyTargetPreset = (target) => {
+        setWorkloadForm(prev => ({ ...prev, payoutRate: target.payoutRate }));
+        setSelectedTargetLabel(target.label);
+      };
+
+      const adjustPayoutRate = (delta) => {
+        setSelectedTargetLabel('');
+        setWorkloadForm(prev => {
+          const currentRate = parseFloat(prev.payoutRate);
+          const baseRate = Number.isFinite(currentRate) ? currentRate : 100;
+          const nextRate = Math.round((baseRate + delta) * 10) / 10;
+          return { ...prev, payoutRate: nextRate.toString() };
+        });
+      };
+
+      const handlePayoutRateKeyDown = (e) => {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          adjustPayoutRate(0.5);
         }
-      });
 
-      zone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        zone.classList.remove("drag-over");
-        if (draggedCard) {
-          zone.appendChild(draggedCard);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          adjustPayoutRate(-0.5);
         }
-      });
-    }
+      };
 
-    function init() {
-      const pool = document.getElementById("pool");
-      pool.innerHTML = "";
+      const handleMachineInputKeyDown = (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setIsMachineDropdownOpen(true);
+          setActiveMachineOptionIndex(prev => Math.min(prev + 1, Math.max(filteredMachineOptions.length - 1, 0)));
+          return;
+        }
 
-      document.querySelectorAll(".tier-drop").forEach(z => z.innerHTML = "");
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setActiveMachineOptionIndex(prev => Math.max(prev - 1, 0));
+          return;
+        }
 
-      machines.forEach(m => pool.appendChild(createCard(m)));
+        if (e.key === 'Enter' && isMachineDropdownOpen && filteredMachineOptions[activeMachineOptionIndex]) {
+          e.preventDefault();
+          selectMachineOption(filteredMachineOptions[activeMachineOptionIndex]);
+          return;
+        }
 
-      document.querySelectorAll(".tier-drop, #pool").forEach(setupDropZone);
-    }
+        if (e.key === 'Escape') {
+          setIsMachineDropdownOpen(false);
+        }
+      };
 
-    document.getElementById("resetBtn").addEventListener("click", init);
+      const handleWorkloadTimeChange = (e) => {
+        const time = e.target.value;
+        setWorkloadForm(prev => ({
+          ...prev, 
+          playTime: time, 
+          playCount: time ? Math.round((parseFloat(time) / 60) * 800).toString() : ''
+        }));
+      };
 
-    init();
+      const handleWorkloadCountChange = (e) => {
+        const count = e.target.value;
+        setWorkloadForm(prev => ({
+          ...prev, 
+          playCount: count, 
+          playTime: count ? Math.round((parseFloat(count) / 800) * 60).toString() : ''
+        }));
+      };
+
+      const formatDateStr = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+
+      const displayDateStr = (date) => {
+        const days = ['日', '月', '火', '水', '木', '金', '土'];
+        return `${date.getMonth() + 1}/${date.getDate()} (${days[date.getDay()]})`;
+      };
+
+      const displayMonthStr = (date) => `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
+
+      const formatSignedAmount = (value, withYen = false) => {
+        const safeValue = Number(value) || 0;
+        const prefix = safeValue > 0 ? '+' : safeValue < 0 ? '' : '±';
+        return `${prefix}${safeValue.toLocaleString()}${withYen ? '円' : ''}`;
+      };
+
+      const changeDate = (days) => {
+        const newDate = new Date(currentDate);
+        newDate.setDate(newDate.getDate() + days);
+        setCurrentDate(newDate);
+      };
+
+      const changeMonth = (months) => {
+        setCurrentDate(prev => {
+          const year = prev.getFullYear();
+          const targetMonth = prev.getMonth() + months;
+          const lastDay = new Date(year, targetMonth + 1, 0).getDate();
+          return new Date(year, targetMonth, Math.min(prev.getDate(), lastDay));
+        });
+      };
+
+      const selectCalendarDate = (date) => {
+        setCurrentDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
+      };
+
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+
+      const fetchMonthWorkloads = async (baseDate = currentDate) => {
+        if (!supabase || !session) return;
+        setWorkloadLoading(true);
+        setWorkloadError('');
+
+        try {
+          const year = baseDate.getFullYear();
+          const month = baseDate.getMonth();
+          const monthStart = formatDateStr(new Date(year, month, 1));
+          const nextMonthStart = formatDateStr(new Date(year, month + 1, 1));
+          const { data, error } = await supabase
+            .from('workload_entries')
+            .select('id,date,machine_name,payout_rate,play_time,play_count,memo,work_value,created_at')
+            .gte('date', monthStart)
+            .lt('date', nextMonthStart)
+            .order('date', { ascending: true })
+            .order('created_at', { ascending: true });
+
+          if (error) throw error;
+          setMonthWorkloads((data || []).map(normalizeWorkloadRow));
+        } catch (error) {
+          setWorkloadError(error.message || '仕事量データを読み込めませんでした');
+        } finally {
+          setWorkloadLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        if (!supabase) {
+          setAuthLoading(false);
+          return;
+        }
+
+        let mounted = true;
+        supabase.auth.getSession()
+          .then(({ data, error }) => {
+            if (!mounted) return;
+            if (error) setAuthError(error.message);
+            setSession(data?.session || null);
+          })
+          .catch(error => {
+            if (mounted) setAuthError(error.message || 'ログイン状態を確認できませんでした');
+          })
+          .finally(() => {
+            if (mounted) setAuthLoading(false);
+          });
+
+        const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+          setSession(nextSession);
+          setAuthError('');
+          setAuthMessage('');
+          if (!nextSession) {
+            setMonthWorkloads([]);
+            setWorkloadError('');
+            setIsWorkloadModalOpen(false);
+          }
+        });
+
+        return () => {
+          mounted = false;
+          data?.subscription?.unsubscribe();
+        };
+      }, []);
+
+      useEffect(() => {
+        if (!session || !supabase) return;
+        fetchMonthWorkloads(currentDate);
+      }, [session, currentYear, currentMonth]);
+
+      const handleAuthSubmit = async (e) => {
+        e.preventDefault();
+        if (!supabase) return;
+
+        const email = authForm.email.trim();
+        const password = authForm.password;
+        if (!email || !password) {
+          setAuthError('メールアドレスとパスワードを入力してください');
+          return;
+        }
+
+        setAuthSubmitting(true);
+        setAuthError('');
+        setAuthMessage('');
+
+        try {
+          const { error } = authMode === 'login'
+            ? await supabase.auth.signInWithPassword({ email, password })
+            : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.href } });
+
+          if (error) throw error;
+          setAuthMessage(authMode === 'login'
+            ? 'ログインしました'
+            : '登録を受け付けました。確認メールが届いた場合は認証後にログインしてください。');
+        } catch (error) {
+          setAuthError(error.message || '認証に失敗しました');
+        } finally {
+          setAuthSubmitting(false);
+        }
+      };
+
+      const handleLogout = async () => {
+        if (!supabase) return;
+        const { error } = await supabase.auth.signOut();
+        if (error) setAuthError(error.message);
+      };
+
+      const migrateLocalWorkloads = async () => {
+        if (!supabase || !session) return;
+        const localData = readLocalWorkloadBackup();
+        const rows = Object.entries(localData).flatMap(([dateKey, items]) => (
+          Array.isArray(items)
+            ? items
+                .filter(item => item && item.machineName)
+                .map(item => {
+                  const payoutRate = parseFloat(item.payoutRate) || 100;
+                  const playTime = parseInt(item.playTime, 10) || 0;
+                  const playCount = parseInt(item.playCount, 10) || 0;
+                  const savedWorkValue = Number(item.workValue);
+                  return {
+                    user_id: session.user.id,
+                    date: dateKey,
+                    machine_name: item.machineName,
+                    payout_rate: payoutRate,
+                    play_time: playTime,
+                    play_count: playCount,
+                    memo: item.memo || '',
+                    work_value: Number.isFinite(savedWorkValue)
+                      ? Math.round(savedWorkValue)
+                      : calculateWorkValue(payoutRate, playTime),
+                  };
+                })
+            : []
+        ));
+
+        if (rows.length === 0) {
+          setHasLocalBackup(false);
+          setAuthMessage('移行できる端末内記録はありません');
+          return;
+        }
+
+        setIsMigratingWorkloads(true);
+        setWorkloadError('');
+        setAuthMessage('');
+
+        try {
+          const { error } = await supabase.from('workload_entries').insert(rows);
+          if (error) throw error;
+          localStorage.removeItem(WORKLOAD_STORAGE_KEY);
+          setHasLocalBackup(false);
+          setAuthMessage(`${rows.length}件の端末内記録を移行しました`);
+          await fetchMonthWorkloads(currentDate);
+        } catch (error) {
+          setWorkloadError(error.message || '端末内記録を移行できませんでした');
+        } finally {
+          setIsMigratingWorkloads(false);
+        }
+      };
+
+      const saveWorkload = async () => {
+        if (!workloadForm.machineName.trim()) return triggerToast('機種名を入力してください');
+        if (!supabase || !session) {
+          setWorkloadError('仕事量を保存するにはログインが必要です');
+          return;
+        }
+        
+        const dateKey = formatDateStr(currentDate);
+        const workValue = calculateWorkValue(workloadForm.payoutRate, workloadForm.playTime);
+        const payoutRate = parseFloat(workloadForm.payoutRate) || 100;
+        const playTime = parseInt(workloadForm.playTime, 10) || 0;
+        const playCount = parseInt(workloadForm.playCount, 10) || 0;
+
+        setWorkloadSaving(true);
+        setWorkloadError('');
+
+        try {
+          const { error } = await supabase.from('workload_entries').insert({
+            user_id: session.user.id,
+            date: dateKey,
+            machine_name: workloadForm.machineName.trim(),
+            payout_rate: payoutRate,
+            play_time: playTime,
+            play_count: playCount,
+            memo: workloadForm.memo || '',
+            work_value: workValue,
+          });
+
+          if (error) throw error;
+          setIsWorkloadModalOpen(false);
+          setWorkloadForm({ ...EMPTY_WORKLOAD_FORM });
+          setSelectedTargetLabel('');
+          await fetchMonthWorkloads(currentDate);
+        } catch (error) {
+          setWorkloadError(error.message || '仕事量を保存できませんでした');
+        } finally {
+          setWorkloadSaving(false);
+        }
+      };
+
+      const deleteWorkload = async (dateKey, id) => {
+        if (!supabase || !session) return;
+        setDeletingWorkloadId(id);
+        setWorkloadError('');
+
+        try {
+          const { error } = await supabase
+            .from('workload_entries')
+            .delete()
+            .eq('id', id);
+
+          if (error) throw error;
+          await fetchMonthWorkloads(currentDate);
+        } catch (error) {
+          setWorkloadError(error.message || '仕事量を削除できませんでした');
+        } finally {
+          setDeletingWorkloadId(null);
+        }
+      };
+
+      const getDateTotalWorkValue = (date) => {
+        const dateKey = formatDateStr(date);
+        const items = monthWorkloads.filter(item => item.date === dateKey);
+        return items.reduce((sum, item) => sum + (Number(item.workValue) || 0), 0);
+      };
+
+      const selectedDateKey = formatDateStr(currentDate);
+      const todayKey = formatDateStr(new Date());
+
+      const calendarDays = useMemo(() => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDayOfMonth = new Date(year, month, 1);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const cells = [];
+
+        for (let i = 0; i < firstDayOfMonth.getDay(); i++) cells.push(null);
+        for (let day = 1; day <= daysInMonth; day++) cells.push(new Date(year, month, day));
+        while (cells.length % 7 !== 0) cells.push(null);
+
+        return cells;
+      }, [currentDate]);
+
+      const monthTotalWorkValue = useMemo(() => {
+        return monthWorkloads.reduce((sum, item) => sum + (Number(item.workValue) || 0), 0);
+      }, [monthWorkloads]);
+
+      const currentWorkloads = monthWorkloads.filter(item => item.date === selectedDateKey);
+
+
+      const exportData = () => {
+        const dataStr = JSON.stringify(rukoItems, null, 2);
+        navigator.clipboard.writeText(dataStr).then(() => {
+          triggerToast("JSONデータをコピーしました！");
+        }).catch(err => {
+          triggerToast("コピー失敗。");
+        });
+      };
+
+      const moveItem = (itemId, targetTier) => {
+        if (!IS_ADMIN_MODE) return;
+        setRukoItems(prev => prev.map(item => item.id === itemId ? { ...item, tier: targetTier } : item));
+        setDraggedItemId(null);
+        setDragOverTier(null);
+      };
+
+      const triggerToast = (msg) => {
+        setShowToast(msg);
+        setTimeout(() => setShowToast(null), 3000);
+      };
+
+      const handleModalSave = () => {
+        if (!formData.name) return triggerToast('機種名を入力してください');
+        if (modalConfig.mode === 'add') {
+          setRukoItems([...rukoItems, { id: `r-${Date.now()}`, ...formData, tier: 'C' }]);
+          triggerToast(`${formData.name} を追加しました`);
+        } else if (modalConfig.mode === 'edit') {
+          setRukoItems(rukoItems.map(i => i.id === modalConfig.itemId ? { ...i, ...formData } : i));
+          triggerToast(`更新しました`);
+        }
+        setModalConfig({ isOpen: false, mode: 'add', itemId: null });
+      };
+
+      const deleteItem = (id) => {
+        if (IS_ADMIN_MODE) setRukoItems(rukoItems.filter(item => item.id !== id));
+      };
+
+      const filteredItems = rukoItems.filter(item => 
+        (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (item.detail && item.detail.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+
+      const listItems = useMemo(() => (
+        filteredItems
+          .map((item, index) => {
+            const timeSlots = getTargetTimeSlots(item);
+            return {
+              ...item,
+              timeSlots,
+              matchesSelectedTime: targetTimeSort === 'all' || timeSlots.includes(targetTimeSort),
+              originalIndex: index,
+            };
+          })
+          .sort((a, b) => {
+            if (targetTimeSort !== 'all') {
+              if (a.matchesSelectedTime !== b.matchesSelectedTime) return a.matchesSelectedTime ? -1 : 1;
+              const aSlotIndex = a.timeSlots.indexOf(targetTimeSort);
+              const bSlotIndex = b.timeSlots.indexOf(targetTimeSort);
+              if (aSlotIndex !== bSlotIndex) return (aSlotIndex === -1 ? 99 : aSlotIndex) - (bSlotIndex === -1 ? 99 : bSlotIndex);
+            }
+            return a.originalIndex - b.originalIndex;
+          })
+      ), [filteredItems, targetTimeSort]);
+
+      const canDrag = IS_ADMIN_MODE && isEditing;
+      const renderMemberGate = (title, description) => (
+        <div className="p-4 space-y-4 bg-gray-50 min-h-full">
+          {!supabase ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+                  <Database size={20} />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-base font-black text-gray-900">Supabase設定が必要です</h2>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-600 font-medium">
+                    会員限定コンテンツを使うには、Supabaseの接続設定が必要です。
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : authLoading ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+              <RefreshCw size={22} className="mx-auto mb-3 text-blue-500 animate-spin" />
+              <p className="text-sm font-black text-gray-700">ログイン状態を確認中...</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+                  <User size={20} />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-base font-black text-gray-900">{title}</h2>
+                  <p className="mt-1 text-xs leading-relaxed text-gray-600 font-medium">{description}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 mb-4 bg-gray-100 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('login'); setAuthError(''); setAuthMessage(''); }}
+                  className={`py-2 rounded-lg text-xs font-black transition-colors ${authMode === 'login' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}
+                >
+                  ログイン
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('signup'); setAuthError(''); setAuthMessage(''); }}
+                  className={`py-2 rounded-lg text-xs font-black transition-colors ${authMode === 'signup' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}
+                >
+                  新規登録
+                </button>
+              </div>
+
+              <form onSubmit={handleAuthSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1">メールアドレス</label>
+                  <input
+                    type="email"
+                    value={authForm.email}
+                    onChange={e => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                    placeholder="email@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1">パスワード</label>
+                  <input
+                    type="password"
+                    value={authForm.password}
+                    onChange={e => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                    placeholder="6文字以上"
+                  />
+                </div>
+
+                {authError && <p className="text-xs font-bold text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{authError}</p>}
+                {authMessage && <p className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">{authMessage}</p>}
+
+                <button
+                  type="submit"
+                  disabled={authSubmitting}
+                  className="w-full bg-blue-600 disabled:bg-blue-300 text-white font-bold py-3 rounded-xl shadow-md flex justify-center items-center gap-2 active:bg-blue-700 transition-colors"
+                >
+                  <User size={18} />
+                  {authSubmitting ? '処理中...' : authMode === 'login' ? 'ログインする' : '登録する'}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      );
+
+      return (
+        <div className="w-full max-w-md mx-auto h-screen overflow-hidden bg-gray-100 flex flex-col select-none font-sans">
+          <header className="sticky top-0 z-50 bg-white shadow-md">
+            <div className="bg-neutral-900 text-white px-4 py-3 flex flex-col gap-1">
+              <div className="flex justify-between items-start">
+                <h1 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none flex items-center gap-2">
+                  {activeTab === 'calc' ? "Calculator" : activeTab === 'column' ? "Mini Columns" : "Ruko App"}
+                  {IS_ADMIN_MODE && <span className="bg-red-500 text-white px-1.5 rounded-sm text-[8px]">Admin Mode</span>}
+                </h1>
+                
+                <div className="flex gap-2">
+                  {IS_ADMIN_MODE && isEditing && (
+                    <button onClick={exportData} className="p-1.5 rounded-full bg-green-600 text-white shadow-lg transition-all active:scale-95 flex items-center justify-center">
+                      <Download size={14} />
+                    </button>
+                  )}
+                  {IS_ADMIN_MODE && activeTab !== 'ai' && (
+                    <button onClick={() => setIsEditing(!isEditing)} className={`p-1.5 rounded-full transition-all shadow-lg ${isEditing ? 'bg-red-500 rotate-90' : 'bg-blue-600'}`}>
+                      {isEditing ? <X size={14} /> : <Edit2 size={14} />}
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-end mt-1">
+                <p className="text-sm sm:text-base font-black italic leading-tight">
+                  {activeTab === 'ruko' ? "最新狙い目Tier表" : activeTab === 'list' ? "狙い目一覧" : activeTab === 'column' ? "ミニコラム集" : "仕事量管理"}
+                </p>
+                {(activeTab !== 'workload' && activeTab !== 'column') && (
+                  <p className="text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium">拾いやすさ×期待値</p>
+                )}
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1 overflow-y-auto pb-24" style={{ height: 'calc(100vh - 130px)', scrollbarGutter: 'stable' }}>
+            
+            {activeTab === 'column' && (
+              session ? (
+              <div className="p-4 space-y-4">
+                <h2 className="text-lg font-black text-gray-800 mb-2 flex items-center gap-2">
+                  <BookOpen size={20} className="text-blue-500" />
+                  ミニコラム集
+                </h2>
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-black text-gray-400">ログイン中</p>
+                    <p className="text-sm font-black text-gray-800 truncate">{session.user?.email}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex-shrink-0 px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-xs font-black flex items-center gap-1.5 active:bg-gray-200"
+                  >
+                    <LogOut size={14} /> ログアウト
+                  </button>
+                </div>
+                
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 border-l-4 border-l-blue-500">
+                  <h3 className="font-bold text-gray-800 text-sm mb-3 border-b border-gray-100 pb-2">ただのAT間天井狙いなどを取り上げない理由</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed font-medium">
+                    天井狙いやスルー回数狙い等、一般層でも一目で「打てそう」と思う狙い方はライバルが多すぎてほぼ打てない。<br /><br />
+                    そのため、"一見なんでも無さそうな台なのに実は打てる"という事前知識を多く持っていないと今の環境で拾い続けるのは不可能。<br /><br />
+                    よってRukoの発信ではそういった特殊狙いを中心にまとめている。
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {COLUMN_DATA.map(col => (
+                    <div key={col.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2.5 py-1 rounded-full">{col.category}</span>
+                        <span className="text-[10px] text-gray-400 font-bold">{col.date}</span>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-bold text-[15px] text-gray-800 mb-2">{col.title}</h3>
+                        <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">{col.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              ) : renderMemberGate(
+                '会員限定コンテンツです',
+                'ログインすると、立ち回りの考え方やコラムを読めます。'
+              )
+            )}
+
+            {}
+            {activeTab === 'workload' && (
+              <div className="p-4 space-y-4 bg-gray-50 min-h-full">
+                {!supabase ? (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+                        <Database size={20} />
+                      </div>
+                      <div className="min-w-0">
+                        <h2 className="text-base font-black text-gray-900">Supabase設定が必要です</h2>
+                        <p className="mt-2 text-xs leading-relaxed text-gray-600 font-medium">
+                          仕事量タブはログイン会員限定です。`SUPABASE_URL` と `SUPABASE_ANON_KEY` を設定すると、ログインフォームとユーザー別保存が有効になります。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : authLoading ? (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+                    <RefreshCw size={22} className="mx-auto mb-3 text-blue-500 animate-spin" />
+                    <p className="text-sm font-black text-gray-700">ログイン状態を確認中...</p>
+                  </div>
+                ) : !session ? (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+                        <User size={20} />
+                      </div>
+                      <div className="min-w-0">
+                        <h2 className="text-base font-black text-gray-900">仕事量は会員限定です</h2>
+                        <p className="mt-1 text-xs leading-relaxed text-gray-600 font-medium">
+                          ログインすると、自分専用の仕事量カレンダーと稼働記録を保存できます。
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mb-4 bg-gray-100 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => { setAuthMode('login'); setAuthError(''); setAuthMessage(''); }}
+                        className={`py-2 rounded-lg text-xs font-black transition-colors ${authMode === 'login' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}
+                      >
+                        ログイン
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthMode('signup'); setAuthError(''); setAuthMessage(''); }}
+                        className={`py-2 rounded-lg text-xs font-black transition-colors ${authMode === 'signup' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'}`}
+                      >
+                        新規登録
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleAuthSubmit} className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">メールアドレス</label>
+                        <input
+                          type="email"
+                          value={authForm.email}
+                          onChange={e => setAuthForm(prev => ({ ...prev, email: e.target.value }))}
+                          className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                          placeholder="email@example.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 mb-1">パスワード</label>
+                        <input
+                          type="password"
+                          value={authForm.password}
+                          onChange={e => setAuthForm(prev => ({ ...prev, password: e.target.value }))}
+                          className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                          placeholder="6文字以上"
+                        />
+                      </div>
+
+                      {authError && <p className="text-xs font-bold text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{authError}</p>}
+                      {authMessage && <p className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">{authMessage}</p>}
+
+                      <button
+                        type="submit"
+                        disabled={authSubmitting}
+                        className="w-full bg-blue-600 disabled:bg-blue-300 text-white font-bold py-3 rounded-xl shadow-md flex justify-center items-center gap-2 active:bg-blue-700 transition-colors"
+                      >
+                        <User size={18} />
+                        {authSubmitting ? '処理中...' : authMode === 'login' ? 'ログインする' : '登録する'}
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <>
+                    {(hasLocalBackup || authMessage) && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 space-y-3">
+                      {hasLocalBackup && (
+                        <button
+                          type="button"
+                          onClick={migrateLocalWorkloads}
+                          disabled={isMigratingWorkloads}
+                          className="w-full bg-neutral-900 disabled:bg-gray-400 text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2 active:bg-neutral-800"
+                        >
+                          <UploadCloud size={16} />
+                          {isMigratingWorkloads ? '移行中...' : 'この端末の記録を移行'}
+                        </button>
+                      )}
+
+                      {authMessage && <p className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">{authMessage}</p>}
+                    </div>
+                    )}
+
+                    {workloadError && (
+                      <div className="bg-red-50 border border-red-100 rounded-xl p-3 flex items-center justify-between gap-3">
+                        <p className="text-xs font-bold text-red-600 leading-relaxed">{workloadError}</p>
+                        <button
+                          type="button"
+                          onClick={() => fetchMonthWorkloads(currentDate)}
+                          className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-white text-red-500 text-xs font-black border border-red-100 flex items-center gap-1"
+                        >
+                          <RefreshCw size={13} /> 再読み込み
+                        </button>
+                      </div>
+                    )}
+
+                    {workloadLoading ? (
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+                        <RefreshCw size={22} className="mx-auto mb-3 text-blue-500 animate-spin" />
+                        <p className="text-sm font-black text-gray-700">仕事量データを読み込み中...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                          <div className="bg-neutral-900 text-white px-3 py-2.5 flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={() => changeMonth(-1)}
+                              className="p-1.5 rounded-full bg-white/15 active:bg-white/25 transition-colors"
+                              aria-label="前の月"
+                            >
+                              <ChevronLeft size={18} />
+                            </button>
+                            <div className="text-center leading-tight">
+                              <p className="text-sm font-black tracking-wide">{displayMonthStr(currentDate)}</p>
+                              <p className="text-xs font-black text-yellow-400">{formatSignedAmount(monthTotalWorkValue, true)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => changeMonth(1)}
+                              className="p-1.5 rounded-full bg-white/15 active:bg-white/25 transition-colors"
+                              aria-label="次の月"
+                            >
+                              <ChevronRight size={18} />
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+                            {CALENDAR_WEEKDAYS.map((day, idx) => (
+                              <div
+                                key={day}
+                                className={`h-7 flex items-center justify-center text-xs font-black ${idx === 0 ? 'text-red-400' : idx === 6 ? 'text-blue-500' : 'text-gray-500'}`}
+                              >
+                                {day}
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="grid grid-cols-7">
+                            {calendarDays.map((date, idx) => {
+                              if (!date) {
+                                return <div key={`blank-${idx}`} className="h-12 bg-gray-50/70 border-r border-b border-gray-100 last:border-r-0" />;
+                              }
+
+                              const dateKey = formatDateStr(date);
+                              const dayTotal = getDateTotalWorkValue(date);
+                              const hasWorkloads = monthWorkloads.some(item => item.date === dateKey);
+                              const isSelected = dateKey === selectedDateKey;
+                              const isToday = dateKey === todayKey;
+                              const weekday = date.getDay();
+
+                              return (
+                                <button
+                                  key={dateKey}
+                                  type="button"
+                                  onClick={() => selectCalendarDate(date)}
+                                  aria-label={`${date.getMonth() + 1}月${date.getDate()}日を選択`}
+                                  className={`relative h-12 min-w-0 border-r border-b border-gray-100 px-1.5 py-1 text-left transition-colors active:bg-blue-50 ${
+                                    isSelected ? 'bg-blue-50 ring-2 ring-inset ring-blue-500 z-10' : 'bg-white hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <div className="flex items-start justify-between gap-1">
+                                    <span className={`text-base font-black leading-none ${
+                                      isSelected ? 'text-blue-700' : weekday === 0 ? 'text-red-500' : weekday === 6 ? 'text-blue-600' : 'text-gray-800'
+                                    }`}>
+                                      {date.getDate()}
+                                    </span>
+                                    {isToday && <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-0.5 flex-shrink-0" />}
+                                  </div>
+                                  {hasWorkloads && (
+                                    <p className={`mt-1.5 text-[10px] font-black leading-none truncate ${
+                                      dayTotal > 0 ? 'text-blue-700' : dayTotal < 0 ? 'text-red-500' : 'text-gray-400'
+                                    }`}>
+                                      {formatSignedAmount(dayTotal)}
+                                    </p>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <button 
+                          onClick={() => setIsWorkloadModalOpen(true)}
+                          className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md flex justify-center items-center gap-2 active:bg-blue-700 transition-colors"
+                        >
+                          <Plus size={20} /> 新規稼働を記録する
+                        </button>
+
+                        <div className="space-y-3 mt-4">
+                          {currentWorkloads.length === 0 ? (
+                            <div className="text-center text-gray-400 py-10 text-sm font-bold bg-white rounded-xl border border-gray-100 border-dashed">
+                              稼働記録がありません
+                            </div>
+                          ) : (
+                            currentWorkloads.map(item => (
+                              <div key={item.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 relative">
+                                <div className="flex justify-between items-start mb-2 pr-6">
+                                  <h3 className="font-black text-gray-800">{item.machineName}</h3>
+                                  <div className="text-right">
+                                    <span className="text-[10px] text-gray-400 font-bold block mb-0.5">仕事量</span>
+                                    <span className={`font-black text-lg ${item.workValue >= 0 ? 'text-blue-600' : 'text-red-500'}`}>
+                                      {item.workValue > 0 ? '+' : ''}{item.workValue.toLocaleString()}円
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex gap-3 text-xs font-medium text-gray-500 bg-gray-50 p-2 rounded-lg mb-2">
+                                  <div className="flex items-center gap-1"><Trophy size={12}/> 割: {item.payoutRate}%</div>
+                                  <div className="flex items-center gap-1"><Clock size={12}/> {item.playTime}分</div>
+                                  <div className="flex items-center gap-1">回転: {item.playCount}G</div>
+                                </div>
+
+                                {item.memo && (
+                                  <p className="text-xs text-gray-600 whitespace-pre-wrap bg-gray-100 p-2 rounded-lg mt-2">
+                                    {item.memo}
+                                  </p>
+                                )}
+
+                                <button 
+                                  type="button"
+                                  onClick={() => deleteWorkload(formatDateStr(currentDate), item.id)}
+                                  disabled={deletingWorkloadId === item.id}
+                                  className="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors p-1 disabled:opacity-40"
+                                  aria-label="稼働記録を削除"
+                                >
+                                  <Trash2 size={16}/>
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'list' && (
+              session ? (
+              <div className="p-3 space-y-3">
+                <div className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Clock size={14} className="text-blue-500" />
+                    <p className="text-xs font-black text-gray-700">狙える時間帯で並び替え</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {TARGET_TIME_SLOT_OPTIONS.map(option => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setTargetTimeSort(option.id)}
+                        className={`rounded-lg border px-2 py-2 text-[11px] font-black transition-colors ${
+                          targetTimeSort === option.id
+                            ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                            : 'border-gray-200 bg-gray-50 text-gray-600 active:bg-gray-100'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <input 
+                    type="text" 
+                    placeholder="機種名や狙い目で検索..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 shadow-sm font-bold text-gray-700"
+                  />
+                </div>
+                <div className="space-y-2">
+                  {listItems.map(item => (
+                    <div 
+                      key={item.id} 
+                      onClick={() => {
+                        if (!isEditing) {
+                          setDetailModalConfig({ isOpen: true, item: item });
+                          setIsMemoEditing(false);
+                          setEditingMemoText(item.memo || '');
+                        }
+                      }}
+                      className={`bg-white rounded-xl border ${isEditing ? 'border-blue-300' : 'border-gray-200'} p-3 flex items-center gap-3 shadow-sm active:bg-blue-50 transition-colors ${!isEditing ? 'cursor-pointer' : ''}`}
+                    >
+                      <div className="w-16 h-16 bg-neutral-800 rounded-lg overflow-hidden flex-shrink-0 border border-neutral-700">
+                        <CardImage url={item.imageUrl} name={item.name} tag={item.tag} tagColor={item.tagColor} hasLink={!!item.link} />
+                      </div>
+                      <div className="flex-1 min-w-0 py-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="bg-gray-100 text-gray-600 text-[10px] font-black px-1.5 py-0.5 rounded border border-gray-200">
+                            Tier: {item.tier}
+                          </span>
+                          <h3 className="font-bold text-sm truncate text-gray-800">{item.name}</h3>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate font-medium">{item.detail}</p>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {item.timeSlots.map(slotId => (
+                            <span
+                              key={`${item.id}-${slotId}`}
+                              className={`text-[9px] font-black px-1.5 py-0.5 rounded border ${
+                                targetTimeSort === slotId
+                                  ? 'bg-blue-600 border-blue-600 text-white'
+                                  : 'bg-gray-50 border-gray-200 text-gray-500'
+                              }`}
+                            >
+                              {getTargetTimeLabel(slotId)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {IS_ADMIN_MODE && isEditing && (
+                        <div className="flex flex-col gap-2 pl-2 border-l border-gray-100">
+                          <button onClick={(e) => { e.stopPropagation(); setFormData({...item}); setModalConfig({isOpen: true, mode: 'edit', itemId: item.id}); }} className="p-2 text-blue-600 bg-blue-50 rounded-full"><Edit2 size={14}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }} className="p-2 text-red-600 bg-red-50 rounded-full"><Trash2 size={14}/></button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {listItems.length === 0 && <div className="text-center text-gray-400 py-10 text-sm font-bold">見つかりませんでした</div>}
+                </div>
+              </div>
+              ) : renderMemberGate(
+                '会員限定コンテンツです',
+                'ログインすると、機種別の狙い目一覧を閲覧できます。'
+              )
+            )}
+
+            {}
+            {activeTab === 'ruko' && (
+              <div className="p-3 space-y-6">
+                <div className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-blue-500">
+                  <h2 className="text-sm font-black text-gray-800 mb-2 flex items-center gap-2">
+                    <MessageSquare size={16} className="text-blue-500" />
+                    現環境について
+                  </h2>
+                  <p className="text-xs text-gray-600 font-medium leading-relaxed whitespace-pre-wrap">
+                    GODが急激に拾えなくなったのでS→Aに。{"\n"}
+                    転生も相当台数減ったが1台長く打てるのでS維持。{"\n\n"}
+                    先月より厳しい環境となった。{"\n\n"}
+                    今は戦コレ６が注目株。{"\n"}
+                    4月以降のコンプ規制強化を対策をした歪んだ爆裂機がこれからいろいろ出そうではあるので期待。
+                  </p>
+                </div>
+
+                {TIER_CONFIG.map((tier) => (
+                  <div 
+                    key={tier.id} 
+                    className={`relative rounded-2xl p-1 transition-all duration-300 ${dragOverTier === tier.id ? 'bg-blue-200/50 scale-[1.02] ring-2 ring-blue-400 ring-dashed' : ''}`}
+                    onDragOver={(e) => { e.preventDefault(); if (draggedItemId) setDragOverTier(tier.id); }}
+                    onDragLeave={() => setDragOverTier(null)}
+                    onDrop={(e) => { e.preventDefault(); if (draggedItemId) moveItem(draggedItemId, tier.id); }}
+                  >
+                    <div className={`w-full h-9 rounded-full mb-3 flex items-center px-6 shadow-lg ${tier.bg} text-white border-b-4 border-black/20`}>
+                      <span className="text-2xl font-black italic tracking-tighter drop-shadow-lg">{tier.label}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 min-h-[80px]">
+                      {filteredItems.filter(i => i.tier === tier.id).map(item => (
+                        <div 
+                          key={item.id}
+                          draggable={canDrag}
+                          onDragStart={(e) => { if (canDrag) { setDraggedItemId(item.id); e.dataTransfer.effectAllowed = 'move'; } }}
+                          onDragEnd={() => { setDraggedItemId(null); setDragOverTier(null); }}
+                          onClick={() => {
+                            if (!isEditing) {
+                              setDetailModalConfig({ isOpen: true, item: item });
+                              setIsMemoEditing(false);
+                              setEditingMemoText(item.memo || '');
+                            }
+                          }}
+                          className={`bg-white border-2 border-blue-500 rounded-xl overflow-hidden shadow-md relative transition-all ${canDrag ? 'cursor-grab' : 'cursor-pointer'} ${draggedItemId === item.id ? 'opacity-20 scale-90' : 'active:scale-95'} hover:border-blue-400`}
+                        >
+                          <CardImage url={item.imageUrl} name={item.name} tag={item.tag} tagColor={item.tagColor} hasLink={!!item.link} />
+                          <div className="p-2 bg-neutral-900 text-blue-200 text-[10px] leading-tight min-h-[48px] flex items-center border-t border-neutral-800 italic">
+                            {item.detail}
+                          </div>
+                          {IS_ADMIN_MODE && isEditing && (
+                            <div className="absolute top-1 right-1 flex flex-col gap-1 z-20">
+                              <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }} className="bg-red-600 text-white rounded-full p-1.5 shadow-xl hover:bg-red-700"><Trash2 size={12} /></button>
+                              <button onClick={(e) => { e.stopPropagation(); setFormData({...item}); setModalConfig({isOpen: true, mode: 'edit', itemId: item.id}); }} className="bg-blue-600 text-white rounded-full p-1.5 shadow-xl hover:bg-blue-700"><Edit2 size={12} /></button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+
+          {}
+          <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 flex justify-around items-center pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            <button onClick={() => setActiveTab('ruko')} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'ruko' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+              <Trophy size={20} className={activeTab === 'ruko' ? 'fill-blue-100' : ''} />
+              <span className="text-[10px] font-bold">Tier表</span>
+            </button>
+            <button onClick={() => setActiveTab('list')} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'list' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+              <List size={20} />
+              <span className="text-[10px] font-bold">狙い目一覧</span>
+            </button>
+            <button onClick={() => setActiveTab('workload')} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'workload' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+              <Coins size={20} className={activeTab === 'workload' ? 'fill-blue-100' : ''} />
+              <span className="text-[10px] font-bold">仕事量</span>
+            </button>
+            <button onClick={() => setActiveTab('column')} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'column' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+              <BookOpen size={20} className={activeTab === 'column' ? 'fill-blue-100' : ''} />
+              <span className="text-[10px] font-bold">ミニコラム集</span>
+            </button>
+          </nav>
+
+          {}
+          {isWorkloadModalOpen && session && (
+            <div className="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center p-4 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl w-full max-w-sm p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <h2 className="text-lg font-black mb-4 text-gray-800 border-b pb-2 flex items-center gap-2">
+                  <Plus size={18} className="text-blue-500"/>
+                  稼働を記録 ({displayDateStr(currentDate)})
+                </h2>
+                
+                <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-600 mb-1">機種名・狙い目</label>
+                    <div className="relative">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        <input 
+                          type="text" 
+                          role="combobox"
+                          aria-expanded={isMachineDropdownOpen}
+                          aria-controls="machine-option-list"
+                          aria-autocomplete="list"
+                          autoComplete="off"
+                          value={workloadForm.machineName}
+                          onFocus={() => setIsMachineDropdownOpen(true)}
+                          onBlur={() => setTimeout(() => setIsMachineDropdownOpen(false), 120)}
+                          onChange={e => {
+                            setWorkloadForm({...workloadForm, machineName: e.target.value});
+                            setIsMachineDropdownOpen(true);
+                          }}
+                          onKeyDown={handleMachineInputKeyDown}
+                          className="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-10 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                          placeholder="機種名を検索..."
+                        />
+                        <ChevronDown size={16} className={`absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-transform ${isMachineDropdownOpen ? 'rotate-180' : ''}`} />
+                      </div>
+
+                      {isMachineDropdownOpen && (
+                        <div id="machine-option-list" role="listbox" className="mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-52 overflow-y-auto">
+                          {filteredMachineOptions.length > 0 ? (
+                            filteredMachineOptions.map((option, idx) => (
+                              <button
+                                key={`${option.name}-${idx}`}
+                                type="button"
+                                role="option"
+                                aria-selected={idx === activeMachineOptionIndex}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => selectMachineOption(option)}
+                                onMouseEnter={() => setActiveMachineOptionIndex(idx)}
+                                className={`w-full text-left px-3 py-2.5 border-b border-gray-100 last:border-b-0 transition-colors ${idx === activeMachineOptionIndex ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'}`}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-sm font-black text-gray-800 leading-tight">{option.name}</span>
+                                  {idx === activeMachineOptionIndex && <Check size={14} className="text-blue-500 flex-shrink-0" />}
+                                </div>
+                                {(option.maker || option.introducedAt) && (
+                                  <div className="mt-1 flex items-center gap-2 text-[10px] font-bold text-gray-400">
+                                    {option.maker && <span>{option.maker}</span>}
+                                    {option.introducedAt && <span>{option.introducedAt}導入</span>}
+                                  </div>
+                                )}
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-3 py-3 text-xs font-bold text-gray-400">
+                              候補なし。入力した名前で保存できます。
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <p className="mt-1 text-[10px] font-bold text-gray-400">候補外もそのまま保存できます</p>
+                    </div>
+                  </div>
+
+                  {targetPreset && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-600 mb-1">狙い目</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {targetPreset.targets.map(target => (
+                          <button
+                            key={target.label}
+                            type="button"
+                            data-target-preset={target.label}
+                            onClick={() => applyTargetPreset(target)}
+                            className={`rounded-lg border px-3 py-2 text-xs font-black transition-colors ${
+                              selectedTargetLabel === target.label
+                                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                                : 'border-gray-200 bg-white text-gray-700 active:bg-gray-50'
+                            }`}
+                          >
+                            {target.label}
+                            <span className="block mt-0.5 text-[10px] font-bold opacity-70">{target.payoutRate}%</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-xs font-bold text-gray-600 mb-1 flex justify-between">
+                      <span>想定機械割 (%)</span>
+                      <span className="text-[10px] font-normal text-gray-400">101% = 時給500円</span>
+                    </label>
+                    <input 
+                      type="number" step="0.5"
+                      value={workloadForm.payoutRate}
+                      onKeyDown={handlePayoutRateKeyDown}
+                      onChange={e => {
+                        setSelectedTargetLabel('');
+                        setWorkloadForm({...workloadForm, payoutRate: e.target.value});
+                      }}
+                      className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                      placeholder="例: 105"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-600 mb-1">稼働時間 (分)</label>
+                      <input 
+                        type="number" 
+                        value={workloadForm.playTime}
+                        onChange={handleWorkloadTimeChange}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                        placeholder="例: 60"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-600 mb-1">回転数 (目安)</label>
+                      <input 
+                        type="number" 
+                        value={workloadForm.playCount}
+                        onChange={handleWorkloadCountChange}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                        placeholder="例: 800"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-gray-400 text-right mb-2">※時間と回転数は連動 (1時間=800G)</p>
+
+                  <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 shadow-sm border border-gray-300 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-gray-700 font-black">仕事量</p>
+                    </div>
+                    <div className="text-xl font-black whitespace-nowrap text-gray-900">
+                      {workloadPreviewValue > 0 ? '+' : ''}{workloadPreviewValue.toLocaleString()}円
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-600 mb-1">メモ (任意)</label>
+                    <textarea 
+                      value={workloadForm.memo}
+                      onChange={e => setWorkloadForm({...workloadForm, memo: e.target.value})}
+                      className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                      placeholder="稼働の振り返りや結果など"
+                    />
+                  </div>
+                </div>
+
+                {workloadError && (
+                  <p className="mt-4 text-xs font-bold text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                    {workloadError}
+                  </p>
+                )}
+
+                <div className="flex gap-3 mt-5 pt-3 border-t border-gray-100">
+                  <button onClick={() => setIsWorkloadModalOpen(false)} className="flex-1 bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl active:bg-gray-200">キャンセル</button>
+                  <button
+                    onClick={saveWorkload}
+                    disabled={workloadSaving}
+                    className="flex-1 bg-blue-600 disabled:bg-blue-300 text-white font-bold py-2.5 rounded-xl shadow-md active:bg-blue-700"
+                  >
+                    {workloadSaving ? '保存中...' : '保存'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {IS_ADMIN_MODE && isEditing && (
+            <button onClick={() => { setFormData({name: '', detail: '', tag: '', imageUrl: '', link: '', memo: DEFAULT_MEMO_TEMPLATE}); setModalConfig({isOpen: true, mode: 'add', itemId: null}); }} className="fixed bottom-24 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all z-50 border-[3px] border-white">
+              <Plus size={32} />
+            </button>
+          )}
+
+          {/* Details Modal */}
+          {detailModalConfig.isOpen && detailModalConfig.item && (
+            <div className="fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setDetailModalConfig({isOpen: false, item: null})}>
+              <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-start mb-4 flex-none">
+                  <h2 className="text-xl font-black text-gray-800 leading-tight pr-4">{detailModalConfig.item.name}</h2>
+                  <button onClick={() => setDetailModalConfig({isOpen: false, item: null})} className="p-1.5 bg-gray-100 rounded-full text-gray-500 active:bg-gray-200 transition-colors"><X size={20} /></button>
+                </div>
+                
+                <div className="mb-4 flex-none flex flex-wrap gap-2">
+                  {detailModalConfig.item.tag && detailModalConfig.item.tag.split(',').map((t, idx) => {
+                    const colors = detailModalConfig.item.tagColor ? detailModalConfig.item.tagColor.split(',') : [];
+                    const color = colors[idx] ? colors[idx].trim() : (colors[0] || 'bg-white');
+                    return <div key={idx} className={`inline-block px-3 py-1 rounded text-xs font-bold shadow-sm ${color}`}>{t.trim()}</div>;
+                  })}
+                </div>
+
+                <div className="relative mb-6 flex-1 overflow-hidden flex flex-col min-h-[150px] group">
+                  {isMemoEditing ? (
+                    <div className="flex flex-col gap-2 h-full animate-in fade-in zoom-in-95 duration-200">
+                      <textarea
+                        value={editingMemoText}
+                        onChange={(e) => setEditingMemoText(e.target.value)}
+                        className="w-full bg-white border-2 border-blue-400 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 flex-1 overflow-y-auto shadow-inner resize-none"
+                        autoFocus
+                      />
+                      <div className="flex gap-2 justify-end flex-none">
+                        <button onClick={() => setIsMemoEditing(false)} className="px-4 py-2 bg-gray-200 text-gray-700 text-xs font-bold rounded-lg">キャンセル</button>
+                        <button onClick={() => {
+                          const updatedItem = { ...detailModalConfig.item, memo: editingMemoText };
+                          setRukoItems(rukoItems.map(i => i.id === updatedItem.id ? updatedItem : i));
+                          setDetailModalConfig({ isOpen: true, item: updatedItem });
+                          setIsMemoEditing(false);
+                          triggerToast('メモを保存しました');
+                        }} className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg">保存</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 h-full cursor-pointer hover:bg-blue-50 transition-colors overflow-y-auto" onClick={() => setIsMemoEditing(true)}>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap font-medium leading-relaxed pr-6">
+                          {detailModalConfig.item.memo || <span className="text-gray-400">詳細な狙い目メモはまだ登録されていません。<br/>ここをタップしてメモを追加・編集できます。</span>}
+                        </p>
+                      </div>
+                      <div className="absolute top-3 right-3 p-1.5 bg-white shadow-sm border border-gray-100 rounded-full text-gray-400 group-hover:text-blue-500 group-hover:border-blue-200 transition-colors pointer-events-none"><Edit2 size={14} /></div>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-3 flex-none">
+                  {detailModalConfig.item.link && (
+                    <button onClick={() => window.open(detailModalConfig.item.link, '_blank', 'noopener,noreferrer')} className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 font-bold py-3.5 rounded-xl border border-blue-200">
+                      <ExternalLink size={18} />詳しい解説記事を見る
+                    </button>
+                  )}
+                  <button onClick={() => setDetailModalConfig({isOpen: false, item: null})} className="w-full bg-neutral-800 text-white font-bold py-3.5 rounded-xl shadow-md">閉じる</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showToast && (
+            <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-neutral-900/90 backdrop-blur-md text-white px-6 py-2.5 rounded-full text-xs font-bold shadow-2xl z-[70] animate-bounce flex flex-col items-center gap-1">
+              <Check size={18} className="text-blue-400" />
+              <span>{showToast}</span>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
   </script>
 </body>
 </html>
