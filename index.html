@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パチスロ ティアリスト</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #ffd700, #ff6b35);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 28px;
+      font-size: 0.9rem;
+    }
+
+    .tier-list {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tier-row {
+      display: flex;
+      align-items: stretch;
+      min-height: 110px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tier-label {
+      width: 80px;
+      min-width: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #111;
+      user-select: none;
+    }
+
+    .tier-S .tier-label { background: #ff4d4d; }
+    .tier-A .tier-label { background: #ff9900; }
+    .tier-B .tier-label { background: #ffe600; }
+    .tier-C .tier-label { background: #66cc44; }
+    .tier-D .tier-label { background: #4488ff; }
+
+    .tier-drop {
+      flex: 1;
+      background: #16213e;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 2px dashed transparent;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .tier-drop.drag-over {
+      border-color: #ffd700;
+      background: #1e2f5e;
+    }
+
+    .card {
+      width: 120px;
+      height: 90px;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: grab;
+      border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .card:active { cursor: grabbing; }
+    .card:hover { transform: scale(1.05); border-color: #ffd700; }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .card.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+
+    .pool-section {
+      max-width: 860px;
+      margin: 20px auto 0;
+    }
+
+    .pool-label {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .pool-drop {
+      min-height: 110px;
+      background: #0f3460;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 2px dashed #334;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .pool-drop.drag-over {
+      border-color: #ffd700;
+      background: #1a4080;
+    }
+
+    .reset-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 32px;
+      background: linear-gradient(90deg, #ffd700, #ff6b35);
+      color: #111;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .reset-btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+  <h1>パチスロ ティアリスト</h1>
+  <p class="subtitle">画像をドラッグ＆ドロップしてランク付けしよう</p>
+
+  <div class="tier-list" id="tierList">
+    <div class="tier-row tier-S">
+      <div class="tier-label">S</div>
+      <div class="tier-drop" data-tier="S"></div>
+    </div>
+    <div class="tier-row tier-A">
+      <div class="tier-label">A</div>
+      <div class="tier-drop" data-tier="A"></div>
+    </div>
+    <div class="tier-row tier-B">
+      <div class="tier-label">B</div>
+      <div class="tier-drop" data-tier="B"></div>
+    </div>
+    <div class="tier-row tier-C">
+      <div class="tier-label">C</div>
+      <div class="tier-drop" data-tier="C"></div>
+    </div>
+    <div class="tier-row tier-D">
+      <div class="tier-label">D</div>
+      <div class="tier-drop" data-tier="D"></div>
+    </div>
+  </div>
+
+  <div class="pool-section">
+    <div class="pool-label">未ランク機種</div>
+    <div class="pool-drop" id="pool"></div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn">リセット</button>
+
+  <script>
+    const machines = [
+      { id: "animal",    src: "image_animal.jpg",    name: "アニマルスロット ドッチ" },
+      { id: "god",       src: "image_godkiseki.jpg", name: "ミリオンGOD 神々の奇跡" },
+      { id: "jormungand",src: "image_jormungand.jpg",name: "スマスロ ヨルムンガンド" },
+      { id: "yoshimune", src: "image_yoshimune .jpg",name: "真打 吉宗" },
+    ];
+
+    let draggedCard = null;
+
+    function createCard(machine) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.draggable = true;
+      card.dataset.id = machine.id;
+      card.title = machine.name;
+
+      const img = document.createElement("img");
+      img.src = machine.src;
+      img.alt = machine.name;
+      card.appendChild(img);
+
+      card.addEventListener("dragstart", (e) => {
+        draggedCard = card;
+        setTimeout(() => card.classList.add("dragging"), 0);
+        e.dataTransfer.effectAllowed = "move";
+      });
+
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        draggedCard = null;
+      });
+
+      return card;
+    }
+
+    function setupDropZone(zone) {
+      zone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        zone.classList.add("drag-over");
+      });
+
+      zone.addEventListener("dragleave", (e) => {
+        if (!zone.contains(e.relatedTarget)) {
+          zone.classList.remove("drag-over");
+        }
+      });
+
+      zone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        zone.classList.remove("drag-over");
+        if (draggedCard) {
+          zone.appendChild(draggedCard);
+        }
+      });
+    }
+
+    function init() {
+      const pool = document.getElementById("pool");
+      pool.innerHTML = "";
+
+      document.querySelectorAll(".tier-drop").forEach(z => z.innerHTML = "");
+
+      machines.forEach(m => pool.appendChild(createCard(m)));
+
+      document.querySelectorAll(".tier-drop, #pool").forEach(setupDropZone);
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", init);
+
+    init();
+  </script>
+</body>
+</html>
