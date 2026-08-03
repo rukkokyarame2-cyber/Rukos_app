@@ -8,6 +8,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preload" as="image" href="ruko-app-loading.png">
+  <link rel="apple-touch-startup-image" href="ruko-app-loading.png">
   <meta name="theme-color" content="#111827">
   <meta name="apple-mobile-web-app-title" content="RUKO APP">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,23 +41,35 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      background: #f3f4f6;
-      color: #111827;
+      background: #030303;
+      color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-align: center;
     }
 
     .boot-fallback__card {
       width: min(100%, 420px);
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      background: #ffffff;
-      padding: 22px;
-      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .boot-fallback__image {
+      width: min(74vw, 280px);
+      max-height: 46vh;
+      border-radius: 22px;
+      object-fit: contain;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
     }
 
     .boot-fallback__brand {
-      margin: 0 0 8px;
-      color: #2563eb;
+      margin: 18px 0 8px;
+      color: #60a5fa;
       font-size: 12px;
       font-weight: 900;
       letter-spacing: 0.12em;
@@ -63,14 +77,14 @@
 
     .boot-fallback__title {
       margin: 0 0 10px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 900;
       line-height: 1.45;
     }
 
     .boot-fallback__text {
       margin: 0 0 16px;
-      color: #4b5563;
+      color: #d1d5db;
       font-size: 13px;
       font-weight: 700;
       line-height: 1.7;
@@ -80,8 +94,8 @@
       width: 100%;
       border: 0;
       border-radius: 12px;
-      background: #111827;
-      color: #ffffff;
+      background: #ffffff;
+      color: #111827;
       padding: 13px 16px;
       font-size: 14px;
       font-weight: 900;
@@ -89,7 +103,7 @@
 
     .boot-fallback__detail {
       margin-top: 12px;
-      color: #6b7280;
+      color: #9ca3af;
       font-size: 11px;
       line-height: 1.5;
       word-break: break-word;
@@ -113,6 +127,7 @@
         root.innerHTML = `
           <div class="boot-fallback" role="alert">
             <div class="boot-fallback__card">
+              <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
               <p class="boot-fallback__brand">RUKO APP</p>
               <h1 class="boot-fallback__title">${message}</h1>
               <p class="boot-fallback__text">通信状況が不安定な時や、ホーム画面アプリの古いキャッシュが残っている時に起こることがあります。再読み込みで復帰できるようにしました。</p>
@@ -174,6 +189,7 @@
   <div id="root">
     <div class="boot-fallback boot-loading" aria-live="polite">
       <div class="boot-fallback__card">
+        <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
         <p class="boot-fallback__brand">RUKO APP</p>
         <h1 class="boot-fallback__title">アプリを読み込んでいます</h1>
         <p class="boot-fallback__text">ホーム画面からの起動でも復帰しやすいように、読み込み状態を表示しています。</p>
@@ -247,21 +263,22 @@
       }, []);
 
       return (
-        <div className="min-h-[100dvh] bg-gray-100 flex items-center justify-center p-6">
-          <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
-            <p className="text-xs font-black tracking-[0.12em] text-blue-600 mb-2">RUKO APP</p>
-            <h1 className="text-lg font-black text-gray-900 mb-2">アプリの起動に失敗しました</h1>
-            <p className="text-sm font-bold leading-relaxed text-gray-600 mb-5">
+        <div className="min-h-[100dvh] bg-black flex items-center justify-center p-6 text-center">
+          <div className="w-full max-w-sm flex flex-col items-center">
+            <img src="ruko-app-loading.png" alt="RUKO APP" className="w-[min(74vw,280px)] max-h-[46vh] object-contain rounded-[22px] shadow-2xl" />
+            <p className="mt-5 text-xs font-black tracking-[0.12em] text-blue-300 mb-2">RUKO APP</p>
+            <h1 className="text-lg font-black text-white mb-2">アプリの起動に失敗しました</h1>
+            <p className="text-sm font-bold leading-relaxed text-gray-300 mb-5">
               一時的な通信不良か、ホーム画面アプリの古いキャッシュが原因の可能性があります。
             </p>
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="w-full bg-neutral-900 text-white rounded-xl py-3 font-black active:bg-neutral-700"
+              className="w-full bg-white text-neutral-950 rounded-xl py-3 font-black active:bg-gray-200"
             >
               再読み込みする
             </button>
-            {detail && <p className="mt-4 text-[11px] leading-relaxed text-gray-400 break-words">{detail}</p>}
+            {detail && <p className="mt-4 text-[11px] leading-relaxed text-gray-500 break-words">{detail}</p>}
           </div>
         </div>
       );

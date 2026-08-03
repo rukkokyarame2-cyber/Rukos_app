@@ -5,6 +5,7 @@ const APP_SHELL_URLS = [
   './slot-tier-app.html',
   './manifest.webmanifest',
   './apple-touch-icon.png',
+  './ruko-app-loading.png',
 ];
 const STATIC_CDN_HOSTS = new Set([
   'cdn.tailwindcss.com',
