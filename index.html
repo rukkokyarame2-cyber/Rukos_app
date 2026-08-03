@@ -78,13 +78,24 @@
       Search, Star, MessageSquare, Menu, Plus, Move, 
       Check, X, Edit2, Trash2, Layout, History, ListPlus, Image as ImageIcon, ExternalLink, Download,
       Trophy, List, User, Database, Calculator, BookOpen, LogOut, RefreshCw, UploadCloud,
-      Calendar, ChevronLeft, ChevronRight, ChevronDown, Clock, Coins
+      Calendar, ChevronLeft, ChevronRight, ChevronDown, Clock, Coins, Building2, Cpu, Brain,
+      MapPin, Link as LinkIcon
     } from 'lucide-react';
 
     const IS_ADMIN_MODE = false; 
     const SUPABASE_URL = 'https://uiwzuwnycuwasqjnfbdq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs';
     const WORKLOAD_STORAGE_KEY = 'slot_app_workload_v1';
+    const STRATEGY_SHORTCUT_LINK_STORAGE_KEY = 'slot_app_strategy_shortcut_links_v1';
+    const STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY = 'slot_app_strategy_shortcut_link_defaults_v1';
+    const DEFAULT_STRATEGY_SHORTCUT_LINKS = [
+      {
+        id: 'default-chonborista',
+        title: 'ちょんぼりすた',
+        url: 'https://chonborista.com/',
+        memo: 'スロット解析確認用',
+      },
+    ];
     const isSupabaseConfigured = () => (
       SUPABASE_URL &&
       SUPABASE_ANON_KEY &&
@@ -391,15 +402,15 @@
     ];
 
     const TARGET_TIME_SLOTS = [
-      { id: 'morning', label: '午前中' },
+      { id: 'morning', label: '9時～12時' },
       { id: 'afternoon', label: '12～17時' },
       { id: 'evening', label: '17～20時' },
       { id: 'late', label: '20時～閉店' },
     ];
 
     const TARGET_TIME_SLOT_OPTIONS = [
-      { id: 'all', label: '通常順' },
       ...TARGET_TIME_SLOTS,
+      { id: 'all', label: '全時間帯' },
     ];
 
     const TARGET_TIME_SLOT_MAP = {
@@ -437,7 +448,7 @@
     const inferTargetTimeSlots = (item) => {
       const text = `${item.name || ''} ${item.detail || ''} ${item.tag || ''} ${item.memo || ''}`;
       const slots = new Set();
-      if (/リセ|朝一|朝イチ|0G|０G/.test(text)) slots.add('morning');
+      if (/リセ|リセット|朝一|朝イチ/.test(text)) slots.add('morning');
       if (/示唆|周期|ゾーン|メニュー|天国/.test(text)) {
         slots.add('afternoon');
         slots.add('evening');
@@ -453,11 +464,18 @@
       return normalizeTimeSlots([...slots]);
     };
 
-    const getTargetTimeSlots = (item) => normalizeTimeSlots(
-      item.timeSlots && item.timeSlots.length
+    const getTargetTimeSlots = (item) => {
+      const baseSlots = item.timeSlots && item.timeSlots.length
         ? item.timeSlots
-        : (TARGET_TIME_SLOT_MAP[item.id] || inferTargetTimeSlots(item))
-    );
+        : (TARGET_TIME_SLOT_MAP[item.id] || []);
+      const inferredSlots = inferTargetTimeSlots(item);
+      const slots = baseSlots.length ? baseSlots : inferredSlots;
+      return normalizeTimeSlots(
+        inferredSlots.includes('morning') && !slots.includes('morning')
+          ? ['morning', ...slots]
+          : slots
+      );
+    };
 
     const getTargetTimeLabel = (slotId) => (
       TARGET_TIME_SLOTS.find(slot => slot.id === slotId)?.label || slotId
@@ -811,29 +829,197 @@
         .sort((a, b) => machinePriority(a) - machinePriority(b) || a.order - b.order);
     };
 
-    const COLUMN_DATA = [
+    const STRATEGY_SECTION_DATA = [
       {
-        id: 'c1',
-        title: '6.5号機・スマスロの「有利区間切断」について',
-        date: '2026/06/15',
-        category: '立ち回り',
-        content: '最近の機種は有利区間切断時の恩恵が強い傾向にあります。特に差枚数で大きくマイナスになっている台からの切断は、恩恵（上位ATや特化ゾーン）を得られる確率が高まるため、狙い目の一つとなります。ただし、切断条件は機種によって異なり、差枚数だけでなく、特定ゲーム数や特定フラグが契機になることもあるため、機種ごとの解析をしっかり確認することが重要です。'
+        id: 'store',
+        title: '店舗選びについて',
+        subtitle: '拾える環境を先に選ぶ',
+        icon: Building2,
+        accent: 'blue',
+        items: [
+          {
+            number: '01',
+            title: '1or6のピンキリ営業より、2〜5の中間営業を狙う',
+            body: '設定狙いの場合は上下がはっきりしていた方が見切りが早くて得だが、エナの場合は普段拾う台に中間が混じっていた方が潜在的な期待値が高くなって得をする。特定日でも6が中々でない店は裏を返せば平常日に中間設定で遊ばせている可能性が高くなるのでエナ店としては優秀だと判断できる。平常日から銅・銀トロが頻発する店の優先度を上げよう。',
+            highlights: ['特定日でも6が中々でない店は裏を返せば平常日に中間設定で遊ばせている可能性が高くなる'],
+            quote: 'エナ的には中間設定が多い店が優良店'
+          },
+          {
+            number: '02',
+            title: '等価店よりも非等価店を優先して使う',
+            body: '非等価店は交換ギャップで利益を作れる分、等価店よりもベース設定が高くなりやすい。等価店は設定1中心になりがちだが、非等価店では最低設定を2にして遊ばせている店も多い。再プレイの範囲内で打てば交換ギャップのデメリットを避けながらベース設定の高さだけを取りにいける。よって非等価店を複数店舗を回るのが基本。持ち玉ができた店では無理にはしごしなくて良い。',
+            highlights: ['再プレイの範囲内で打てば交換ギャップのデメリットを避けながらベース設定の高さだけを取りにいける。よって非等価店を複数店舗を回るのが基本。'],
+            quote: '非等価店で再プレイ分だけはしごするのが最適解\n（持ち玉できたらそこでジグマ）'
+          },
+          {
+            number: '03',
+            title: 'その時軸にしている機種の扱いが良い店を選ぶ',
+            body: 'ゴッドや喰種など、その時期に一番拾う頻度が高い機種が週間おすすめ機種になっていたり、店が少しでも設定を使っている可能性があるなら優先度を上げたい。甘いラインだけ打ち、トロフィーや確定系が出た時だけ追うというフォローも取りやすくなる。ただし朝イチから全台埋まるほどの信頼度だと逆に拾えないので、稼働率は高すぎない方がいい。目安としては、空き台も残る50％前後の店が一番動きやすい。',
+            highlights: ['ただし朝イチから全台埋まるほどの信頼度だと逆に拾えないので、稼働率は高すぎない方がいい。'],
+            quote: 'よく拾う機種を少しでも甘く打てる店を優先しよう'
+          }
+        ]
       },
       {
-        id: 'c2',
-        title: 'エナ専のメンタル管理術',
-        date: '2026/05/20',
-        category: 'コラム',
-        content: '期待値稼働において最も重要なのは「ブレないメンタル」です。下振れが続くと、ついボーダーを下げてしまったり、オカルトに頼りたくなったりしますが、そこをグッと堪えて機械のように期待値を積み続けることが最終的なプラスに繋がります。下振れは必ず起こるものとして受け入れ、資金管理を徹底しましょう。'
+        id: 'machine',
+        title: '機種攻略について',
+        subtitle: '台の歪みと優遇を拾う',
+        icon: Cpu,
+        accent: 'red',
+        items: [
+          {
+            number: '01',
+            title: 'マイルドな機種よりも荒い機種を狙うようにする',
+            body: '純増が早い台、一撃の平均獲得枚数が多い台。こういう荒い台は何かしらの歪んだゲーム性を組み込まないと試験突破ができない。初当たりが天井に依存している台ほど天井狙いが甘くなるという特徴もある。',
+            quote: 'コイン単価高い台をむしろ進んで狙うようにしよう'
+          },
+          {
+            number: '02',
+            title: '差枚狙いと優遇狙いを極める',
+            body: '情報化社会の中で一般層もみんなただの天井狙いは知っていてライバルが多い。その中で差別化するには特殊な狙い方をするしかない。',
+            quote: 'マイルド台＝差枚狙い / 荒い台＝優遇狙いは常に意識しよう'
+          },
+          {
+            number: '03',
+            title: 'エナ稼働でも設定差をしっかり把握しておく',
+            body: 'エナで拾っている中で設定差の大きい挙動を何回も打つ機会があるなら、その店のその機種の扱いが良いことが分かる。そうなると普段拾うボーダーを下げることができてライバルが減る。',
+            quote: '自分だけしか知らない情報で周りと差を付けよう'
+          }
+        ]
       },
       {
-        id: 'c3',
-        title: '朝イチのリセット狙い、どう立ち回る？',
-        date: '2026/04/10',
-        category: '立ち回り',
-        content: '朝イチは恩恵のある機種から狙うのが基本です。喰種やモンキーなど、リセット恩恵が強い機種はライバルも多いですが、優先して確保したいところです。もし取れなかった場合は、リセット確率が高く、かつ恩恵がある程度見込める機種などをフォローしていく形になります。店舗の傾向（全リセ、ランダム、据え置きメイン）を把握することも必須です。'
+        id: 'mind',
+        title: 'マインドについて',
+        subtitle: '大衆と違う行動を残す',
+        icon: Brain,
+        accent: 'violet',
+        items: [
+          {
+            number: '01',
+            title: '明確な期待値が分からない狙い目を重視すべし',
+            body: '明確な数値で得をするということが分からない限り絶対に打たないと決めている人がとても多い。しかし今のスロットには正確な期待値は出せないけど明らかに甘い状況というのがいくつもある。それらはライバルが少ないので進んで打つようにしたい。',
+            quote: '大衆と違う結果を残すには大衆と違う行動をしなくてはいけない'
+          },
+          {
+            number: '02',
+            title: '自分の打感を重視すべし',
+            body: '「期待値表的には打てるとなっているけど辛く感じる」「ここを狙ってる人は少ないけど甘く感じる」こういう打ち方は大量データの前ではオカルトだと軽視されがちだが、そんなことはない。何千万Gと打たなくたって分かる特殊な挙動はいくらだって存在する。今までの同メーカーの解析情報等をもとに自分の考えを信じるのは何の問題もない。',
+            quote: '打感で危ないと思う台は無理に打たなくてもいい'
+          }
+        ]
+      },
+      {
+        id: 'travel',
+        title: '旅打ちのお供',
+        subtitle: '遠征先の店・飯・宿をまとめる',
+        icon: MapPin,
+        accent: 'green',
+        items: [
+          {
+            number: '01',
+            title: '全国のパチ屋情報をまとめる',
+            body: '遠征先では店舗名だけでなく、交換率、再プレイ条件、抽選方法、並び場所、特日、客層、駐車場、近くの移動手段まで残しておく。次に同じ地域へ行った時、移動しながら候補店を判断しやすくなる。',
+            quote: '初見の地域ほど店メモがそのまま期待値になる'
+          },
+          {
+            number: '02',
+            title: 'グルメ情報をセットで残す',
+            body: '稼働の合間に寄れる飯屋、閉店後に開いている店、朝から使える店をまとめておく。遠征中の判断疲れを減らせるし、長時間稼働でもコンディションを崩しにくい。',
+            quote: '勝てる遠征は稼働外のストレスを減らすことも大事'
+          },
+          {
+            number: '03',
+            title: 'ホテル情報を候補化しておく',
+            body: 'ホールからの距離、駐車場、チェックイン時間、コインランドリー、周辺の飲食店、料金感をメモしておく。良い宿を固定できると翌日の朝イチ行動まで組み立てやすい。',
+            quote: '宿選びは翌日の立ち回り準備でもある'
+          }
+        ]
+      },
+      {
+        id: 'links',
+        title: 'ショートカットリンク',
+        subtitle: '攻略サイトへすぐ飛ぶ',
+        icon: LinkIcon,
+        accent: 'amber',
+        items: []
       }
     ];
+
+    const STRATEGY_ACCENT_STYLES = {
+      blue: {
+        activeButton: 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm',
+        inactiveButton: 'border-gray-200 bg-white text-gray-700 active:bg-gray-50',
+        icon: 'bg-blue-600 text-white',
+        badge: 'bg-blue-100 text-blue-700',
+        quote: 'border-blue-200 bg-blue-50 text-blue-800'
+      },
+      red: {
+        activeButton: 'border-red-500 bg-red-50 text-red-700 shadow-sm',
+        inactiveButton: 'border-gray-200 bg-white text-gray-700 active:bg-gray-50',
+        icon: 'bg-red-600 text-white',
+        badge: 'bg-red-100 text-red-700',
+        quote: 'border-red-200 bg-red-50 text-red-800'
+      },
+      violet: {
+        activeButton: 'border-violet-500 bg-violet-50 text-violet-700 shadow-sm',
+        inactiveButton: 'border-gray-200 bg-white text-gray-700 active:bg-gray-50',
+        icon: 'bg-violet-600 text-white',
+        badge: 'bg-violet-100 text-violet-700',
+        quote: 'border-violet-200 bg-violet-50 text-violet-800'
+      },
+      green: {
+        activeButton: 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm',
+        inactiveButton: 'border-gray-200 bg-white text-gray-700 active:bg-gray-50',
+        icon: 'bg-emerald-600 text-white',
+        badge: 'bg-emerald-100 text-emerald-700',
+        quote: 'border-emerald-200 bg-emerald-50 text-emerald-800'
+      },
+      amber: {
+        activeButton: 'border-amber-500 bg-amber-50 text-amber-700 shadow-sm',
+        inactiveButton: 'border-gray-200 bg-white text-gray-700 active:bg-gray-50',
+        icon: 'bg-amber-500 text-white',
+        badge: 'bg-amber-100 text-amber-700',
+        quote: 'border-amber-200 bg-amber-50 text-amber-800'
+      }
+    };
+
+    const normalizeShortcutUrl = (value) => {
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+      return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    };
+
+    const mergeDefaultShortcutLinks = (links) => {
+      const existingUrls = new Set(links.map(link => normalizeShortcutUrl(link.url).toLowerCase()));
+      const missingDefaults = DEFAULT_STRATEGY_SHORTCUT_LINKS.filter(link => (
+        !existingUrls.has(normalizeShortcutUrl(link.url).toLowerCase())
+      ));
+      return [...missingDefaults, ...links];
+    };
+
+    const renderHighlightedText = (text, highlights = []) => {
+      const targets = highlights.filter(Boolean);
+      if (!targets.length) return text;
+
+      const parts = [];
+      let cursor = 0;
+      targets.forEach((target, index) => {
+        const foundAt = text.indexOf(target, cursor);
+        if (foundAt === -1) return;
+        if (foundAt > cursor) parts.push(text.slice(cursor, foundAt));
+        parts.push(
+          <span
+            key={`${target}-${index}`}
+            className="text-red-500 bg-red-100/80 px-0.5 rounded-sm box-decoration-clone"
+          >
+            {target}
+          </span>
+        );
+        cursor = foundAt + target.length;
+      });
+      if (cursor < text.length) parts.push(text.slice(cursor));
+      return parts;
+    };
 
     const CardImage = ({ url, name, tag, tagColor, hasLink }) => {
       const [error, setError] = useState(false);
@@ -928,7 +1114,40 @@
       const [dragOverTier, setDragOverTier] = useState(null);
       const [searchQuery, setSearchQuery] = useState('');
       const [targetTimeSort, setTargetTimeSort] = useState('all');
+      const [activeStrategySectionId, setActiveStrategySectionId] = useState(null);
+      const [shortcutLinks, setShortcutLinks] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STRATEGY_SHORTCUT_LINK_STORAGE_KEY);
+          const defaultLinksSeeded = localStorage.getItem(STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY) === '1';
+          const parsed = saved ? JSON.parse(saved) : [];
+          const links = Array.isArray(parsed)
+            ? parsed
+                .filter(link => link && link.title && link.url)
+                .map(link => ({
+                  id: link.id || `link-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                  title: String(link.title),
+                  url: String(link.url),
+                  memo: String(link.memo || ''),
+                }))
+            : [];
+          if (defaultLinksSeeded) return links;
+          localStorage.setItem(STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY, '1');
+          return mergeDefaultShortcutLinks(links);
+        } catch (e) {
+          console.warn('ショートカットリンクを読み込めませんでした', e);
+          return DEFAULT_STRATEGY_SHORTCUT_LINKS;
+        }
+      });
+      const [shortcutLinkForm, setShortcutLinkForm] = useState({ title: '', url: '', memo: '' });
       const [showToast, setShowToast] = useState(null);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(STRATEGY_SHORTCUT_LINK_STORAGE_KEY, JSON.stringify(shortcutLinks));
+        } catch (e) {
+          console.warn('ショートカットリンクを保存できませんでした', e);
+        }
+      }, [shortcutLinks]);
 
       const [detailModalConfig, setDetailModalConfig] = useState({ isOpen: false, item: null });
       const [isMemoEditing, setIsMemoEditing] = useState(false);
@@ -960,6 +1179,11 @@
       const [selectedTargetLabel, setSelectedTargetLabel] = useState('');
 
       const machineOptions = useMemo(() => buildMachineOptions(rukoItems), [rukoItems]);
+      const activeStrategySection = STRATEGY_SECTION_DATA.find(section => section.id === activeStrategySectionId) || null;
+      const activeStrategyStyles = activeStrategySection
+        ? STRATEGY_ACCENT_STYLES[activeStrategySection.accent] || STRATEGY_ACCENT_STYLES.blue
+        : STRATEGY_ACCENT_STYLES.blue;
+      const ActiveStrategyIcon = activeStrategySection?.icon || BookOpen;
       const targetPreset = useMemo(() => findTargetPreset(workloadForm.machineName), [workloadForm.machineName]);
       const workloadPreviewValue = useMemo(
         () => calculateWorkValue(workloadForm.payoutRate, workloadForm.playTime),
@@ -1213,6 +1437,38 @@
         if (!supabase) return;
         const { error } = await supabase.auth.signOut();
         if (error) setAuthError(error.message);
+      };
+
+      const saveShortcutLink = () => {
+        const title = shortcutLinkForm.title.trim();
+        const url = normalizeShortcutUrl(shortcutLinkForm.url);
+        const memo = shortcutLinkForm.memo.trim();
+
+        if (!title) return triggerToast('リンク名を入力してください');
+        if (!url) return triggerToast('URLを入力してください');
+
+        try {
+          new URL(url);
+        } catch (error) {
+          return triggerToast('URLの形式を確認してください');
+        }
+
+        setShortcutLinks(prev => [
+          {
+            id: `link-${Date.now()}`,
+            title,
+            url,
+            memo,
+          },
+          ...prev,
+        ]);
+        setShortcutLinkForm({ title: '', url: '', memo: '' });
+        triggerToast('リンクを追加しました');
+      };
+
+      const deleteShortcutLink = (id) => {
+        setShortcutLinks(prev => prev.filter(link => link.id !== id));
+        triggerToast('リンクを削除しました');
       };
 
       const migrateLocalWorkloads = async () => {
@@ -1517,7 +1773,7 @@
             <div className="bg-neutral-900 text-white px-4 py-3 flex flex-col gap-1">
               <div className="flex justify-between items-start">
                 <h1 className="text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none flex items-center gap-2">
-                  {activeTab === 'calc' ? "Calculator" : activeTab === 'column' ? "Mini Columns" : "Ruko App"}
+                  {activeTab === 'calc' ? "Calculator" : activeTab === 'column' ? "Strategy Notes" : "Ruko App"}
                   {IS_ADMIN_MODE && <span className="bg-red-500 text-white px-1.5 rounded-sm text-[8px]">Admin Mode</span>}
                 </h1>
                 
@@ -1537,7 +1793,7 @@
               
               <div className="flex justify-between items-end mt-1">
                 <p className="text-sm sm:text-base font-black italic leading-tight">
-                  {activeTab === 'ruko' ? "最新狙い目Tier表" : activeTab === 'list' ? "狙い目一覧" : activeTab === 'column' ? "ミニコラム集" : "仕事量管理"}
+                  {activeTab === 'ruko' ? "最新狙い目Tier表" : activeTab === 'list' ? "狙い目一覧" : activeTab === 'column' ? "攻略思考集" : "仕事量管理"}
                 </p>
                 {(activeTab !== 'workload' && activeTab !== 'column') && (
                   <p className="text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium">拾いやすさ×期待値</p>
@@ -1550,53 +1806,182 @@
             
             {activeTab === 'column' && (
               session ? (
-              <div className="p-4 space-y-4">
-                <h2 className="text-lg font-black text-gray-800 mb-2 flex items-center gap-2">
-                  <BookOpen size={20} className="text-blue-500" />
-                  ミニコラム集
-                </h2>
+              <div className="p-4 bg-gray-50 min-h-full flex flex-col">
+                <div className="flex-1 space-y-4">
+                  {!activeStrategySection ? (
+                    <>
+                      <h2 className="text-lg font-black text-gray-800 flex items-center gap-2">
+                        <BookOpen size={20} className="text-blue-500" />
+                        攻略思考集
+                      </h2>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-black text-gray-400">ログイン中</p>
-                    <p className="text-sm font-black text-gray-800 truncate">{session.user?.email}</p>
+                      <div className="grid grid-cols-1 gap-2">
+                        {STRATEGY_SECTION_DATA.map(section => {
+                          const SectionIcon = section.icon;
+                          const styles = STRATEGY_ACCENT_STYLES[section.accent] || STRATEGY_ACCENT_STYLES.blue;
+                          return (
+                            <button
+                              key={section.id}
+                              type="button"
+                              onClick={() => setActiveStrategySectionId(section.id)}
+                              className={`w-full border rounded-xl px-3 py-3 flex items-center gap-3 text-left transition-colors ${styles.inactiveButton}`}
+                            >
+                              <span className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${styles.icon}`}>
+                                <SectionIcon size={20} />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-black leading-tight">{section.title}</span>
+                                <span className="block text-[11px] font-bold text-gray-500 mt-1">{section.subtitle}</span>
+                                <span className="block text-[10px] font-black text-gray-400 mt-1">
+                                  {section.id === 'links' ? `${shortcutLinks.length}件のリンク` : `${section.items.length}本の記事`}
+                                </span>
+                              </span>
+                              <ChevronRight size={16} className="text-gray-400" />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <section className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setActiveStrategySectionId(null)}
+                        className="inline-flex items-center gap-1.5 text-xs font-black text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2 active:bg-gray-50"
+                      >
+                        <ChevronLeft size={16} />
+                        攻略思考集に戻る
+                      </button>
+
+                      <div className="flex items-center gap-2 px-1">
+                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeStrategyStyles.icon}`}>
+                          <ActiveStrategyIcon size={18} />
+                        </span>
+                        <div>
+                          <p className="text-[10px] font-black text-gray-400">
+                            {activeStrategySection.id === 'links' ? `${shortcutLinks.length} LINKS` : `${activeStrategySection.items.length} NOTES`}
+                          </p>
+                          <h3 className="text-base font-black text-gray-900">{activeStrategySection.title}</h3>
+                        </div>
+                      </div>
+
+                      {activeStrategySection.id === 'links' ? (
+                        <div className="space-y-3">
+                          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                            <div>
+                              <label className="block text-[10px] font-black text-gray-500 mb-1">リンク名</label>
+                              <input
+                                type="text"
+                                value={shortcutLinkForm.title}
+                                onChange={e => setShortcutLinkForm(prev => ({ ...prev, title: e.target.value }))}
+                                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                placeholder="例: ちょんぼりすた"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-black text-gray-500 mb-1">URL</label>
+                              <input
+                                type="url"
+                                value={shortcutLinkForm.url}
+                                onChange={e => setShortcutLinkForm(prev => ({ ...prev, url: e.target.value }))}
+                                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                placeholder="https://..."
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-black text-gray-500 mb-1">メモ</label>
+                              <input
+                                type="text"
+                                value={shortcutLinkForm.memo}
+                                onChange={e => setShortcutLinkForm(prev => ({ ...prev, memo: e.target.value }))}
+                                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold"
+                                placeholder="例: 解析確認用"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={saveShortcutLink}
+                              className="w-full bg-neutral-900 text-white rounded-xl py-3 text-sm font-black flex items-center justify-center gap-2 active:bg-neutral-700"
+                            >
+                              <Plus size={16} />
+                              リンクを追加
+                            </button>
+                          </div>
+
+                          {shortcutLinks.length === 0 ? (
+                            <div className="bg-white rounded-xl border border-dashed border-gray-300 p-5 text-center">
+                              <LinkIcon size={22} className="mx-auto text-gray-400 mb-2" />
+                              <p className="text-sm font-black text-gray-700">まだリンクがありません</p>
+                              <p className="mt-1 text-xs font-bold text-gray-500">よく見る攻略サイトや地域情報を追加できます。</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              {shortcutLinks.map(link => (
+                                <article key={link.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center gap-3">
+                                  <div className="min-w-0 flex-1">
+                                    <h4 className="text-sm font-black text-gray-900 truncate">{link.title}</h4>
+                                    <p className="mt-0.5 text-[11px] font-bold text-blue-600 truncate">{link.url}</p>
+                                    {link.memo && <p className="mt-1 text-[11px] font-bold text-gray-500">{link.memo}</p>}
+                                  </div>
+                                  <a
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 active:bg-blue-100"
+                                    aria-label={`${link.title}を開く`}
+                                  >
+                                    <ExternalLink size={16} />
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteShortcutLink(link.id)}
+                                    className="w-9 h-9 rounded-lg bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 active:bg-red-100"
+                                    aria-label={`${link.title}を削除`}
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </article>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : activeStrategySection.items.map(item => (
+                        <article key={item.number} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                          <div className="p-4">
+                            <div className="flex items-start gap-3">
+                              <span className={`px-2 py-1 rounded-lg text-xs font-black leading-none ${activeStrategyStyles.badge}`}>{item.number}</span>
+                              <h4 className="text-[15px] font-black text-gray-900 leading-snug">{item.title}</h4>
+                            </div>
+                            <p className="mt-3 text-xs text-gray-700 leading-relaxed font-bold">{renderHighlightedText(item.body, item.highlights)}</p>
+                            <p className={`mt-3 border rounded-lg px-3 py-2 text-xs leading-relaxed font-black whitespace-pre-line ${activeStrategyStyles.quote}`}>
+                              「{item.quote}」
+                            </p>
+                          </div>
+                        </article>
+                      ))}
+                    </section>
+                  )}
+                </div>
+
+                <div className="mt-auto pt-6">
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black text-gray-400">ログイン中</p>
+                        <p className="text-sm font-black text-gray-800 truncate">{session.user?.email}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex-shrink-0 px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-xs font-black flex items-center gap-1.5 active:bg-gray-200"
+                      >
+                        <LogOut size={14} /> ログアウト
+                      </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex-shrink-0 px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-xs font-black flex items-center gap-1.5 active:bg-gray-200"
-                  >
-                    <LogOut size={14} /> ログアウト
-                  </button>
-                </div>
-                
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 border-l-4 border-l-blue-500">
-                  <h3 className="font-bold text-gray-800 text-sm mb-3 border-b border-gray-100 pb-2">ただのAT間天井狙いなどを取り上げない理由</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                    天井狙いやスルー回数狙い等、一般層でも一目で「打てそう」と思う狙い方はライバルが多すぎてほぼ打てない。<br /><br />
-                    そのため、"一見なんでも無さそうな台なのに実は打てる"という事前知識を多く持っていないと今の環境で拾い続けるのは不可能。<br /><br />
-                    よってRukoの発信ではそういった特殊狙いを中心にまとめている。
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  {COLUMN_DATA.map(col => (
-                    <div key={col.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                        <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2.5 py-1 rounded-full">{col.category}</span>
-                        <span className="text-[10px] text-gray-400 font-bold">{col.date}</span>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-bold text-[15px] text-gray-800 mb-2">{col.title}</h3>
-                        <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">{col.content}</p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
               ) : renderMemberGate(
                 '会員限定コンテンツです',
-                'ログインすると、立ち回りの考え方やコラムを読めます。'
+                'ログインすると、攻略思考・旅打ち情報・ショートカットリンクを使えます。'
               )
             )}
 
@@ -2034,9 +2419,9 @@
               <Coins size={20} className={activeTab === 'workload' ? 'fill-blue-100' : ''} />
               <span className="text-[10px] font-bold">仕事量</span>
             </button>
-            <button onClick={() => setActiveTab('column')} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'column' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+            <button onClick={() => { setActiveTab('column'); setActiveStrategySectionId(null); }} className={`flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === 'column' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
               <BookOpen size={20} className={activeTab === 'column' ? 'fill-blue-100' : ''} />
-              <span className="text-[10px] font-bold">ミニコラム集</span>
+              <span className="text-[10px] font-bold">攻略思考集</span>
             </button>
           </nav>
 
