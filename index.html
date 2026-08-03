@@ -896,15 +896,29 @@
         items: [
           {
             number: '01',
-            title: '明確な期待値が分からない狙い目を重視すべし',
-            body: '明確な数値で得をするということが分からない限り絶対に打たないと決めている人がとても多い。しかし今のスロットには正確な期待値は出せないけど明らかに甘い状況というのがいくつもある。それらはライバルが少ないので進んで打つようにしたい。',
-            quote: '大衆と違う結果を残すには大衆と違う行動をしなくてはいけない'
+            title: '今のスマスロで勝ち続けるのは簡単なことではないと理解する',
+            body: 'スロットで勝つのは簡単だと言われがちだが、今のスマスロで勝ち続けるのはそんなに単純ではない。そもそも狙い目や前提を間違えて理解していれば、試行回数を増やしても結果はズレ続ける。さらに荒い機種が中心なので、正しい判断を続けるためには十分な資金、試行回数を稼ぐ行動量、下振れを受け止めるメンタルが必要になる。',
+            quote: '勝つ前提を甘く見ないことが継続の土台になる'
           },
           {
             number: '02',
-            title: '自分の打感を重視すべし',
+            title: '明確な期待値が分からない狙い目こそチャンスだと思うべき',
+            body: '明確な数値で得をするということが分からない限り絶対に打たないと決めている人がとても多い。しかし今のスロットには正確な期待値は出せないけど明らかに甘い状況というのがいくつもある。こういう狙い目は情報が広がる前ほどライバルが少ないので、ライバルが増える前に試行回数を積んでしまいたい。自分で先に触って根拠を固められれば、その後の立ち回りの武器になる。',
+            highlights: ['ライバルが増える前に試行回数を積んでしまいたい。'],
+            quote: '大衆と違う結果を残すには大衆と違う行動をしなくてはいけない'
+          },
+          {
+            number: '03',
+            title: '自分の打感を無視しない',
             body: '「期待値表的には打てるとなっているけど辛く感じる」「ここを狙ってる人は少ないけど甘く感じる」こういう打ち方は大量データの前ではオカルトだと軽視されがちだが、そんなことはない。何千万Gと打たなくたって分かる特殊な挙動はいくらだって存在する。今までの同メーカーの解析情報等をもとに自分の考えを信じるのは何の問題もない。',
+            highlights: ['何千万Gと打たなくたって分かる特殊な挙動はいくらだって存在する。'],
             quote: '打感で危ないと思う台は無理に打たなくてもいい'
+          },
+          {
+            number: '04',
+            title: '下振れの割り切り方',
+            body: 'スマスロは荒いので、正しい台を打っていても短期では簡単に負ける。下振れを結果論で否定しすぎると、本当に甘い狙い目まで打てなくなる。打つ前の根拠、台数、投資管理を残して、結果ではなく判断の質で振り返るようにしたい。',
+            quote: '負けた理由を結果ではなく根拠で確認する'
           }
         ]
       },
@@ -1021,7 +1035,7 @@
       return parts;
     };
 
-    const CardImage = ({ url, name, tag, tagColor, hasLink }) => {
+    const CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
       const [error, setError] = useState(false);
       const [retryIndex, setRetryIndex] = useState(0);
 
@@ -1042,7 +1056,7 @@
       const tagsArray = Array.isArray(safeTag) ? safeTag : safeTag.toString().split(',');
 
       return (
-        <div className="h-28 relative overflow-hidden bg-neutral-900 flex flex-col justify-end">
+        <div className={`${compact ? 'h-24' : 'h-28'} relative overflow-hidden bg-neutral-900 flex flex-col justify-end`}>
           {currentUrl && !error ? (
             <img 
               key={currentUrl} src={currentUrl} alt={name || "image"} 
@@ -1793,7 +1807,7 @@
               
               <div className="flex justify-between items-end mt-1">
                 <p className="text-sm sm:text-base font-black italic leading-tight">
-                  {activeTab === 'ruko' ? "最新狙い目Tier表" : activeTab === 'list' ? "狙い目一覧" : activeTab === 'column' ? "攻略思考集" : "仕事量管理"}
+                  {activeTab === 'ruko' ? "8月4日版　最新狙い目Tier表" : activeTab === 'list' ? "狙い目一覧" : activeTab === 'column' ? "攻略思考集" : "仕事量管理"}
                 </p>
                 {(activeTab !== 'workload' && activeTab !== 'column') && (
                   <p className="text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium">拾いやすさ×期待値</p>
@@ -2218,7 +2232,7 @@
                                 </div>
                                 
                                 <div className="flex gap-3 text-xs font-medium text-gray-500 bg-gray-50 p-2 rounded-lg mb-2">
-                                  <div className="flex items-center gap-1"><Trophy size={12}/> 割: {item.payoutRate}%</div>
+                                  <div className="flex items-center gap-1">機械割: {item.payoutRate}%</div>
                                   <div className="flex items-center gap-1"><Clock size={12}/> {item.playTime}分</div>
                                   <div className="flex items-center gap-1">回転: {item.playCount}G</div>
                                 </div>
@@ -2343,13 +2357,13 @@
 
             {}
             {activeTab === 'ruko' && (
-              <div className="p-3 space-y-6">
-                <div className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-blue-500">
-                  <h2 className="text-sm font-black text-gray-800 mb-2 flex items-center gap-2">
-                    <MessageSquare size={16} className="text-blue-500" />
+              <div className="p-2 space-y-3">
+                <div className="bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-blue-500">
+                  <h2 className="text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5">
+                    <MessageSquare size={14} className="text-blue-500" />
                     現環境について
                   </h2>
-                  <p className="text-xs text-gray-600 font-medium leading-relaxed whitespace-pre-wrap">
+                  <p className="text-[11px] text-gray-600 font-medium leading-snug whitespace-pre-wrap">
                     GODが急激に拾えなくなったのでS→Aに。{"\n"}
                     転生も相当台数減ったが1台長く打てるのでS維持。{"\n\n"}
                     先月より厳しい環境となった。{"\n\n"}
@@ -2366,11 +2380,11 @@
                     onDragLeave={() => setDragOverTier(null)}
                     onDrop={(e) => { e.preventDefault(); if (draggedItemId) moveItem(draggedItemId, tier.id); }}
                   >
-                    <div className={`w-full h-9 rounded-full mb-3 flex items-center px-6 shadow-lg ${tier.bg} text-white border-b-4 border-black/20`}>
-                      <span className="text-2xl font-black italic tracking-tighter drop-shadow-lg">{tier.label}</span>
+                    <div className={`w-full h-8 rounded-full mb-2 flex items-center px-5 shadow-lg ${tier.bg} text-white border-b-4 border-black/20`}>
+                      <span className="text-xl font-black italic tracking-tighter drop-shadow-lg">{tier.label}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 min-h-[80px]">
+                    <div className="grid grid-cols-2 gap-2 min-h-[72px]">
                       {filteredItems.filter(i => i.tier === tier.id).map(item => (
                         <div 
                           key={item.id}
@@ -2386,8 +2400,8 @@
                           }}
                           className={`bg-white border-2 border-blue-500 rounded-xl overflow-hidden shadow-md relative transition-all ${canDrag ? 'cursor-grab' : 'cursor-pointer'} ${draggedItemId === item.id ? 'opacity-20 scale-90' : 'active:scale-95'} hover:border-blue-400`}
                         >
-                          <CardImage url={item.imageUrl} name={item.name} tag={item.tag} tagColor={item.tagColor} hasLink={!!item.link} />
-                          <div className="p-2 bg-neutral-900 text-blue-200 text-[10px] leading-tight min-h-[48px] flex items-center border-t border-neutral-800 italic">
+                          <CardImage url={item.imageUrl} name={item.name} tag={item.tag} tagColor={item.tagColor} hasLink={!!item.link} compact />
+                          <div className="p-1.5 bg-neutral-900 text-blue-200 text-[10px] leading-tight min-h-[40px] flex items-center border-t border-neutral-800 italic">
                             {item.detail}
                           </div>
                           {IS_ADMIN_MODE && isEditing && (
@@ -2540,6 +2554,7 @@
                     />
                   </div>
 
+                  <p className="text-[10px] font-bold text-gray-500 -mb-2">※打っていた時間か回転数を入力</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-gray-600 mb-1">稼働時間 (分)</label>
@@ -2627,36 +2642,12 @@
                   })}
                 </div>
 
-                <div className="relative mb-6 flex-1 overflow-hidden flex flex-col min-h-[150px] group">
-                  {isMemoEditing ? (
-                    <div className="flex flex-col gap-2 h-full animate-in fade-in zoom-in-95 duration-200">
-                      <textarea
-                        value={editingMemoText}
-                        onChange={(e) => setEditingMemoText(e.target.value)}
-                        className="w-full bg-white border-2 border-blue-400 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 flex-1 overflow-y-auto shadow-inner resize-none"
-                        autoFocus
-                      />
-                      <div className="flex gap-2 justify-end flex-none">
-                        <button onClick={() => setIsMemoEditing(false)} className="px-4 py-2 bg-gray-200 text-gray-700 text-xs font-bold rounded-lg">キャンセル</button>
-                        <button onClick={() => {
-                          const updatedItem = { ...detailModalConfig.item, memo: editingMemoText };
-                          setRukoItems(rukoItems.map(i => i.id === updatedItem.id ? updatedItem : i));
-                          setDetailModalConfig({ isOpen: true, item: updatedItem });
-                          setIsMemoEditing(false);
-                          triggerToast('メモを保存しました');
-                        }} className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg">保存</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 h-full cursor-pointer hover:bg-blue-50 transition-colors overflow-y-auto" onClick={() => setIsMemoEditing(true)}>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap font-medium leading-relaxed pr-6">
-                          {detailModalConfig.item.memo || <span className="text-gray-400">詳細な狙い目メモはまだ登録されていません。<br/>ここをタップしてメモを追加・編集できます。</span>}
-                        </p>
-                      </div>
-                      <div className="absolute top-3 right-3 p-1.5 bg-white shadow-sm border border-gray-100 rounded-full text-gray-400 group-hover:text-blue-500 group-hover:border-blue-200 transition-colors pointer-events-none"><Edit2 size={14} /></div>
-                    </>
-                  )}
+                <div className="relative mb-6 flex-1 overflow-hidden flex flex-col min-h-[150px]">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 h-full overflow-y-auto">
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap font-medium leading-relaxed">
+                      {detailModalConfig.item.memo || <span className="text-gray-400">詳細な狙い目メモはまだ登録されていません。</span>}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-3 flex-none">
