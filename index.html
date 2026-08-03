@@ -610,29 +610,29 @@
     ];
 
     const TARGET_TIME_SLOT_MAP = {
-      r_sengoku6: ['afternoon', 'evening', 'late'],
-      r_yabachiyo: ['evening', 'late'],
-      r_rioace2: ['morning', 'afternoon', 'evening', 'late'],
-      r_bio_re3: ['morning', 'afternoon', 'evening'],
-      r_godkiseki: ['afternoon', 'evening', 'late'],
-      r_yoshimune: ['afternoon', 'evening', 'late'],
-      r_yoshimune2: ['afternoon', 'evening'],
-      r_yoshimune3: ['afternoon', 'evening', 'late'],
-      r_kabaneri: ['afternoon', 'evening', 'late'],
+      r_sengoku6: ['afternoon', 'evening'],
+      r_yabachiyo: ['afternoon', 'evening'],
+      r_rioace2: [],
+      r_bio_re3: [],
+      r_godkiseki: ['morning', 'afternoon', 'evening', 'late'],
+      r_yoshimune: [],
+      r_yoshimune2: [],
+      r_yoshimune3: ['late'],
+      r_kabaneri: ['afternoon', 'evening'],
       r_kabaneri2: ['afternoon', 'evening', 'late'],
-      r4: ['morning', 'afternoon', 'evening', 'late'],
-      r_ghoul: ['morning', 'afternoon'],
-      r2: ['afternoon', 'evening', 'late'],
-      r6: ['evening', 'late'],
-      r8: ['afternoon', 'evening', 'late'],
-      r10: ['afternoon', 'evening'],
-      r12: ['evening', 'late'],
-      r13: ['evening', 'late'],
-      r14: ['evening', 'late'],
+      r4: ['morning', 'afternoon', 'evening'],
+      r_ghoul: ['morning'],
+      r2: ['afternoon', 'evening'],
+      r6: ['afternoon', 'evening'],
+      r8: ['afternoon', 'evening'],
+      r10: [],
+      r12: ['late'],
+      r13: [],
+      r14: ['evening'],
       r15: ['morning'],
-      r16: ['afternoon', 'evening'],
-      r17: ['afternoon', 'evening', 'late'],
-      r18: ['morning', 'afternoon', 'evening'],
+      r16: [],
+      r17: [],
+      r18: [],
       r19: ['morning'],
     };
 
@@ -661,9 +661,12 @@
     };
 
     const getTargetTimeSlots = (item) => {
-      const baseSlots = item.timeSlots && item.timeSlots.length
-        ? item.timeSlots
-        : (TARGET_TIME_SLOT_MAP[item.id] || []);
+      const hasManualSlots = Object.prototype.hasOwnProperty.call(TARGET_TIME_SLOT_MAP, item.id);
+      const baseSlots = hasManualSlots
+        ? TARGET_TIME_SLOT_MAP[item.id]
+        : (item.timeSlots && item.timeSlots.length ? item.timeSlots : []);
+      if (hasManualSlots) return normalizeTimeSlots(baseSlots);
+
       const inferredSlots = inferTargetTimeSlots(item);
       const slots = baseSlots.length ? baseSlots : inferredSlots;
       return normalizeTimeSlots(
@@ -1685,6 +1688,15 @@
         triggerToast('リンクを削除しました');
       };
 
+      const openShortcutLink = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      };
+
+      const goToShortcutLinks = () => {
+        setActiveTab('column');
+        setActiveStrategySectionId('links');
+      };
+
       const migrateLocalWorkloads = async () => {
         if (!supabase || !session) return;
         const localData = readLocalWorkloadBackup();
@@ -2131,25 +2143,29 @@
                           ) : (
                             <div className="space-y-2">
                               {shortcutLinks.map(link => (
-                                <article key={link.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center gap-3">
-                                  <div className="min-w-0 flex-1">
-                                    <h4 className="text-sm font-black text-gray-900 truncate">{link.title}</h4>
-                                    <p className="mt-0.5 text-[11px] font-bold text-blue-600 truncate">{link.url}</p>
-                                    {link.memo && <p className="mt-1 text-[11px] font-bold text-gray-500">{link.memo}</p>}
-                                  </div>
-                                  <a
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 active:bg-blue-100"
-                                    aria-label={`${link.title}を開く`}
-                                  >
-                                    <ExternalLink size={16} />
-                                  </a>
+                                <article key={link.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex items-stretch">
                                   <button
                                     type="button"
-                                    onClick={() => deleteShortcutLink(link.id)}
-                                    className="w-9 h-9 rounded-lg bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 active:bg-red-100"
+                                    onClick={() => openShortcutLink(link.url)}
+                                    className="min-w-0 flex-1 p-3 flex items-center gap-3 text-left active:bg-blue-50 transition-colors"
+                                    aria-label={`${link.title}を開く`}
+                                  >
+                                    <span className="min-w-0 flex-1">
+                                      <span className="block text-sm font-black text-gray-900 truncate">{link.title}</span>
+                                      <span className="block mt-0.5 text-[11px] font-bold text-blue-600 truncate">{link.url}</span>
+                                      {link.memo && <span className="block mt-1 text-[11px] font-bold text-gray-500">{link.memo}</span>}
+                                    </span>
+                                    <span className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                      <ExternalLink size={16} />
+                                    </span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteShortcutLink(link.id);
+                                    }}
+                                    className="w-11 bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 active:bg-red-100 border-l border-red-100"
                                     aria-label={`${link.title}を削除`}
                                   >
                                     <Trash2 size={16} />
@@ -2571,6 +2587,22 @@
                     4月以降のコンプ規制強化を対策をした歪んだ爆裂機がこれからいろいろ出そうではあるので期待。
                   </p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={goToShortcutLinks}
+                  className="w-full bg-gray-100 text-gray-700 rounded-lg px-3 py-1.5 shadow-sm border border-gray-200 flex items-center justify-between gap-3 active:bg-gray-200 transition-colors"
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    <span className="w-6 h-6 rounded-md bg-gray-700 text-white flex items-center justify-center flex-shrink-0">
+                      <LinkIcon size={13} />
+                    </span>
+                    <span className="min-w-0 text-left">
+                      <span className="block text-xs font-black leading-tight truncate">ショートカットリンク</span>
+                    </span>
+                  </span>
+                  <ChevronRight size={14} className="flex-shrink-0 text-gray-400" />
+                </button>
 
                 {TIER_CONFIG.map((tier) => (
                   <div 
