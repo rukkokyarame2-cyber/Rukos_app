@@ -7,11 +7,15 @@
   
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-title" content="RUKO APP">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+  <script src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     html,
@@ -29,6 +33,68 @@
       overflow-x: hidden;
     }
 
+    .boot-fallback {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: #f3f4f6;
+      color: #111827;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .boot-fallback__card {
+      width: min(100%, 420px);
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #ffffff;
+      padding: 22px;
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .boot-fallback__brand {
+      margin: 0 0 8px;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+    }
+
+    .boot-fallback__title {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .boot-fallback__text {
+      margin: 0 0 16px;
+      color: #4b5563;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .boot-fallback__button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: #111827;
+      color: #ffffff;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .boot-fallback__detail {
+      margin-top: 12px;
+      color: #6b7280;
+      font-size: 11px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
     @media (max-width: 768px) {
       input,
       textarea,
@@ -39,6 +105,55 @@
   </style>
   <script>
     (() => {
+      window.__slotAppBooted = false;
+      window.__slotAppShowBootError = (message, detail = '') => {
+        if (window.__slotAppBooted) return;
+        const root = document.getElementById('root');
+        if (!root) return;
+        root.innerHTML = `
+          <div class="boot-fallback" role="alert">
+            <div class="boot-fallback__card">
+              <p class="boot-fallback__brand">RUKO APP</p>
+              <h1 class="boot-fallback__title">${message}</h1>
+              <p class="boot-fallback__text">通信状況が不安定な時や、ホーム画面アプリの古いキャッシュが残っている時に起こることがあります。再読み込みで復帰できるようにしました。</p>
+              <button class="boot-fallback__button" type="button" onclick="location.reload()">再読み込みする</button>
+              ${detail ? `<p class="boot-fallback__detail">${String(detail).replace(/[<>&"]/g, char => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[char]))}</p>` : ''}
+            </div>
+          </div>
+        `;
+      };
+
+      window.addEventListener('error', event => {
+        const target = event.target;
+        if (target && target.tagName === 'SCRIPT') {
+          window.__slotAppShowBootError('アプリの読み込みに失敗しました', target.src || '');
+          return;
+        }
+        if (event.message) {
+          window.__slotAppShowBootError('アプリの起動に失敗しました', event.message);
+        }
+      }, true);
+
+      window.addEventListener('unhandledrejection', event => {
+        const reason = event.reason;
+        const detail = reason && reason.message ? reason.message : String(reason || '');
+        window.__slotAppShowBootError('アプリの起動に失敗しました', detail);
+      });
+
+      window.addEventListener('load', () => {
+        window.setTimeout(() => {
+          if (!window.__slotAppBooted) {
+            window.__slotAppShowBootError('アプリの読み込みに時間がかかっています');
+          }
+        }, 12000);
+
+        if ('serviceWorker' in navigator && ['http:', 'https:'].includes(location.protocol)) {
+          navigator.serviceWorker.register('./sw.js').catch(error => {
+            console.warn('Service Workerを登録できませんでした', error);
+          });
+        }
+      });
+
       document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
       document.addEventListener('gesturechange', event => event.preventDefault(), { passive: false });
       document.addEventListener('gestureend', event => event.preventDefault(), { passive: false });
@@ -56,7 +171,15 @@
   </script>
 </head>
 <body class="bg-gray-100 font-sans">
-  <div id="root"></div>
+  <div id="root">
+    <div class="boot-fallback boot-loading" aria-live="polite">
+      <div class="boot-fallback__card">
+        <p class="boot-fallback__brand">RUKO APP</p>
+        <h1 class="boot-fallback__title">アプリを読み込んでいます</h1>
+        <p class="boot-fallback__text">ホーム画面からの起動でも復帰しやすいように、読み込み状態を表示しています。</p>
+      </div>
+    </div>
+  </div>
   
   <script type="importmap">
     {
@@ -112,6 +235,57 @@
         })
       : null;
     const DEFAULT_MEMO_TEMPLATE = "【一言メモ】\n\n\n【狙い目ボーダー】\n";
+
+    const markAppBooted = () => {
+      window.__slotAppBooted = true;
+      document.body.classList.add('app-booted');
+    };
+
+    const BootErrorView = ({ detail = '' }) => {
+      useEffect(() => {
+        markAppBooted();
+      }, []);
+
+      return (
+        <div className="min-h-[100dvh] bg-gray-100 flex items-center justify-center p-6">
+          <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xl p-6">
+            <p className="text-xs font-black tracking-[0.12em] text-blue-600 mb-2">RUKO APP</p>
+            <h1 className="text-lg font-black text-gray-900 mb-2">アプリの起動に失敗しました</h1>
+            <p className="text-sm font-bold leading-relaxed text-gray-600 mb-5">
+              一時的な通信不良か、ホーム画面アプリの古いキャッシュが原因の可能性があります。
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="w-full bg-neutral-900 text-white rounded-xl py-3 font-black active:bg-neutral-700"
+            >
+              再読み込みする
+            </button>
+            {detail && <p className="mt-4 text-[11px] leading-relaxed text-gray-400 break-words">{detail}</p>}
+          </div>
+        </div>
+      );
+    };
+
+    class AppErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, detail: '' };
+      }
+
+      static getDerivedStateFromError(error) {
+        return { hasError: true, detail: error?.message || String(error || '') };
+      }
+
+      componentDidCatch(error, info) {
+        console.error('アプリ描画エラー:', error, info);
+      }
+
+      render() {
+        if (this.state.hasError) return <BootErrorView detail={this.state.detail} />;
+        return this.props.children;
+      }
+    }
 
     // ユーザーの指示に従い更新されたデータ
     const RUKO_OFFICIAL_DATA = [
@@ -1098,6 +1272,10 @@
 
     const App = () => {
       const [activeTab, setActiveTab] = useState('ruko'); 
+
+      useEffect(() => {
+        markAppBooted();
+      }, []);
       
       const [rukoItems, setRukoItems] = useState(() => {
         let items = RUKO_OFFICIAL_DATA;
@@ -2673,7 +2851,11 @@
     };
 
     const root = createRoot(document.getElementById('root'));
-    root.render(<App />);
+    root.render(
+      <AppErrorBoundary>
+        <App />
+      </AppErrorBoundary>
+    );
   </script>
 </body>
 </html>

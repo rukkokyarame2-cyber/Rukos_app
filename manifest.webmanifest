@@ -1,0 +1,20 @@
+{
+  "name": "スロット狙い目ティア管理アプリ",
+  "short_name": "RUKO APP",
+  "description": "狙い目Tier表、仕事量管理、攻略思考集をまとめたアプリ",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
