@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" style="background:#030303;">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -10,20 +10,19 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preload" as="image" href="ruko-app-loading.png">
   <link rel="apple-touch-startup-image" href="ruko-app-loading.png">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#030303">
   <meta name="apple-mobile-web-app-title" content="RUKO APP">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     html,
     body {
       width: 100%;
       height: 100%;
+      margin: 0;
+      background: #030303;
       overflow-x: hidden;
       overscroll-behavior-x: none;
       -webkit-text-size-adjust: 100%;
@@ -185,7 +184,7 @@
     })();
   </script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans" style="background:#030303;">
   <div id="root">
     <div class="boot-fallback boot-loading" aria-live="polite">
       <div class="boot-fallback__card">
@@ -196,6 +195,10 @@
       </div>
     </div>
   </div>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
   <script type="importmap">
     {
@@ -254,6 +257,8 @@
 
     const markAppBooted = () => {
       window.__slotAppBooted = true;
+      document.documentElement.style.background = '';
+      document.body.style.background = '';
       document.body.classList.add('app-booted');
     };
 
