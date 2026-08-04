@@ -1,8 +1,9 @@
-const CACHE_NAME = 'ruko-slot-app-v20260804-boot-fallback';
+const CACHE_NAME = 'ruko-slot-app-v20260805-august-order-fixes';
 const APP_SHELL_URLS = [
   './',
   './index.html',
   './slot-tier-app.html',
+  './app.js?v=20260805-august-order-fixes',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
