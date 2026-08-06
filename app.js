@@ -724,14 +724,14 @@ var TARGET_PRESETS = [
 var CURRENT_ENVIRONMENT_NOTE = {
   updatedAt: "8\u67086\u65E5\u7248",
   title: "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
-  body: "8\u6708\u306E\u5927\u91CF\u65B0\u53F0\u306B\u3088\u308A\u8EE2\u751F\u306E\u53F0\u6570\u304C\u76F8\u5F53\u6E1B\u3063\u3066\u3057\u307E\u3063\u305F\u3002\n\u305D\u308C\u3067\u3082\u62FE\u3063\u3066\u3057\u307E\u3048\u3070\u9577\u304F\u6253\u3066\u308B\u512A\u4F4D\u6027\u306F\u5909\u308F\u3089\u306A\u3044\u306E\u3067S\u3067\u636E\u3048\u7F6E\u304D\u3002"
+  body: "8\u6708\u306E\u5927\u91CF\u65B0\u53F0\u306B\u3088\u308A\u8EE2\u751F\u306E\u53F0\u6570\u304C\u76F8\u5F53\u6E1B\u3063\u3066\u3057\u307E\u3063\u305F\u3002\n\u305D\u308C\u3067\u3082\u62FE\u3063\u3066\u3057\u307E\u3048\u3070\u9577\u304F\u6253\u3066\u308B\u512A\u4F4D\u6027\u306F\u5909\u308F\u3089\u306A\u3044\u306E\u3067S\u3067\u636E\u3048\u7F6E\u304D\u3002\n\n\u5C11\u3057\u524D\u306E\u3088\u3046\u306BGOD\u3084\u8EE2\u751F\u3001\u55B0\u7A2E\u306E\u3088\u3046\u306A1\u6A5F\u7A2E\u306B\u7279\u5316\u3057\u3066\u8EF8\u306B\u7A3C\u50CD\u3059\u308B\u3068\u3044\u3046\u3088\u308A\u306F\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u3092\u96D1\u591A\u306B\u89E6\u308C\u306A\u3044\u3068\u3044\u3051\u306A\u3044\u74B0\u5883\u306B\u306A\u3063\u3066\u304D\u305F\u3002\n\n\u65B0\u53F0\u3092\u3057\u3063\u304B\u308A\u62FE\u3044\u305F\u3044\u3002"
 };
 var ENVIRONMENT_ARCHIVE_ENTRIES = [
   {
     number: "01",
     title: "8\u67086\u65E5\u7248 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
     body: CURRENT_ENVIRONMENT_NOTE.body,
-    quote: "\u5927\u91CF\u65B0\u53F0\u3067\u8EE2\u751F\u306E\u53F0\u6570\u306F\u6E1B\u3063\u305F\u304C\u3001\u62FE\u3048\u305F\u6642\u306E\u6EDE\u5728\u6642\u9593\u3068\u512A\u4F4D\u6027\u306F\u307E\u3060\u5F37\u3044\u306E\u3067S\u7DAD\u6301\u3002"
+    quote: "\u8EE2\u751F\u306FS\u7DAD\u6301\u30021\u6A5F\u7A2E\u7279\u5316\u3088\u308A\u3082\u3001\u65B0\u53F0\u3092\u542B\u3081\u3066\u5E83\u304F\u89E6\u308B\u74B0\u5883\u3078\u3002"
   },
   {
     number: "02",
@@ -778,6 +778,7 @@ var calculateTimeRangeMinutes = (startTime, endTime) => {
   if (duration < 0) duration += 24 * 60;
   return duration;
 };
+var formatClockTime = (date = /* @__PURE__ */ new Date()) => `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 var EMPTY_WORKLOAD_FORM = {
   machineName: "",
   payoutRate: "105",
@@ -1367,6 +1368,9 @@ var App = () => {
   const handleWorkloadEndTimeChange = (e) => {
     updateWorkloadTimeRange({ endTime: e.target.value });
   };
+  const setWorkloadClockNow = (field) => {
+    updateWorkloadTimeRange({ [field]: formatClockTime() });
+  };
   const formatDateStr = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -1780,7 +1784,7 @@ var App = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-end mt-1", children: [
-        /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base font-black italic leading-tight", children: activeTab === "ruko" ? "8\u67084\u65E5\u7248\u3000\u6700\u65B0\u72D9\u3044\u76EETier\u8868" : activeTab === "list" ? "\u72D9\u3044\u76EE\u4E00\u89A7" : activeTab === "column" ? "\u653B\u7565\u601D\u8003\u96C6" : "\u4ED5\u4E8B\u91CF\u7BA1\u7406" }),
+        /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base font-black italic leading-tight", children: activeTab === "ruko" ? "8\u67086\u65E5\u7248\u3000\u6700\u65B0\u72D9\u3044\u76EETier\u8868" : activeTab === "list" ? "\u72D9\u3044\u76EE\u4E00\u89A7" : activeTab === "column" ? "\u653B\u7565\u601D\u8003\u96C6" : "\u4ED5\u4E8B\u91CF\u7BA1\u7406" }),
         activeTab !== "workload" && activeTab !== "column" && /* @__PURE__ */ jsx("p", { className: "text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium", children: "\u62FE\u3044\u3084\u3059\u3055\xD7\u671F\u5F85\u5024" })
       ] })
     ] }) }),
@@ -2578,6 +2582,18 @@ var App = () => {
                   className: "w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold",
                   "aria-label": "\u6253\u3061\u59CB\u3081\u306E\u6642\u9593"
                 }
+              ),
+              /* @__PURE__ */ jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setWorkloadClockNow("startTime"),
+                  className: "mt-1 w-full rounded-md border border-gray-200 bg-gray-100 px-2 py-1 text-[10px] font-black text-gray-700 flex items-center justify-center gap-1 active:bg-gray-200",
+                  children: [
+                    /* @__PURE__ */ jsx(Clock, { size: 11 }),
+                    "\u73FE\u5728\u6642\u523B"
+                  ]
+                }
               )
             ] }),
             /* @__PURE__ */ jsxs("div", { children: [
@@ -2590,6 +2606,18 @@ var App = () => {
                   onChange: handleWorkloadEndTimeChange,
                   className: "w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold",
                   "aria-label": "\u6253\u3061\u7D42\u308F\u308A\u306E\u6642\u9593"
+                }
+              ),
+              /* @__PURE__ */ jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setWorkloadClockNow("endTime"),
+                  className: "mt-1 w-full rounded-md border border-gray-200 bg-gray-100 px-2 py-1 text-[10px] font-black text-gray-700 flex items-center justify-center gap-1 active:bg-gray-200",
+                  children: [
+                    /* @__PURE__ */ jsx(Clock, { size: 11 }),
+                    "\u73FE\u5728\u6642\u523B"
+                  ]
                 }
               )
             ] })

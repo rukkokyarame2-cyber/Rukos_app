@@ -1,8 +1,8 @@
-﻿const CACHE_NAME = 'ruko-slot-app-v20260806-machine-strategy-highlights';
+﻿const CACHE_NAME = 'ruko-slot-app-v20260807-env-now-buttons';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260806-machine-strategy-highlights',
+  './app.js?v=20260807-env-now-buttons',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
@@ -92,6 +92,7 @@ self.addEventListener('fetch', event => {
     })());
   }
 });
+
 
 
 
