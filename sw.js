@@ -1,8 +1,8 @@
-﻿const CACHE_NAME = 'ruko-slot-app-v20260807-env-now-buttons';
+const CACHE_NAME = 'ruko-slot-app-v20260807-network-first-update';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260807-env-now-buttons',
+  './app.js?v=20260807-network-first-update',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
@@ -26,7 +26,6 @@ const cacheResponse = async (cache, request, response) => {
 
 const fallbackDocument = async (cache) => (
   await cache.match('./index.html') ||
-  await cache.match('./slot-tier-app.html') ||
   new Response('アプリを読み込めませんでした。通信状況を確認して再読み込みしてください。', {
     status: 503,
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -57,16 +56,19 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
   const isStaticCdnRequest = STATIC_CDN_HOSTS.has(url.hostname);
-  const isStaticAsset = ['script', 'style', 'image', 'font'].includes(request.destination);
+  const isStaticAsset = ['style', 'image', 'font'].includes(request.destination);
+  const isAppScript = url.origin === self.location.origin && url.pathname.endsWith('/app.js');
 
-  if (request.mode === 'navigate') {
+  if (request.mode === 'navigate' || isAppScript) {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
       try {
         const response = await fetch(request);
         return cacheResponse(cache, request, response);
       } catch (error) {
-        return fallbackDocument(cache);
+        if (request.mode === 'navigate') return fallbackDocument(cache);
+        const cached = await cache.match(request);
+        return cached || new Response('', { status: 504, statusText: 'Offline' });
       }
     })());
     return;
@@ -92,9 +94,3 @@ self.addEventListener('fetch', event => {
     })());
   }
 });
-
-
-
-
-
-
