@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja" style="background:#030303;">
 <head>
   <meta charset="UTF-8">
@@ -211,6 +211,47 @@
     }
   </script>
   
-  <script type="module" src="app.js?v=20260805-august-spacing-swap"></script>
+  <script>
+    (() => {
+      const appScriptVersion = '20260806-machine-strategy-highlights';
+      const localServerUrl = 'http://127.0.0.1:8187/slot-tier-app.html';
+
+      const loadAppScript = () => {
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = `app.js?v=${appScriptVersion}`;
+        document.body.appendChild(script);
+      };
+
+      const showFileOpenGuide = () => {
+        const root = document.getElementById('root');
+        if (!root || location.protocol !== 'file:') return;
+        root.innerHTML = `
+          <div class="boot-fallback" role="alert">
+            <div class="boot-fallback__card">
+              <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
+              <p class="boot-fallback__brand">RUKO APP</p>
+              <h1 class="boot-fallback__title">ローカルサーバー版で開いてください</h1>
+              <p class="boot-fallback__text">ChromeでHTMLを直接開くと、アプリ本体の読み込みが止まることがあります。下のボタンからテスト用URLを開いてください。</p>
+              <button class="boot-fallback__button" type="button" onclick="location.href='${localServerUrl}'">テスト用URLを開く</button>
+            </div>
+          </div>
+        `;
+      };
+
+      if (location.protocol === 'file:') {
+        fetch(localServerUrl, { mode: 'no-cors', cache: 'no-store' })
+          .then(() => location.replace(localServerUrl))
+          .catch(showFileOpenGuide);
+        window.setTimeout(showFileOpenGuide, 1200);
+        return;
+      }
+
+      loadAppScript();
+    })();
+  </script>
 </body>
 </html>
+
+
+

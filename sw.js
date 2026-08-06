@@ -1,9 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260805-august-spacing-swap';
+﻿const CACHE_NAME = 'ruko-slot-app-v20260806-machine-strategy-highlights';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './slot-tier-app.html',
-  './app.js?v=20260805-august-spacing-swap',
+  './app.js?v=20260806-machine-strategy-highlights',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
@@ -93,3 +92,8 @@ self.addEventListener('fetch', event => {
     })());
   }
 });
+
+
+
+
+

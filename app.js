@@ -1,4 +1,4 @@
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+// work/slot-tier-app-source.jsx
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { createClient } from "@supabase/supabase-js";
@@ -38,15 +38,17 @@ import {
   Cpu,
   Brain,
   MapPin,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Tag
 } from "lucide-react";
-const IS_ADMIN_MODE = false;
-const SUPABASE_URL = "https://uiwzuwnycuwasqjnfbdq.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs";
-const WORKLOAD_STORAGE_KEY = "slot_app_workload_v1";
-const STRATEGY_SHORTCUT_LINK_STORAGE_KEY = "slot_app_strategy_shortcut_links_v1";
-const STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY = "slot_app_strategy_shortcut_link_defaults_v1";
-const DEFAULT_STRATEGY_SHORTCUT_LINKS = [
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+var IS_ADMIN_MODE = false;
+var SUPABASE_URL = "https://uiwzuwnycuwasqjnfbdq.supabase.co";
+var SUPABASE_ANON_KEY = "sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs";
+var WORKLOAD_STORAGE_KEY = "slot_app_workload_v1";
+var STRATEGY_SHORTCUT_LINK_STORAGE_KEY = "slot_app_strategy_shortcut_links_v1";
+var STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY = "slot_app_strategy_shortcut_link_defaults_v1";
+var DEFAULT_STRATEGY_SHORTCUT_LINKS = [
   {
     id: "default-chonborista",
     title: "\u3061\u3087\u3093\u307C\u308A\u3059\u305F",
@@ -54,22 +56,22 @@ const DEFAULT_STRATEGY_SHORTCUT_LINKS = [
     memo: "\u30B9\u30ED\u30C3\u30C8\u89E3\u6790\u78BA\u8A8D\u7528"
   }
 ];
-const isSupabaseConfigured = () => SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
-const supabase = isSupabaseConfigured() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+var isSupabaseConfigured = () => SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
+var supabase = isSupabaseConfigured() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
   }
 }) : null;
-const DEFAULT_MEMO_TEMPLATE = "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n";
-const markAppBooted = () => {
+var DEFAULT_MEMO_TEMPLATE = "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n";
+var markAppBooted = () => {
   window.__slotAppBooted = true;
   document.documentElement.style.background = "";
   document.body.style.background = "";
   document.body.classList.add("app-booted");
 };
-const BootErrorView = ({ detail = "" }) => {
+var BootErrorView = ({ detail = "" }) => {
   useEffect(() => {
     markAppBooted();
   }, []);
@@ -90,7 +92,7 @@ const BootErrorView = ({ detail = "" }) => {
     detail && /* @__PURE__ */ jsx("p", { className: "mt-4 text-[11px] leading-relaxed text-gray-500 break-words", children: detail })
   ] }) });
 };
-class AppErrorBoundary extends React.Component {
+var AppErrorBoundary = class extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, detail: "" };
@@ -105,19 +107,8 @@ class AppErrorBoundary extends React.Component {
     if (this.state.hasError) return /* @__PURE__ */ jsx(BootErrorView, { detail: this.state.detail });
     return this.props.children;
   }
-}
-const RUKO_OFFICIAL_DATA = [
-  {
-    "id": "r_comp",
-    "name": "\u30B3\u30F3\u30D7\u5BFE\u7B56",
-    "detail": "\u5171\u901A\u4ED5\u69D8",
-    "tier": "\u5185\u90E8\u4ED5\u69D8",
-    "tag": "\u5185\u90E8\u4ED5\u69D8",
-    "tagColor": "bg-gray-500",
-    "imageUrl": "",
-    "link": "",
-    "memo": "4\u6708\u306B\u30B3\u30F3\u30D7\u898F\u5236\u660E\u78BA\u5316\u306B\u306A\u3063\u3066\u304B\u3089\u306E\u8352\u6CE2\u6A5F\u7A2E\u306B\u3064\u3044\u3066\u5171\u901A\u4ED5\u69D8/\u4ECA\u5F8C\u306E\u65B0\u53F0\u3082\u307B\u307C\u540C\u3058\u3060\u3068\u601D\u3046\u3002\n\n\u30FB\u4E0A\u4F4D(\u5207\u65AD)\u5F8C\u306E\u6319\u52D5\n\u2192\u57FA\u672C\u7684\u306B\u306F\u51FA\u7389\u51B7\u9047\u3067\u9023\u30C1\u30E3\u30F3\u306F\u307B\u307C\u3057\u306A\u3044\n\u2192\u305D\u306E\u4EE3\u308F\u308A\u306B\u5225\u4ED5\u69D8\u3067\u90E8\u5206\u7684\u306B\u6253\u3066\u308B\u7B87\u6240\u6709\u308B\u5834\u5408\u591A\u3044(\u30DF\u30DF\u30BA\u6319\u52D5\u3067\u30B3\u30F3\u30D7\u9632\u3050)\n\n\u30FB\u4E0A\u4F4D\u679A\u6570\u306E\u56FA\u5B9A\u5316\n\u2192\u5207\u65AD\u307E\u3067\u306F\u9AD8\u78BA\u7387\u3067\u7D99\u7D9A\u3059\u308B\u4EE3\u308F\u308A\u306B\u3001\n\u5207\u65AD\u5F8C\u306B1000\u679A\u524D\u5F8C\u51FA\u3057\u3066\u7D42\u4E86\u3063\u3066\u53F0\u304C\u591A\u3044\n\u2192\u5207\u65AD\u524D\u306E\u533A\u9593\u3068\u5408\u308F\u305B\u30666000\u679A\u524D\u5F8C\u306B\u843D\u3061\u7740\u304F\n\n\u30FB\u51F9\u307F\u512A\u9047\n\u2192\u5358\u7D14\u306B\u5207\u65AD\u307E\u3067\u679A\u6570\u304C\u51FA\u308B\u3053\u3068\u304C\u591A\u3044\u306E\u3067\u51F9\u3093\u3067\u308C\u3070\u51F9\u3093\u3067\u308B\u3060\u3051\u5F37\u3044\u3002\u305D\u306E\u4EE3\u308F\u308A\u306B\u671D2\u301C\u51F9\u3080\u307E\u3067\u304C\u6253\u3064\u610F\u5473\u306E\u7121\u3044\u533A\u9593\u3059\u304E\u308B\u3002\n\u2192\u51F9\u307F\u304C\u5F37\u3044\u3051\u3069\u51F9\u307F\u3059\u304E\u308B\u3068\u826F\u304F\u7121\u3044\u3063\u3066\u4ED5\u69D8\u306F\u3042\u308A\u305D\u3046\u3002\u5171\u901A\u3057\u3066-2000\u301C-4000\u304C\u826F\u3055\u3052\u3002"
-  },
+};
+var RUKO_OFFICIAL_DATA = [
   {
     "id": "r_sengoku6",
     "name": "\u6226\u30B3\u30EC6",
@@ -209,13 +200,13 @@ const RUKO_OFFICIAL_DATA = [
   {
     "id": "r_kabaneri",
     "name": "\u30AB\u30D0\u30CD\u30EA\u6D77\u9580\u6C7A\u6226",
-    "detail": "\u5404\u7A2E\u72D9\u3044\u76EE\uFF083\u67083\u65E5\u66F4\u65B0\uFF09",
-    "tier": "C",
-    "tag": "\u30BE\u30FC\u30F3, \u5929\u4E95",
-    "tagColor": "bg-cyan-400, bg-cyan-400",
+    "detail": "1\u5468\u671F\u975E\u5F53\u9078\u5F8C\u306E2\u5468\u671F\u72D9\u3044",
+    "tier": "B",
+    "tag": "\u30BE\u30FC\u30F3",
+    "tagColor": "bg-cyan-400",
     "imageUrl": "image_kabaneri.jpg",
-    "link": "",
-    "memo": "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB\u6700\u8FD1\u6D41\u884C\u308A\u306E\u30E2\u30F3\u30AD\u30FC\u578B\u306E\u5468\u671F\u53F0\u306A\u306E\u3067\u540C\u3058\u3088\u3046\u306B\u72D9\u3046\u3002\uFF08\u793A\u5506\u306F\u96C6\u8A08\u3057\u307E\u3059\uFF09\n\u30FB\u77ED\u7E2E\u6642\u306F1\u5468\u671F\u304C\u6E1B\u7B97\u533A\u9593\u3060\u3068\u60F3\u5B9A\u3055\u308C\u308B\u306E\u3067\u6253\u305F\u306A\u3044\u3002\n\u30FB\u30BE\u30FC\u30F3\u72D9\u3044\u306F\u3059\u3067\u306BRB\u3084CZ\u30B9\u30EB\u30FC\u3057\u3066\u3044\u308B\u53EF\u80FD\u6027\u304C\u9AD8\u30442\u5468\u671F\u306E\u65B9\u304C\u7518\u304F\u3066\u62FE\u3044\u3084\u3059\u3044\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n\u30FB\u5468\u671F\u72D9\u3044\n1\u5468\u671F\u6EDE\u5728\u4E2D\u306E\u5834\u5408\uFF1A110G\uFF5E150\u30BE\u30FC\u30F3\n\u2192\u77ED\u7E2E\u6642\u306F1\u5468\u671F\u8F9B\u3044\u306E\u3067\u6253\u305F\u306A\u3044\n\uFF12\u5468\u671F\u6EDE\u5728\u4E2D\u306E\u5834\u5408\uFF1A\nRB0\u56DE\uFF1A250G\uFF5E300\u30BE\u30FC\u30F3\nRB1\u56DE\u4EE5\u4E0A\uFF1A210G\uFF5E300\u30BE\u30FC\u30F3\n\n\u30FB\u77ED\u7E2E\u5468\u671F\u5929\u4E95\u72D9\u3044\n2\u5468\u671F\uFF5E\u5929\u4E95\u307E\u3067\n\u2192\u77ED\u7E2E\u6642\u306F1\u5468\u671F\u8F9B\u3044\u306E\u3067\u629C\u3051\u304B\u3089\u6253\u3064\n\n\u30FB\u4E0A\u4F4DST\u30EB\u30FC\u30D7\u72D9\u3044\n\u30B5\u30D6\u6DB2\u6676\u304C\u6D77\u9580\u57CE\u306E\u53F0\u3092\u30EB\u30FC\u30D7\u629C\u3051\u307E\u3067\u3002"
+    "link": "https://note.com/ruko7613/n/n0bb5b38a22c3",
+    "memo": "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB1\u5468\u671F\u6EDE\u5728\u4E2D\u306FRB\u6BD4\u7387\u304C\u9AD8\u304F\u3066\u72D9\u3048\u306A\u3044\u306E\u30672\u5468\u671F\u306E\u30BE\u30FC\u30F3\u72D9\u3044\u304C\u672C\u547D\n\u30FB1\u5468\u671F\u3067RB\u304C\u5F53\u9078\u3057\u3066\u3044\u306A\u3044\u5834\u54082\u5468\u671F\u306E\u30BE\u30FC\u30F3\u5F53\u9078\u7387\u304C\u9AD8\u304F\u306A\u308B\u306E\u3067\u305D\u308C\u3092\u72D9\u3046\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n2\u5468\u671F\u6EDE\u5728\u4E2D\n1\u5468\u671FRB\u975E\u5F53\u9078\uFF1A180\uFF5E2\u5468\u671F\u30BE\u30FC\u30F3\u5230\u9054\u307E\u3067\n\u203B\u9014\u4E2D\u3067CZ\u304B\u3089RB\u5F53\u9078\u3057\u3066\u3082\u30BE\u30FC\u30F3\u629C\u3051\u307E\u3067\u306F\u6253\u3061\u5207\u308B"
   },
   {
     "id": "r_kabaneri2",
@@ -383,25 +374,52 @@ const RUKO_OFFICIAL_DATA = [
     "memo": "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB\u7A3C\u50CD\u306F\u5C11\u306A\u304F\u3001\u901A\u5E38\u306E\u30CF\u30A4\u30A8\u30CA\u306F\u53B3\u3057\u3044\n\u30FB\u30EA\u30BB\u30C3\u30C8\u533A\u9593\u306F\u7518\u304F\u5C11\u3057\u3067\u3082\u89E6\u3089\u308C\u3066\u3044\u308C\u3070\u6253\u3066\u308B\u306E\u3067\u307B\u307C\u305D\u308C\u3060\u3051\n\u30FB\u6295\u8CC7\u304C\u3060\u3044\u3076\u304B\u304B\u308B\u53F0\u306A\u306E\u3067\u7B49\u4FA1\u304B\u6301\u3061\u7389\u4F59\u88D5\u3042\u308B\u3068\u304D\u306E\u307F\u6253\u3064\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n\u30FB\u671D\u4E00\uFF10\u30B9\u306E\u53F0\u3092100G\uFF5E160G\u307E\u3067\n\u30FB\u3053\u306E\u533A\u9593\u306B\u5F53\u9078\u3057\u305F\u5834\u5408\u306F\u305D\u306E\u307E\u307E\u5929\u56FD\u304B5\u30B9\u30EB\u30FC\u307E\u3067\u6253\u3064\n\u30FB5\u30B9\u30EB\u30FC\u3057\u305F\u6642\u70B9\u3067\u901A\u5E38\u30E2\u30FC\u30C9B\u4EE5\u4E0A\u304B\u30C9\u30AD\u30CF\u30CAB\u4EE5\u4E0A\u306E\u793A\u5506\u304C\u51FA\u3066\u306A\u3051\u308C\u3070\u3084\u3081\u3002\u793A\u5506\u3042\u308A\u306A\u3089\u5929\u56FD\u307E\u3067\u3002"
   }
 ];
-const TIER_CONFIG = [
-  { id: "\u5185\u90E8\u4ED5\u69D8", label: "\u5185\u90E8\u4ED5\u69D8\u306B\u3064\u3044\u3066", bg: "bg-gradient-to-r from-pink-500 to-rose-600" },
+var HIDDEN_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_comp"]);
+var REFRESH_OFFICIAL_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_kabaneri"]);
+var TARGET_TIER_ORDER = ["S", "A", "B", "C", "\u305D\u306E\u4ED6\u72D9\u3044\u76EE"];
+var TARGET_TAG_FILTER_OPTIONS = [
+  { id: "all", label: "\u5168\u30BF\u30B0" },
+  { id: "\u30EA\u30BB", label: "\u30EA\u30BB" },
+  { id: "\u30BE\u30FC\u30F3", label: "\u30BE\u30FC\u30F3" },
+  { id: "\u5DEE\u679A", label: "\u5DEE\u679A" },
+  { id: "\u512A\u9047", label: "\u512A\u9047" },
+  { id: "\u5929\u4E95", label: "\u5929\u4E95" },
+  { id: "\u7A62\u308C", label: "\u7A62\u308C" },
+  { id: "\u793A\u5506", label: "\u793A\u5506" },
+  { id: "\u30B9\u30EB\u30FC", label: "\u30B9\u30EB\u30FC" }
+];
+var TIER_CONFIG = [
   { id: "S", label: "S", bg: "bg-gradient-to-r from-red-400 to-red-600" },
   { id: "A", label: "A", bg: "bg-gradient-to-r from-orange-400 to-orange-500" },
   { id: "B", label: "B", bg: "bg-gradient-to-r from-yellow-400 to-yellow-500" },
   { id: "C", label: "C", bg: "bg-gradient-to-r from-green-400 to-green-500" },
   { id: "\u305D\u306E\u4ED6\u72D9\u3044\u76EE", label: "\u305D\u306E\u4ED6\u72D9\u3044\u76EE", bg: "bg-gradient-to-r from-gray-400 to-gray-600" }
 ];
-const TARGET_TIME_SLOTS = [
+var TARGET_TIME_SLOTS = [
   { id: "morning", label: "9\u6642\uFF5E12\u6642" },
   { id: "afternoon", label: "12\uFF5E17\u6642" },
   { id: "evening", label: "17\uFF5E20\u6642" },
   { id: "late", label: "20\u6642\uFF5E\u9589\u5E97" }
 ];
-const TARGET_TIME_SLOT_OPTIONS = [
+var TARGET_TIME_SLOT_OPTIONS = [
   ...TARGET_TIME_SLOTS,
   { id: "all", label: "\u5168\u6642\u9593\u5E2F" }
 ];
-const TARGET_TIME_SLOT_MAP = {
+var refreshOfficialTargetItems = (items) => {
+  const officialById = new Map(RUKO_OFFICIAL_DATA.map((item) => [item.id, item]));
+  const seen = /* @__PURE__ */ new Set();
+  const refreshedItems = items.map((item) => {
+    if (!item || !item.id) return item;
+    seen.add(item.id);
+    if (!REFRESH_OFFICIAL_TARGET_ITEM_IDS.has(item.id)) return item;
+    return { ...item, ...officialById.get(item.id) };
+  });
+  REFRESH_OFFICIAL_TARGET_ITEM_IDS.forEach((id) => {
+    if (!seen.has(id) && officialById.has(id)) refreshedItems.push(officialById.get(id));
+  });
+  return refreshedItems;
+};
+var TARGET_TIME_SLOT_MAP = {
   r_sengoku6: ["afternoon", "evening"],
   r_yabachiyo: ["afternoon", "evening"],
   r_rioace2: [],
@@ -427,11 +445,11 @@ const TARGET_TIME_SLOT_MAP = {
   r18: [],
   r19: ["morning"]
 };
-const normalizeTimeSlots = (slots) => {
+var normalizeTimeSlots = (slots) => {
   const slotSet = new Set(Array.isArray(slots) ? slots : []);
   return TARGET_TIME_SLOTS.map((slot) => slot.id).filter((id) => slotSet.has(id));
 };
-const inferTargetTimeSlots = (item) => {
+var inferTargetTimeSlots = (item) => {
   const text = `${item.name || ""} ${item.detail || ""} ${item.tag || ""} ${item.memo || ""}`;
   const slots = /* @__PURE__ */ new Set();
   if (/リセ|リセット|朝一|朝イチ/.test(text)) slots.add("morning");
@@ -449,7 +467,7 @@ const inferTargetTimeSlots = (item) => {
   }
   return normalizeTimeSlots([...slots]);
 };
-const getTargetTimeSlots = (item) => {
+var getTargetTimeSlots = (item) => {
   const hasManualSlots = Object.prototype.hasOwnProperty.call(TARGET_TIME_SLOT_MAP, item.id);
   const baseSlots = hasManualSlots ? TARGET_TIME_SLOT_MAP[item.id] : item.timeSlots && item.timeSlots.length ? item.timeSlots : [];
   if (hasManualSlots) return normalizeTimeSlots(baseSlots);
@@ -459,8 +477,18 @@ const getTargetTimeSlots = (item) => {
     inferredSlots.includes("morning") && !slots.includes("morning") ? ["morning", ...slots] : slots
   );
 };
-const getTargetTimeLabel = (slotId) => TARGET_TIME_SLOTS.find((slot) => slot.id === slotId)?.label || slotId;
-const TIER_MACHINE_ALIAS_MAP = {
+var getTargetTimeLabel = (slotId) => TARGET_TIME_SLOTS.find((slot) => slot.id === slotId)?.label || slotId;
+var getTargetTierRank = (tier) => {
+  const index = TARGET_TIER_ORDER.indexOf(tier);
+  return index === -1 ? TARGET_TIER_ORDER.length : index;
+};
+var getTargetTagNames = (item) => (item.tag || "").split(",").map((tag) => tag.trim()).filter(Boolean);
+var matchesTargetTagFilter = (item, tagFilter) => {
+  if (tagFilter === "all") return true;
+  const tags = getTargetTagNames(item);
+  return tags.some((tag) => tag.includes(tagFilter) || tagFilter.includes(tag));
+};
+var TIER_MACHINE_ALIAS_MAP = {
   "\u6226\u30B3\u30EC6": ["\u6226\u56FD\u30B3\u30EC\u30AF\u30B7\u30E7\u30F3\uFF16", "\u6226\u30B3\u30EC\uFF16", "\u6226\u56FD\u30B3\u30EC\u30AF\u30B7\u30E7\u30F36"],
   "\u30EA\u30AA\u30A8\u30FC\u30B9\uFF12": ["\u30B9\u30DE\u30B9\u30ED\u30B9\u30FC\u30D1\u30FC\u30EA\u30AA\u30A8\u30FC\u30B92", "\u30EA\u30AA\u30A8\u30FC\u30B92", "\u30B9\u30FC\u30D1\u30FC\u30EA\u30AA\u30A8\u30FC\u30B92"],
   "\u30D0\u30A4\u30AA\u30CF\u30B6\u30FC\u30C9RE:3": ["\u30B9\u30DE\u30B9\u30ED \u30D0\u30A4\u30AA\u30CF\u30B6\u30FC\u30C9RE:3", "\u30D0\u30A4\u30AARE3", "\u30D0\u30A4\u30AARE:3"],
@@ -481,7 +509,7 @@ const TIER_MACHINE_ALIAS_MAP = {
   "\u5317\u6597\u306E\u62F3": ["\u30B9\u30DE\u30B9\u30ED\u5317\u6597\u306E\u62F3"],
   "\u6C96\u30C9\u30ADDUO\u30A2\u30F3\u30B3\u30FC\u30EB": ["\u30B9\u30DE\u30B9\u30ED \u6C96\u30C9\u30AD!DUO \u30A2\u30F3\u30B3\u30FC\u30EB", "\u6C96\u30C9\u30AD!DUO \u30A2\u30F3\u30B3\u30FC\u30EB"]
 };
-const SMART_SLOT_MACHINE_OPTIONS = [
+var SMART_SLOT_MACHINE_OPTIONS = [
   { name: "\uFF2C ULTRAMAN \u6700\u7D42\u6C7A\u6226", maker: "\u30AA\u30C3\u30B1\u30FC.", introducedAt: "2026.7.6", aliases: [] },
   { name: "L\u30D1\u30C1\u30B9\u30ED \u304B\u3089\u304F\u308A\u30B5\u30FC\u30AB\u30B92", maker: "\u30B8\u30A7\u30A4\u30D3\u30FC", introducedAt: "2026.7.6", aliases: ["\u304B\u3089\u304F\u308A\u30B5\u30FC\u30AB\u30B92", "\u304B\u3089\u304F\u308A2"] },
   { name: "L\u5357\u56FD\u80B2\u3061SPECIAL", maker: "\u30A2\u30E0\u30C6\u30C3\u30AF\u30B9", introducedAt: "2026.7.6", aliases: ["\u5357\u56FD\u80B2\u3061SPECIAL"] },
@@ -663,8 +691,8 @@ const SMART_SLOT_MACHINE_OPTIONS = [
   { name: "\u30B9\u30DE\u30B9\u30ED\u30EA\u30CE\u30D8\u30D6\u30F3", maker: "\u5C71\u4F50", introducedAt: "2022.11.21", aliases: ["\u30EA\u30CE\u30D8\u30D6\u30F3"] },
   { name: "\u30D1\u30C1\u30B9\u30ED \u9769\u547D\u6A5F\u30F4\u30A1\u30EB\u30F4\u30EC\u30A4\u30F4", maker: "SANKYO", introducedAt: "2022.11.21", aliases: ["\u30F4\u30A1\u30EB\u30F4\u30EC\u30A4\u30F4", "\u30F4\u30F4\u30F4"] }
 ];
-const normalizeMachineText = (value) => (value || "").toString().toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 65248)).replace(/[‐‑‒–—―ー－\-~〜～・･\s　!！?？()（）[\]【】「」『』™]/g, "");
-const uniqueValues = (values) => {
+var normalizeMachineText = (value) => (value || "").toString().toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 65248)).replace(/[‐‑‒–—―ー－\-~〜～・･\s　!！?？()（）[\]【】「」『』™]/g, "");
+var uniqueValues = (values) => {
   const seen = /* @__PURE__ */ new Set();
   return values.filter((value) => {
     const key = normalizeMachineText(value);
@@ -673,10 +701,10 @@ const uniqueValues = (values) => {
     return true;
   });
 };
-const SAMMY_MAKER_ALIASES = ["\u9280\u5EA7", "\u30ED\u30C7\u30AA", "\u30BF\u30A4\u30E8\u30FC\u30A8\u30EC\u30C3\u30AF"];
-const MACHINE_DISPLAY_PRIORITY = ["\u5317\u6597\u8EE2\u751F\uFF12", "\u6771\u4EAC\u55B0\u7A2E", "L\u30B4\u30C3\u30C9\u8ECC\u8DE1"];
-const CALENDAR_WEEKDAYS = ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"];
-const TARGET_PRESETS = [
+var SAMMY_MAKER_ALIASES = ["\u9280\u5EA7", "\u30ED\u30C7\u30AA", "\u30BF\u30A4\u30E8\u30FC\u30A8\u30EC\u30C3\u30AF"];
+var MACHINE_DISPLAY_PRIORITY = ["\u5317\u6597\u8EE2\u751F\uFF12", "\u6771\u4EAC\u55B0\u7A2E", "L\u30B4\u30C3\u30C9\u8ECC\u8DE1"];
+var CALENDAR_WEEKDAYS = ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"];
+var TARGET_PRESETS = [
   {
     id: "hokuto-tensei",
     machineMatchers: ["\u5317\u6597\u8EE2\u751F\uFF12", "\u5317\u6597\u8EE2\u751F2", "\u30B9\u30DE\u30B9\u30ED \u5317\u6597\u306E\u62F3 \u8EE2\u751F\u306E\u7AE02"],
@@ -693,43 +721,73 @@ const TARGET_PRESETS = [
     ]
   }
 ];
-const CURRENT_ENVIRONMENT_NOTE = {
-  updatedAt: "7/15\u66F4\u65B0",
+var CURRENT_ENVIRONMENT_NOTE = {
+  updatedAt: "8\u67086\u65E5\u7248",
   title: "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
-  body: "GOD\u304C\u6025\u6FC0\u306B\u62FE\u3048\u306A\u304F\u306A\u3063\u305F\u306E\u3067S\u2192A\u306B\u3002\n\u8EE2\u751F\u3082\u76F8\u5F53\u53F0\u6570\u6E1B\u3063\u305F\u304C1\u53F0\u9577\u304F\u6253\u3066\u308B\u306E\u3067S\u7DAD\u6301\u3002\n\n\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3068\u306A\u3063\u305F\u3002\n\n\u4ECA\u306F\u6226\u30B3\u30EC\uFF16\u304C\u6CE8\u76EE\u682A\u3002\n4\u6708\u4EE5\u964D\u306E\u30B3\u30F3\u30D7\u898F\u5236\u5F37\u5316\u3092\u5BFE\u7B56\u3092\u3057\u305F\u6B6A\u3093\u3060\u7206\u88C2\u6A5F\u304C\u3053\u308C\u304B\u3089\u3044\u308D\u3044\u308D\u51FA\u305D\u3046\u3067\u306F\u3042\u308B\u306E\u3067\u671F\u5F85\u3002"
+  body: "8\u6708\u306E\u5927\u91CF\u65B0\u53F0\u306B\u3088\u308A\u8EE2\u751F\u306E\u53F0\u6570\u304C\u76F8\u5F53\u6E1B\u3063\u3066\u3057\u307E\u3063\u305F\u3002\n\u305D\u308C\u3067\u3082\u62FE\u3063\u3066\u3057\u307E\u3048\u3070\u9577\u304F\u6253\u3066\u308B\u512A\u4F4D\u6027\u306F\u5909\u308F\u3089\u306A\u3044\u306E\u3067S\u3067\u636E\u3048\u7F6E\u304D\u3002"
 };
-const ENVIRONMENT_ARCHIVE_ENTRIES = [
+var ENVIRONMENT_ARCHIVE_ENTRIES = [
   {
     number: "01",
-    title: "7/15\u66F4\u65B0 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
+    title: "8\u67086\u65E5\u7248 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
     body: CURRENT_ENVIRONMENT_NOTE.body,
+    quote: "\u5927\u91CF\u65B0\u53F0\u3067\u8EE2\u751F\u306E\u53F0\u6570\u306F\u6E1B\u3063\u305F\u304C\u3001\u62FE\u3048\u305F\u6642\u306E\u6EDE\u5728\u6642\u9593\u3068\u512A\u4F4D\u6027\u306F\u307E\u3060\u5F37\u3044\u306E\u3067S\u7DAD\u6301\u3002"
+  },
+  {
+    number: "02",
+    title: "7/15\u66F4\u65B0 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
+    body: "GOD\u304C\u6025\u6FC0\u306B\u62FE\u3048\u306A\u304F\u306A\u3063\u305F\u306E\u3067S\u2192A\u306B\u3002\n\u8EE2\u751F\u3082\u76F8\u5F53\u53F0\u6570\u6E1B\u3063\u305F\u304C1\u53F0\u9577\u304F\u6253\u3066\u308B\u306E\u3067S\u7DAD\u6301\u3002\n\n\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3068\u306A\u3063\u305F\u3002\n\n\u4ECA\u306F\u6226\u30B3\u30EC\uFF16\u304C\u6CE8\u76EE\u682A\u3002\n4\u6708\u4EE5\u964D\u306E\u30B3\u30F3\u30D7\u898F\u5236\u5F37\u5316\u3092\u5BFE\u7B56\u3092\u3057\u305F\u6B6A\u3093\u3060\u7206\u88C2\u6A5F\u304C\u3053\u308C\u304B\u3089\u3044\u308D\u3044\u308D\u51FA\u305D\u3046\u3067\u306F\u3042\u308B\u306E\u3067\u671F\u5F85\u3002",
     quote: "\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3002GOD\u306FA\u3078\u3001\u8EE2\u751F\u306FS\u7DAD\u6301\u3001\u6226\u30B3\u30EC6\u306B\u6CE8\u76EE\u3002"
   }
 ];
-const normalizeMachineMaker = (maker) => SAMMY_MAKER_ALIASES.includes(maker) ? "\u30B5\u30DF\u30FC" : maker || "";
-const machinePriority = (option) => {
+var normalizeMachineMaker = (maker) => SAMMY_MAKER_ALIASES.includes(maker) ? "\u30B5\u30DF\u30FC" : maker || "";
+var machinePriority = (option) => {
   const searchText = normalizeMachineText([option.name, ...option.aliases || []].join(" "));
   const index = MACHINE_DISPLAY_PRIORITY.findIndex((name) => searchText.includes(normalizeMachineText(name)));
   return index === -1 ? Number.MAX_SAFE_INTEGER : index;
 };
-const findTargetPreset = (machineName) => {
+var findTargetPreset = (machineName) => {
   const normalizedMachineName = normalizeMachineText(machineName);
   return TARGET_PRESETS.find((preset) => preset.machineMatchers.some((matcher) => normalizedMachineName.includes(normalizeMachineText(matcher))));
 };
-const calculateWorkValue = (payoutRate, playTime) => {
+var calculateWorkValue = (payoutRate, playTime) => {
   const rate = parseFloat(payoutRate) || 100;
   const time = parseFloat(playTime) || 0;
   const hourlyWage = (rate - 100) * 500;
   return Math.round(hourlyWage * (time / 60));
 };
-const EMPTY_WORKLOAD_FORM = {
+var estimatePlayCountFromTime = (playTime) => {
+  const time = parseFloat(playTime);
+  return Number.isFinite(time) ? Math.round(time / 60 * 800).toString() : "";
+};
+var estimatePlayTimeFromCount = (playCount) => {
+  const count = parseFloat(playCount);
+  return Number.isFinite(count) ? Math.round(count / 800 * 60).toString() : "";
+};
+var parseClockTimeToMinutes = (time) => {
+  if (!time || !time.includes(":")) return null;
+  const [hours, minutes] = time.split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  return hours * 60 + minutes;
+};
+var calculateTimeRangeMinutes = (startTime, endTime) => {
+  const startMinutes = parseClockTimeToMinutes(startTime);
+  const endMinutes = parseClockTimeToMinutes(endTime);
+  if (startMinutes === null || endMinutes === null) return "";
+  let duration = endMinutes - startMinutes;
+  if (duration < 0) duration += 24 * 60;
+  return duration;
+};
+var EMPTY_WORKLOAD_FORM = {
   machineName: "",
   payoutRate: "105",
+  startTime: "",
+  endTime: "",
   playTime: "60",
   playCount: "800",
   memo: ""
 };
-const readLocalWorkloadBackup = () => {
+var readLocalWorkloadBackup = () => {
   try {
     const saved = localStorage.getItem(WORKLOAD_STORAGE_KEY);
     if (!saved) return {};
@@ -740,8 +798,8 @@ const readLocalWorkloadBackup = () => {
     return {};
   }
 };
-const hasLocalWorkloadBackup = () => Object.values(readLocalWorkloadBackup()).some((items) => Array.isArray(items) && items.length > 0);
-const normalizeWorkloadRow = (row) => ({
+var hasLocalWorkloadBackup = () => Object.values(readLocalWorkloadBackup()).some((items) => Array.isArray(items) && items.length > 0);
+var normalizeWorkloadRow = (row) => ({
   id: row.id,
   date: row.date,
   machineName: row.machine_name || "",
@@ -752,7 +810,7 @@ const normalizeWorkloadRow = (row) => ({
   workValue: Number(row.work_value) || 0,
   createdAt: row.created_at
 });
-const addMachineOption = (list, index, option) => {
+var addMachineOption = (list, index, option) => {
   const aliases = uniqueValues([...option.aliases || [], option.detail, option.tag].filter(Boolean));
   const dedupeAliases = uniqueValues(option.dedupeAliases || []);
   const keys = uniqueValues([option.name, ...dedupeAliases]);
@@ -777,7 +835,7 @@ const addMachineOption = (list, index, option) => {
   list.push(nextOption);
   keys.map(normalizeMachineText).forEach((key) => index.set(key, nextOption));
 };
-const buildMachineOptions = (rukoItems) => {
+var buildMachineOptions = (rukoItems) => {
   const list = [];
   const index = /* @__PURE__ */ new Map();
   rukoItems.filter((item) => item && item.name && item.tier !== "\u5185\u90E8\u4ED5\u69D8" && item.name !== "\u30B3\u30F3\u30D7\u5BFE\u7B56").forEach((item) => {
@@ -793,7 +851,7 @@ const buildMachineOptions = (rukoItems) => {
   SMART_SLOT_MACHINE_OPTIONS.forEach((option) => addMachineOption(list, index, option));
   return list.map((option, order) => ({ ...option, order })).sort((a, b) => machinePriority(a) - machinePriority(b) || a.order - b.order);
 };
-const STRATEGY_SECTION_DATA = [
+var STRATEGY_SECTION_DATA = [
   {
     id: "store",
     title: "\u5E97\u8217\u9078\u3073\u306B\u3064\u3044\u3066",
@@ -834,13 +892,15 @@ const STRATEGY_SECTION_DATA = [
       {
         number: "01",
         title: "\u30DE\u30A4\u30EB\u30C9\u306A\u6A5F\u7A2E\u3088\u308A\u3082\u8352\u3044\u6A5F\u7A2E\u3092\u72D9\u3046\u3088\u3046\u306B\u3059\u308B",
-        body: "\u7D14\u5897\u304C\u65E9\u3044\u53F0\u3001\u4E00\u6483\u306E\u5E73\u5747\u7372\u5F97\u679A\u6570\u304C\u591A\u3044\u53F0\u3002\u3053\u3046\u3044\u3046\u8352\u3044\u53F0\u306F\u4F55\u304B\u3057\u3089\u306E\u6B6A\u3093\u3060\u30B2\u30FC\u30E0\u6027\u3092\u7D44\u307F\u8FBC\u307E\u306A\u3044\u3068\u8A66\u9A13\u7A81\u7834\u304C\u3067\u304D\u306A\u3044\u3002\u521D\u5F53\u305F\u308A\u304C\u5929\u4E95\u306B\u4F9D\u5B58\u3057\u3066\u3044\u308B\u53F0\u307B\u3069\u5929\u4E95\u72D9\u3044\u304C\u7518\u304F\u306A\u308B\u3068\u3044\u3046\u7279\u5FB4\u3082\u3042\u308B\u3002",
-        quote: "\u30B3\u30A4\u30F3\u5358\u4FA1\u9AD8\u3044\u53F0\u3092\u3080\u3057\u308D\u9032\u3093\u3067\u72D9\u3046\u3088\u3046\u306B\u3057\u3088\u3046"
+        body: "\u7D14\u5897\u304C\u65E9\u3044\u53F0\u3001AT\u4E00\u6483\u306E\u5E73\u5747\u7372\u5F97\u679A\u6570\u304C\u591A\u3044\u53F0\u3002\u3053\u3046\u3044\u3046\u8352\u3044\u53F0\u306F\u4F55\u304B\u3057\u3089\u306E\u6B6A\u3093\u3060\u30B2\u30FC\u30E0\u6027\u3092\u7D44\u307F\u8FBC\u307E\u306A\u3044\u3068\u578B\u5F0F\u8A66\u9A13\u3092\u7A81\u7834\u3067\u304D\u306A\u3044\u3002\u53CE\u652F\u306E\u5B89\u5B9A\u3092\u6C42\u3081\u3066\u8352\u3044\u53F0\u304B\u3089\u907F\u3051\u3088\u3046\u3068\u3059\u308B\u3068\u671F\u5F85\u5024\u306E\u4F4E\u3044\u7A3C\u50CD\u306B\u306A\u3063\u3066\u3057\u307E\u3046\u3053\u3068\u304C\u591A\u3044\u74B0\u5883\u306A\u306E\u3067\u6CE8\u610F\u3057\u3088\u3046\u3002\u65B0\u53F0\u304C\u51FA\u305F\u3068\u304D\u306F\u307E\u305A\u306F\u30B3\u30A4\u30F3\u5358\u4FA1\u3084\u7D14\u5897\u304B\u3089\u8352\u305D\u3046\u306A\u53F0\u3092\u307F\u3064\u3051\u3066\u304B\u3089\u300C\u3053\u306E\u30E1\u30FC\u30AB\u30FC\u306A\u3089\u3053\u3053\u3089\u3078\u3093\u306B\u8A66\u9A13\u7A81\u7834\u306E\u305F\u3081\u306E\u4ED5\u69D8\u304F\u307F\u3053\u3093\u3067\u305D\u3046\u3060\u306A\u3042\u300D\u306A\u3069\u63A8\u6E2C\u3059\u308B\u3002",
+        highlights: ["\u3053\u3046\u3044\u3046\u8352\u3044\u53F0\u306F\u4F55\u304B\u3057\u3089\u306E\u6B6A\u3093\u3060\u30B2\u30FC\u30E0\u6027\u3092\u7D44\u307F\u8FBC\u307E\u306A\u3044\u3068\u578B\u5F0F\u8A66\u9A13\u3092\u7A81\u7834\u3067\u304D\u306A\u3044\u3002", "\u3053\u306E\u30E1\u30FC\u30AB\u30FC\u306A\u3089\u3053\u3053\u3089\u3078\u3093\u306B\u8A66\u9A13\u7A81\u7834\u306E\u305F\u3081\u306E\u4ED5\u69D8\u304F\u307F\u3053\u3093\u3067\u305D\u3046\u3060\u306A\u3042"],
+        quote: "\u30B3\u30A4\u30F3\u5358\u4FA1\u9AD8\u3044\u53F0\u3092\u3080\u3057\u308D\u9032\u3093\u3067\u653B\u7565\u3057\u3066\u72D9\u3046\u3088\u3046\u306B\u3057\u3088\u3046"
       },
       {
         number: "02",
         title: "\u5DEE\u679A\u72D9\u3044\u3068\u512A\u9047\u72D9\u3044\u3092\u6975\u3081\u308B",
-        body: "\u60C5\u5831\u5316\u793E\u4F1A\u306E\u4E2D\u3067\u4E00\u822C\u5C64\u3082\u307F\u3093\u306A\u305F\u3060\u306E\u5929\u4E95\u72D9\u3044\u306F\u77E5\u3063\u3066\u3044\u3066\u30E9\u30A4\u30D0\u30EB\u304C\u591A\u3044\u3002\u305D\u306E\u4E2D\u3067\u5DEE\u5225\u5316\u3059\u308B\u306B\u306F\u7279\u6B8A\u306A\u72D9\u3044\u65B9\u3092\u3059\u308B\u3057\u304B\u306A\u3044\u3002",
+        body: "\u60C5\u5831\u5316\u793E\u4F1A\u306E\u4E2D\u3067\u4E00\u822C\u5C64\u3082\u305F\u3060\u306E\u5929\u4E95\u72D9\u3044\u306F\u77E5\u3063\u3066\u3044\u3066\u30E9\u30A4\u30D0\u30EB\u304C\u591A\u3044\u3002\u305D\u306E\u4E2D\u3067\u5DEE\u5225\u5316\u3059\u308B\u306B\u306F\u5C65\u6B74\u8AAD\u307F\u304C\u8907\u96D1\u306A\u7279\u6B8A\u306A\u72D9\u3044\u65B9\u3092\u3059\u308B\u3057\u304B\u306A\u3044\u3002\u6A5F\u7A2E\u3054\u3068\u306B\u3088\u308B\u7279\u6B8A\u4ED5\u69D8\u3092\u899A\u3048\u308B\u305F\u3081\u306B\u3082\u5927\u304D\u306A2\u8EF8\u306B\u306A\u308B\u5DEE\u679A\u72D9\u3044\u3068\u512A\u9047\u72D9\u3044\u306E\u8003\u3048\u65B9\u306F\u3057\u3063\u304B\u308A\u7406\u89E3\u3057\u3066\u304A\u304D\u305F\u3044\u3002",
+        highlights: ["\u305D\u306E\u4E2D\u3067\u5DEE\u5225\u5316\u3059\u308B\u306B\u306F\u5C65\u6B74\u8AAD\u307F\u304C\u8907\u96D1\u306A\u7279\u6B8A\u306A\u72D9\u3044\u65B9\u3092\u3059\u308B\u3057\u304B\u306A\u3044\u3002"],
         quote: "\u30DE\u30A4\u30EB\u30C9\u53F0\uFF1D\u5DEE\u679A\u72D9\u3044 / \u8352\u3044\u53F0\uFF1D\u512A\u9047\u72D9\u3044\u306F\u5E38\u306B\u610F\u8B58\u3057\u3088\u3046"
       },
       {
@@ -863,7 +923,8 @@ const STRATEGY_SECTION_DATA = [
         number: "01",
         title: "L\u3068\u3042\u308B\u9B54\u8853\u306E\u7981\u66F8\u76EE\u93322",
         body: "\u2460\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u72D9\u3044\uFF08\u7A62\u308C\uFF09\u304C\u8EF8\u306B\u306A\u308A\u305D\u3046\n\n\u2461\u30DD\u30A4\u30F3\u30C8\u6301\u3061\u8D8A\u3057\u7CFB\u306E\u53F0\u306A\u306E\u3067\u4E0D\u554F\u5373\u3084\u3081\u6761\u4EF6\u3088\u308A\u306F\u30DC\u30FC\u30C0\u30FC\u4E0B\u3052\u3089\u308C\u308B\n\n\u2462\u30EA\u30BB\u306F\u57FA\u672C\u7684\u306B\u8F9B\u3044\u306E\u3067\u3088\u3063\u307D\u3069\u5F37\u3044\u6253\u3061\u5206\u3051\u304C\u898B\u3064\u304B\u3089\u306A\u3044\u3068\u6253\u3066\u306A\u3055\u305D\u3046",
-        quote: "\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u3068\u30DD\u30A4\u30F3\u30C8\u6301\u3061\u8D8A\u3057\u3092\u8EF8\u306B\u898B\u308B"
+        quote: "\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u3068\u30DD\u30A4\u30F3\u30C8\u6301\u3061\u8D8A\u3057\u3092\u8EF8\u306B\u898B\u308B",
+        link: "https://note.com/preview/ncb2e2abe6176?prev_access_key=70389930aed323d3117e3c76bc2c1f78"
       },
       {
         number: "02",
@@ -929,6 +990,7 @@ const STRATEGY_SECTION_DATA = [
         number: "04",
         title: "\u4E0B\u632F\u308C\u306E\u5272\u308A\u5207\u308A\u65B9",
         body: "\u30B9\u30DE\u30B9\u30ED\u306F\u8352\u3044\u306E\u3067\u3001\u6B63\u3057\u3044\u53F0\u3092\u6253\u3063\u3066\u3044\u3066\u3082\u77ED\u671F\u3067\u306F\u7C21\u5358\u306B\u8CA0\u3051\u308B\u3002\u4E0B\u632F\u308C\u3092\u7D50\u679C\u8AD6\u3067\u5426\u5B9A\u3057\u3059\u304E\u308B\u3068\u3001\u672C\u5F53\u306B\u7518\u3044\u72D9\u3044\u76EE\u307E\u3067\u6253\u3066\u306A\u304F\u306A\u308B\u3002\u6253\u3064\u524D\u306E\u6839\u62E0\u3001\u53F0\u6570\u3001\u6295\u8CC7\u7BA1\u7406\u3092\u6B8B\u3057\u3066\u3001\u7D50\u679C\u3067\u306F\u306A\u304F\u5224\u65AD\u306E\u8CEA\u3067\u632F\u308A\u8FD4\u308B\u3088\u3046\u306B\u3057\u305F\u3044\u3002",
+        highlights: ["\u7D50\u679C\u3067\u306F\u306A\u304F\u5224\u65AD\u306E\u8CEA\u3067\u632F\u308A\u8FD4\u308B\u3088\u3046\u306B\u3057\u305F\u3044\u3002"],
         quote: "\u8CA0\u3051\u305F\u7406\u7531\u3092\u7D50\u679C\u3067\u306F\u306A\u304F\u6839\u62E0\u3067\u78BA\u8A8D\u3059\u308B"
       }
     ]
@@ -959,7 +1021,7 @@ const STRATEGY_SECTION_DATA = [
     items: []
   }
 ];
-const STRATEGY_ACCENT_STYLES = {
+var STRATEGY_ACCENT_STYLES = {
   blue: {
     activeButton: "border-blue-500 bg-blue-50 text-blue-700 shadow-sm",
     inactiveButton: "border-gray-200 bg-white text-gray-700 active:bg-gray-50",
@@ -1003,17 +1065,17 @@ const STRATEGY_ACCENT_STYLES = {
     quote: "border-gray-200 bg-gray-50 text-gray-700"
   }
 };
-const normalizeShortcutUrl = (value) => {
+var normalizeShortcutUrl = (value) => {
   const trimmed = value.trim();
   if (!trimmed) return "";
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 };
-const mergeDefaultShortcutLinks = (links) => {
+var mergeDefaultShortcutLinks = (links) => {
   const existingUrls = new Set(links.map((link) => normalizeShortcutUrl(link.url).toLowerCase()));
   const missingDefaults = DEFAULT_STRATEGY_SHORTCUT_LINKS.filter((link) => !existingUrls.has(normalizeShortcutUrl(link.url).toLowerCase()));
   return [...missingDefaults, ...links];
 };
-const renderHighlightedText = (text, highlights = []) => {
+var renderHighlightedText = (text, highlights = []) => {
   const targets = highlights.filter(Boolean);
   if (!targets.length) return text;
   const parts = [];
@@ -1037,7 +1099,7 @@ const renderHighlightedText = (text, highlights = []) => {
   if (cursor < text.length) parts.push(text.slice(cursor));
   return parts;
 };
-const CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
+var CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
   const [error, setError] = useState(false);
   const [retryIndex, setRetryIndex] = useState(0);
   const variants = useMemo(() => {
@@ -1076,7 +1138,7 @@ const CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
     ] })
   ] });
 };
-const App = () => {
+var App = () => {
   const [activeTab, setActiveTab] = useState("ruko");
   useEffect(() => {
     markAppBooted();
@@ -1092,7 +1154,7 @@ const App = () => {
     } catch (e) {
       console.error("\u30C7\u30FC\u30BF\u8AAD\u307F\u8FBC\u307F\u30A8\u30E9\u30FC:", e);
     }
-    return items.filter((item) => item).map((item) => ({
+    return refreshOfficialTargetItems(items).filter((item) => item && !HIDDEN_TARGET_ITEM_IDS.has(item.id)).map((item) => ({
       ...item,
       memo: item.memo || DEFAULT_MEMO_TEMPLATE,
       timeSlots: getTargetTimeSlots(item)
@@ -1110,6 +1172,7 @@ const App = () => {
   const [dragOverTier, setDragOverTier] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [targetTimeSort, setTargetTimeSort] = useState("all");
+  const [targetTagFilter, setTargetTagFilter] = useState("all");
   const [activeStrategySectionId, setActiveStrategySectionId] = useState(null);
   const [shortcutLinks, setShortcutLinks] = useState(() => {
     try {
@@ -1173,6 +1236,10 @@ const App = () => {
     () => calculateWorkValue(workloadForm.payoutRate, workloadForm.playTime),
     [workloadForm.payoutRate, workloadForm.playTime]
   );
+  const workloadTimeRangeMinutes = useMemo(
+    () => calculateTimeRangeMinutes(workloadForm.startTime, workloadForm.endTime),
+    [workloadForm.startTime, workloadForm.endTime]
+  );
   const filteredMachineOptions = useMemo(() => {
     const query = normalizeMachineText(workloadForm.machineName);
     const matchedOptions = query ? machineOptions.filter((option) => normalizeMachineText([
@@ -1225,8 +1292,10 @@ const App = () => {
       const nextTime = Math.max(0, Math.round((baseTime + delta) / 10) * 10);
       return {
         ...prev,
+        startTime: "",
+        endTime: "",
         playTime: nextTime.toString(),
-        playCount: Math.round(nextTime / 60 * 800).toString()
+        playCount: estimatePlayCountFromTime(nextTime)
       };
     });
   };
@@ -1265,17 +1334,38 @@ const App = () => {
     const time = e.target.value;
     setWorkloadForm((prev) => ({
       ...prev,
+      startTime: "",
+      endTime: "",
       playTime: time,
-      playCount: time ? Math.round(parseFloat(time) / 60 * 800).toString() : ""
+      playCount: estimatePlayCountFromTime(time)
     }));
   };
   const handleWorkloadCountChange = (e) => {
     const count = e.target.value;
     setWorkloadForm((prev) => ({
       ...prev,
+      startTime: "",
+      endTime: "",
       playCount: count,
-      playTime: count ? Math.round(parseFloat(count) / 800 * 60).toString() : ""
+      playTime: estimatePlayTimeFromCount(count)
     }));
+  };
+  const updateWorkloadTimeRange = (updates) => {
+    setWorkloadForm((prev) => {
+      const next = { ...prev, ...updates };
+      const duration = calculateTimeRangeMinutes(next.startTime, next.endTime);
+      if (duration !== "") {
+        next.playTime = duration.toString();
+        next.playCount = estimatePlayCountFromTime(duration);
+      }
+      return next;
+    });
+  };
+  const handleWorkloadStartTimeChange = (e) => {
+    updateWorkloadTimeRange({ startTime: e.target.value });
+  };
+  const handleWorkloadEndTimeChange = (e) => {
+    updateWorkloadTimeRange({ endTime: e.target.value });
   };
   const formatDateStr = (date) => {
     const y = date.getFullYear();
@@ -1572,7 +1662,7 @@ const App = () => {
     if (IS_ADMIN_MODE) setRukoItems(rukoItems.filter((item) => item.id !== id));
   };
   const filteredItems = rukoItems.filter(
-    (item) => (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || item.detail && item.detail.toLowerCase().includes(searchQuery.toLowerCase())
+    (item) => !HIDDEN_TARGET_ITEM_IDS.has(item.id) && ((item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || item.detail && item.detail.toLowerCase().includes(searchQuery.toLowerCase()))
   );
   const listItems = useMemo(() => filteredItems.map((item, index) => {
     const timeSlots = getTargetTimeSlots(item);
@@ -1580,17 +1670,14 @@ const App = () => {
       ...item,
       timeSlots,
       matchesSelectedTime: targetTimeSort === "all" || timeSlots.includes(targetTimeSort),
+      matchesSelectedTag: matchesTargetTagFilter(item, targetTagFilter),
       originalIndex: index
     };
-  }).sort((a, b) => {
-    if (targetTimeSort !== "all") {
-      if (a.matchesSelectedTime !== b.matchesSelectedTime) return a.matchesSelectedTime ? -1 : 1;
-      const aSlotIndex = a.timeSlots.indexOf(targetTimeSort);
-      const bSlotIndex = b.timeSlots.indexOf(targetTimeSort);
-      if (aSlotIndex !== bSlotIndex) return (aSlotIndex === -1 ? 99 : aSlotIndex) - (bSlotIndex === -1 ? 99 : bSlotIndex);
-    }
+  }).filter((item) => item.matchesSelectedTime && item.matchesSelectedTag).sort((a, b) => {
+    const tierDiff = getTargetTierRank(a.tier) - getTargetTierRank(b.tier);
+    if (tierDiff !== 0) return tierDiff;
     return a.originalIndex - b.originalIndex;
-  }), [filteredItems, targetTimeSort]);
+  }), [filteredItems, targetTimeSort, targetTagFilter]);
   const canDrag = IS_ADMIN_MODE && isEditing;
   const renderMemberGate = (title, description) => /* @__PURE__ */ jsx("div", { className: "p-4 space-y-4 bg-gray-50 min-h-full", children: !supabase ? /* @__PURE__ */ jsx("div", { className: "bg-white rounded-2xl shadow-sm border border-gray-200 p-5", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start gap-3", children: [
     /* @__PURE__ */ jsx("div", { className: "w-10 h-10 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsx(Database, { size: 20 }) }),
@@ -1852,7 +1939,19 @@ const App = () => {
               "\u300C",
               item.quote,
               "\u300D"
-            ] })
+            ] }),
+            item.link && /* @__PURE__ */ jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => openShortcutLink(item.link),
+                className: "mt-3 w-full bg-blue-50 border border-blue-100 text-blue-600 rounded-xl px-3 py-2.5 text-xs font-black flex items-center justify-center gap-2 active:bg-blue-100",
+                children: [
+                  /* @__PURE__ */ jsx(ExternalLink, { size: 14 }),
+                  "\u8A73\u3057\u3044\u89E3\u8AAC\u8A18\u4E8B\u3092\u898B\u308B"
+                ]
+              }
+            )
           ] }) }, item.number))
         ] }) }),
         /* @__PURE__ */ jsx("div", { className: "mt-auto pt-6", children: /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl shadow-sm border border-gray-200 p-3 flex items-center justify-between gap-3", children: [
@@ -2124,7 +2223,7 @@ const App = () => {
         /* @__PURE__ */ jsxs("div", { className: "bg-white border border-gray-200 rounded-xl p-3 shadow-sm", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 mb-2", children: [
             /* @__PURE__ */ jsx(Clock, { size: 14, className: "text-blue-500" }),
-            /* @__PURE__ */ jsx("p", { className: "text-xs font-black text-gray-700", children: "\u72D9\u3048\u308B\u6642\u9593\u5E2F\u3067\u4E26\u3073\u66FF\u3048" })
+            /* @__PURE__ */ jsx("p", { className: "text-xs font-black text-gray-700", children: "\u72D9\u3048\u308B\u6642\u9593\u5E2F\u3067\u7D5E\u308A\u8FBC\u307F" })
           ] }),
           /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-1.5", children: TARGET_TIME_SLOT_OPTIONS.map((option) => /* @__PURE__ */ jsx(
             "button",
@@ -2135,7 +2234,23 @@ const App = () => {
               children: option.label
             },
             option.id
-          )) })
+          )) }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-3 pt-3 border-t border-gray-100", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 mb-2", children: [
+              /* @__PURE__ */ jsx(Tag, { size: 14, className: "text-blue-500" }),
+              /* @__PURE__ */ jsx("p", { className: "text-xs font-black text-gray-700", children: "\u72D9\u3044\u65B9\u30BF\u30B0\u3067\u7D5E\u308A\u8FBC\u307F" })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "grid grid-cols-3 gap-1.5", children: TARGET_TAG_FILTER_OPTIONS.map((option) => /* @__PURE__ */ jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setTargetTagFilter(option.id),
+                className: `rounded-lg border px-2 py-2 text-[11px] font-black transition-colors ${targetTagFilter === option.id ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm" : "border-gray-200 bg-gray-50 text-gray-600 active:bg-gray-100"}`,
+                children: option.label
+              },
+              option.id
+            )) })
+          ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "relative mb-2", children: [
           /* @__PURE__ */ jsx(Search, { className: "absolute left-3 top-1/2 -translate-y-1/2 text-gray-400", size: 18 }),
@@ -2173,6 +2288,19 @@ const App = () => {
                     /* @__PURE__ */ jsx("h3", { className: "font-bold text-sm truncate text-gray-800", children: item.name })
                   ] }),
                   /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 truncate font-medium", children: item.detail }),
+                  /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1 mt-1.5", children: getTargetTagNames(item).map((tagName, idx) => {
+                    const colors = item.tagColor ? item.tagColor.split(",") : [];
+                    const color = colors[idx] ? colors[idx].trim() : colors[0] || "bg-gray-100";
+                    const isActiveTag = targetTagFilter !== "all" && (tagName.includes(targetTagFilter) || targetTagFilter.includes(tagName));
+                    return /* @__PURE__ */ jsx(
+                      "span",
+                      {
+                        className: `text-[9px] font-black px-1.5 py-0.5 rounded border ${isActiveTag ? "bg-blue-600 border-blue-600 text-white" : `${color} border-transparent text-black`}`,
+                        children: tagName
+                      },
+                      `${item.id}-tag-${tagName}`
+                    );
+                  }) }),
                   /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1 mt-2", children: item.timeSlots.map((slotId) => /* @__PURE__ */ jsx(
                     "span",
                     {
@@ -2207,7 +2335,9 @@ const App = () => {
         /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-blue-500", children: [
           /* @__PURE__ */ jsxs("h2", { className: "text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5", children: [
             /* @__PURE__ */ jsx(MessageSquare, { size: 14, className: "text-blue-500" }),
-            "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066"
+            CURRENT_ENVIRONMENT_NOTE.updatedAt,
+            " ",
+            CURRENT_ENVIRONMENT_NOTE.title
           ] }),
           /* @__PURE__ */ jsx("p", { className: "text-[11px] text-gray-600 font-medium leading-snug whitespace-pre-wrap", children: CURRENT_ENVIRONMENT_NOTE.body })
         ] }),
@@ -2429,7 +2559,46 @@ const App = () => {
             }
           )
         ] }),
-        /* @__PURE__ */ jsx("p", { className: "text-[10px] font-bold text-gray-500 -mb-2", children: "\u203B\u6253\u3063\u3066\u3044\u305F\u6642\u9593\u304B\u56DE\u8EE2\u6570\u3092\u5165\u529B" }),
+        /* @__PURE__ */ jsxs("div", { className: "rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-[11px] font-black text-red-500 leading-relaxed", children: [
+          "\u203B\u6253\u3063\u3066\u3044\u305F\u6642\u9593\u304B\u56DE\u8EE2\u6570\u3092\u5165\u529B\u3002",
+          /* @__PURE__ */ jsx("br", {}),
+          "\u958B\u59CB/\u7D42\u4E86\u6642\u523B\u3067\u3082\u7A3C\u50CD\u6642\u9593\u3092\u81EA\u52D5\u8A08\u7B97\u3067\u304D\u307E\u3059\u3002"
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("label", { className: "block text-xs font-bold text-gray-600 mb-1", children: "\u6253\u3061\u59CB\u3081 / \u6253\u3061\u7D42\u308F\u308A" }),
+          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: "block text-[10px] font-bold text-gray-500 mb-1", children: "\u6253\u3061\u59CB\u3081" }),
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  type: "time",
+                  value: workloadForm.startTime,
+                  onChange: handleWorkloadStartTimeChange,
+                  className: "w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold",
+                  "aria-label": "\u6253\u3061\u59CB\u3081\u306E\u6642\u9593"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: "block text-[10px] font-bold text-gray-500 mb-1", children: "\u6253\u3061\u7D42\u308F\u308A" }),
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  type: "time",
+                  value: workloadForm.endTime,
+                  onChange: handleWorkloadEndTimeChange,
+                  className: "w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold",
+                  "aria-label": "\u6253\u3061\u7D42\u308F\u308A\u306E\u6642\u9593"
+                }
+              )
+            ] })
+          ] }),
+          workloadTimeRangeMinutes !== "" && /* @__PURE__ */ jsxs("p", { className: "mt-1 text-[10px] font-bold text-gray-500", children: [
+            workloadTimeRangeMinutes,
+            "\u5206\u3092\u7A3C\u50CD\u6642\u9593\u306B\u53CD\u6620"
+          ] })
+        ] }),
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsx("label", { className: "block text-xs font-bold text-gray-600 mb-1", children: "\u7A3C\u50CD\u6642\u9593 (\u5206)" }),
@@ -2526,7 +2695,7 @@ const App = () => {
     ] })
   ] });
 };
-const root = createRoot(document.getElementById("root"));
+var root = createRoot(document.getElementById("root"));
 root.render(
   /* @__PURE__ */ jsx(AppErrorBoundary, { children: /* @__PURE__ */ jsx(App, {}) })
 );
