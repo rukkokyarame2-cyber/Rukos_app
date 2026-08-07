@@ -26,7 +26,7 @@ const cacheResponse = async (cache, request, response) => {
 
 const fallbackDocument = async (cache) => (
   await cache.match('./index.html') ||
-  new Response('繧｢繝励Μ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲る壻ｿ｡迥ｶ豕√ｒ遒ｺ隱阪＠縺ｦ蜀崎ｪｭ縺ｿ霎ｼ縺ｿ縺励※縺上□縺輔＞縲・, {
+  new Response('アプリを読み込めませんでした。通信状況を確認して再読み込みしてください。', {
     status: 503,
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   })
