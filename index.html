@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>繧ｹ繝ｭ繝・ヨ迢吶＞逶ｮ繝・ぅ繧｢邂｡逅・い繝励Μ</title>
-
+  <title>スロット狙い目ティア管理アプリ</title>
+  
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -129,8 +129,8 @@
               <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
               <p class="boot-fallback__brand">RUKO APP</p>
               <h1 class="boot-fallback__title">${message}</h1>
-              <p class="boot-fallback__text">騾壻ｿ｡迥ｶ豕√′荳榊ｮ牙ｮ壹↑譎ゅｄ縲√・繝ｼ繝逕ｻ髱｢繧｢繝励Μ縺ｮ蜿､縺・く繝｣繝・す繝･縺梧ｮ九▲縺ｦ縺・ｋ譎ゅ↓襍ｷ縺薙ｋ縺薙→縺後≠繧翫∪縺吶ょ・隱ｭ縺ｿ霎ｼ縺ｿ縺ｧ蠕ｩ蟶ｰ縺ｧ縺阪ｋ繧医≧縺ｫ縺励∪縺励◆縲・/p>
-              <button class="boot-fallback__button" type="button" onclick="location.reload()">蜀崎ｪｭ縺ｿ霎ｼ縺ｿ縺吶ｋ</button>
+              <p class="boot-fallback__text">通信状況が不安定な時や、ホーム画面アプリの古いキャッシュが残っている時に起こることがあります。再読み込みで復帰できるようにしました。</p>
+              <button class="boot-fallback__button" type="button" onclick="location.reload()">再読み込みする</button>
               ${detail ? `<p class="boot-fallback__detail">${String(detail).replace(/[<>&"]/g, char => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[char]))}</p>` : ''}
             </div>
           </div>
@@ -140,30 +140,30 @@
       window.addEventListener('error', event => {
         const target = event.target;
         if (target && target.tagName === 'SCRIPT') {
-          window.__slotAppShowBootError('繧｢繝励Μ縺ｮ隱ｭ縺ｿ霎ｼ縺ｿ縺ｫ螟ｱ謨励＠縺ｾ縺励◆', target.src || '');
+          window.__slotAppShowBootError('アプリの読み込みに失敗しました', target.src || '');
           return;
         }
         if (event.message) {
-          window.__slotAppShowBootError('繧｢繝励Μ縺ｮ襍ｷ蜍輔↓螟ｱ謨励＠縺ｾ縺励◆', event.message);
+          window.__slotAppShowBootError('アプリの起動に失敗しました', event.message);
         }
       }, true);
 
       window.addEventListener('unhandledrejection', event => {
         const reason = event.reason;
         const detail = reason && reason.message ? reason.message : String(reason || '');
-        window.__slotAppShowBootError('繧｢繝励Μ縺ｮ襍ｷ蜍輔↓螟ｱ謨励＠縺ｾ縺励◆', detail);
+        window.__slotAppShowBootError('アプリの起動に失敗しました', detail);
       });
 
       window.addEventListener('load', () => {
         window.setTimeout(() => {
           if (!window.__slotAppBooted) {
-            window.__slotAppShowBootError('繧｢繝励Μ縺ｮ隱ｭ縺ｿ霎ｼ縺ｿ縺ｫ譎る俣縺後°縺九▲縺ｦ縺・∪縺・);
+            window.__slotAppShowBootError('アプリの読み込みに時間がかかっています');
           }
         }, 12000);
 
         if ('serviceWorker' in navigator && ['http:', 'https:'].includes(location.protocol)) {
           navigator.serviceWorker.register('./sw.js').catch(error => {
-            console.warn('Service Worker繧堤匳骭ｲ縺ｧ縺阪∪縺帙ｓ縺ｧ縺励◆', error);
+            console.warn('Service Workerを登録できませんでした', error);
           });
         }
       });
@@ -190,15 +190,15 @@
       <div class="boot-fallback__card">
         <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
         <p class="boot-fallback__brand">RUKO APP</p>
-        <h1 class="boot-fallback__title">繧｢繝励Μ繧定ｪｭ縺ｿ霎ｼ繧薙〒縺・∪縺・/h1>
-        <p class="boot-fallback__text">繝帙・繝逕ｻ髱｢縺九ｉ縺ｮ襍ｷ蜍輔〒繧ょｾｩ蟶ｰ縺励ｄ縺吶＞繧医≧縺ｫ縲∬ｪｭ縺ｿ霎ｼ縺ｿ迥ｶ諷九ｒ陦ｨ遉ｺ縺励※縺・∪縺吶・/p>
+        <h1 class="boot-fallback__title">アプリを読み込んでいます</h1>
+        <p class="boot-fallback__text">ホーム画面からの起動でも復帰しやすいように、読み込み状態を表示しています。</p>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
-
+  
   <script type="importmap">
     {
       "imports": {
@@ -210,7 +210,7 @@
       }
     }
   </script>
-
+  
   <script>
     (() => {
       const appScriptVersion = '20260807-safe-area-calendar';
@@ -231,9 +231,9 @@
             <div class="boot-fallback__card">
               <img class="boot-fallback__image" src="ruko-app-loading.png" alt="RUKO APP">
               <p class="boot-fallback__brand">RUKO APP</p>
-              <h1 class="boot-fallback__title">繝ｭ繝ｼ繧ｫ繝ｫ繧ｵ繝ｼ繝舌・迚医〒髢九＞縺ｦ縺上□縺輔＞</h1>
-              <p class="boot-fallback__text">Chrome縺ｧHTML繧堤峩謗･髢九￥縺ｨ縲√い繝励Μ譛ｬ菴薙・隱ｭ縺ｿ霎ｼ縺ｿ縺梧ｭ｢縺ｾ繧九％縺ｨ縺後≠繧翫∪縺吶ゆｸ九・繝懊ち繝ｳ縺九ｉ繝・せ繝育畑URL繧帝幕縺・※縺上□縺輔＞縲・/p>
-              <button class="boot-fallback__button" type="button" onclick="location.href='${localServerUrl}'">繝・せ繝育畑URL繧帝幕縺・/button>
+              <h1 class="boot-fallback__title">ローカルサーバー版で開いてください</h1>
+              <p class="boot-fallback__text">ChromeでHTMLを直接開くと、アプリ本体の読み込みが止まることがあります。下のボタンからテスト用URLを開いてください。</p>
+              <button class="boot-fallback__button" type="button" onclick="location.href='${localServerUrl}'">テスト用URLを開く</button>
             </div>
           </div>
         `;
@@ -252,6 +252,7 @@
   </script>
 </body>
 </html>
+
 
 
 
