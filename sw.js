@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260807-network-first-update';
+const CACHE_NAME = 'ruko-slot-app-v20260807-safe-area-calendar';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260807-network-first-update',
+  './app.js?v=20260807-safe-area-calendar',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
@@ -26,7 +26,7 @@ const cacheResponse = async (cache, request, response) => {
 
 const fallbackDocument = async (cache) => (
   await cache.match('./index.html') ||
-  new Response('アプリを読み込めませんでした。通信状況を確認して再読み込みしてください。', {
+  new Response('繧｢繝励Μ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲る壻ｿ｡迥ｶ豕√ｒ遒ｺ隱阪＠縺ｦ蜀崎ｪｭ縺ｿ霎ｼ縺ｿ縺励※縺上□縺輔＞縲・, {
     status: 503,
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   })

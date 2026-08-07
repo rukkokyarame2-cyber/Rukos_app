@@ -1,4 +1,4 @@
-// work/slot-tier-app-source.jsx
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { createClient } from "@supabase/supabase-js";
@@ -41,14 +41,13 @@ import {
   Link as LinkIcon,
   Tag
 } from "lucide-react";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
-var IS_ADMIN_MODE = false;
-var SUPABASE_URL = "https://uiwzuwnycuwasqjnfbdq.supabase.co";
-var SUPABASE_ANON_KEY = "sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs";
-var WORKLOAD_STORAGE_KEY = "slot_app_workload_v1";
-var STRATEGY_SHORTCUT_LINK_STORAGE_KEY = "slot_app_strategy_shortcut_links_v1";
-var STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY = "slot_app_strategy_shortcut_link_defaults_v1";
-var DEFAULT_STRATEGY_SHORTCUT_LINKS = [
+const IS_ADMIN_MODE = false;
+const SUPABASE_URL = "https://uiwzuwnycuwasqjnfbdq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_cZKly5Ydf_Tzjv_cz_c3Ww_4QAdQWcs";
+const WORKLOAD_STORAGE_KEY = "slot_app_workload_v1";
+const STRATEGY_SHORTCUT_LINK_STORAGE_KEY = "slot_app_strategy_shortcut_links_v1";
+const STRATEGY_SHORTCUT_LINK_DEFAULTS_KEY = "slot_app_strategy_shortcut_link_defaults_v1";
+const DEFAULT_STRATEGY_SHORTCUT_LINKS = [
   {
     id: "default-chonborista",
     title: "\u3061\u3087\u3093\u307C\u308A\u3059\u305F",
@@ -56,22 +55,22 @@ var DEFAULT_STRATEGY_SHORTCUT_LINKS = [
     memo: "\u30B9\u30ED\u30C3\u30C8\u89E3\u6790\u78BA\u8A8D\u7528"
   }
 ];
-var isSupabaseConfigured = () => SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
-var supabase = isSupabaseConfigured() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const isSupabaseConfigured = () => SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
+const supabase = isSupabaseConfigured() ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
   }
 }) : null;
-var DEFAULT_MEMO_TEMPLATE = "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n";
-var markAppBooted = () => {
+const DEFAULT_MEMO_TEMPLATE = "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n";
+const markAppBooted = () => {
   window.__slotAppBooted = true;
   document.documentElement.style.background = "";
   document.body.style.background = "";
   document.body.classList.add("app-booted");
 };
-var BootErrorView = ({ detail = "" }) => {
+const BootErrorView = ({ detail = "" }) => {
   useEffect(() => {
     markAppBooted();
   }, []);
@@ -92,7 +91,7 @@ var BootErrorView = ({ detail = "" }) => {
     detail && /* @__PURE__ */ jsx("p", { className: "mt-4 text-[11px] leading-relaxed text-gray-500 break-words", children: detail })
   ] }) });
 };
-var AppErrorBoundary = class extends React.Component {
+class AppErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, detail: "" };
@@ -107,8 +106,8 @@ var AppErrorBoundary = class extends React.Component {
     if (this.state.hasError) return /* @__PURE__ */ jsx(BootErrorView, { detail: this.state.detail });
     return this.props.children;
   }
-};
-var RUKO_OFFICIAL_DATA = [
+}
+const RUKO_OFFICIAL_DATA = [
   {
     "id": "r_sengoku6",
     "name": "\u6226\u30B3\u30EC6",
@@ -374,10 +373,10 @@ var RUKO_OFFICIAL_DATA = [
     "memo": "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB\u7A3C\u50CD\u306F\u5C11\u306A\u304F\u3001\u901A\u5E38\u306E\u30CF\u30A4\u30A8\u30CA\u306F\u53B3\u3057\u3044\n\u30FB\u30EA\u30BB\u30C3\u30C8\u533A\u9593\u306F\u7518\u304F\u5C11\u3057\u3067\u3082\u89E6\u3089\u308C\u3066\u3044\u308C\u3070\u6253\u3066\u308B\u306E\u3067\u307B\u307C\u305D\u308C\u3060\u3051\n\u30FB\u6295\u8CC7\u304C\u3060\u3044\u3076\u304B\u304B\u308B\u53F0\u306A\u306E\u3067\u7B49\u4FA1\u304B\u6301\u3061\u7389\u4F59\u88D5\u3042\u308B\u3068\u304D\u306E\u307F\u6253\u3064\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n\u30FB\u671D\u4E00\uFF10\u30B9\u306E\u53F0\u3092100G\uFF5E160G\u307E\u3067\n\u30FB\u3053\u306E\u533A\u9593\u306B\u5F53\u9078\u3057\u305F\u5834\u5408\u306F\u305D\u306E\u307E\u307E\u5929\u56FD\u304B5\u30B9\u30EB\u30FC\u307E\u3067\u6253\u3064\n\u30FB5\u30B9\u30EB\u30FC\u3057\u305F\u6642\u70B9\u3067\u901A\u5E38\u30E2\u30FC\u30C9B\u4EE5\u4E0A\u304B\u30C9\u30AD\u30CF\u30CAB\u4EE5\u4E0A\u306E\u793A\u5506\u304C\u51FA\u3066\u306A\u3051\u308C\u3070\u3084\u3081\u3002\u793A\u5506\u3042\u308A\u306A\u3089\u5929\u56FD\u307E\u3067\u3002"
   }
 ];
-var HIDDEN_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_comp"]);
-var REFRESH_OFFICIAL_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_kabaneri"]);
-var TARGET_TIER_ORDER = ["S", "A", "B", "C", "\u305D\u306E\u4ED6\u72D9\u3044\u76EE"];
-var TARGET_TAG_FILTER_OPTIONS = [
+const HIDDEN_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_comp"]);
+const REFRESH_OFFICIAL_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_kabaneri"]);
+const TARGET_TIER_ORDER = ["S", "A", "B", "C", "\u305D\u306E\u4ED6\u72D9\u3044\u76EE"];
+const TARGET_TAG_FILTER_OPTIONS = [
   { id: "all", label: "\u5168\u30BF\u30B0" },
   { id: "\u30EA\u30BB", label: "\u30EA\u30BB" },
   { id: "\u30BE\u30FC\u30F3", label: "\u30BE\u30FC\u30F3" },
@@ -388,24 +387,24 @@ var TARGET_TAG_FILTER_OPTIONS = [
   { id: "\u793A\u5506", label: "\u793A\u5506" },
   { id: "\u30B9\u30EB\u30FC", label: "\u30B9\u30EB\u30FC" }
 ];
-var TIER_CONFIG = [
+const TIER_CONFIG = [
   { id: "S", label: "S", bg: "bg-gradient-to-r from-red-400 to-red-600" },
   { id: "A", label: "A", bg: "bg-gradient-to-r from-orange-400 to-orange-500" },
   { id: "B", label: "B", bg: "bg-gradient-to-r from-yellow-400 to-yellow-500" },
   { id: "C", label: "C", bg: "bg-gradient-to-r from-green-400 to-green-500" },
   { id: "\u305D\u306E\u4ED6\u72D9\u3044\u76EE", label: "\u305D\u306E\u4ED6\u72D9\u3044\u76EE", bg: "bg-gradient-to-r from-gray-400 to-gray-600" }
 ];
-var TARGET_TIME_SLOTS = [
+const TARGET_TIME_SLOTS = [
   { id: "morning", label: "9\u6642\uFF5E12\u6642" },
   { id: "afternoon", label: "12\uFF5E17\u6642" },
   { id: "evening", label: "17\uFF5E20\u6642" },
   { id: "late", label: "20\u6642\uFF5E\u9589\u5E97" }
 ];
-var TARGET_TIME_SLOT_OPTIONS = [
+const TARGET_TIME_SLOT_OPTIONS = [
   ...TARGET_TIME_SLOTS,
   { id: "all", label: "\u5168\u6642\u9593\u5E2F" }
 ];
-var refreshOfficialTargetItems = (items) => {
+const refreshOfficialTargetItems = (items) => {
   const officialById = new Map(RUKO_OFFICIAL_DATA.map((item) => [item.id, item]));
   const seen = /* @__PURE__ */ new Set();
   const refreshedItems = items.map((item) => {
@@ -419,7 +418,7 @@ var refreshOfficialTargetItems = (items) => {
   });
   return refreshedItems;
 };
-var TARGET_TIME_SLOT_MAP = {
+const TARGET_TIME_SLOT_MAP = {
   r_sengoku6: ["afternoon", "evening"],
   r_yabachiyo: ["afternoon", "evening"],
   r_rioace2: [],
@@ -445,11 +444,11 @@ var TARGET_TIME_SLOT_MAP = {
   r18: [],
   r19: ["morning"]
 };
-var normalizeTimeSlots = (slots) => {
+const normalizeTimeSlots = (slots) => {
   const slotSet = new Set(Array.isArray(slots) ? slots : []);
   return TARGET_TIME_SLOTS.map((slot) => slot.id).filter((id) => slotSet.has(id));
 };
-var inferTargetTimeSlots = (item) => {
+const inferTargetTimeSlots = (item) => {
   const text = `${item.name || ""} ${item.detail || ""} ${item.tag || ""} ${item.memo || ""}`;
   const slots = /* @__PURE__ */ new Set();
   if (/リセ|リセット|朝一|朝イチ/.test(text)) slots.add("morning");
@@ -467,7 +466,7 @@ var inferTargetTimeSlots = (item) => {
   }
   return normalizeTimeSlots([...slots]);
 };
-var getTargetTimeSlots = (item) => {
+const getTargetTimeSlots = (item) => {
   const hasManualSlots = Object.prototype.hasOwnProperty.call(TARGET_TIME_SLOT_MAP, item.id);
   const baseSlots = hasManualSlots ? TARGET_TIME_SLOT_MAP[item.id] : item.timeSlots && item.timeSlots.length ? item.timeSlots : [];
   if (hasManualSlots) return normalizeTimeSlots(baseSlots);
@@ -477,18 +476,18 @@ var getTargetTimeSlots = (item) => {
     inferredSlots.includes("morning") && !slots.includes("morning") ? ["morning", ...slots] : slots
   );
 };
-var getTargetTimeLabel = (slotId) => TARGET_TIME_SLOTS.find((slot) => slot.id === slotId)?.label || slotId;
-var getTargetTierRank = (tier) => {
+const getTargetTimeLabel = (slotId) => TARGET_TIME_SLOTS.find((slot) => slot.id === slotId)?.label || slotId;
+const getTargetTierRank = (tier) => {
   const index = TARGET_TIER_ORDER.indexOf(tier);
   return index === -1 ? TARGET_TIER_ORDER.length : index;
 };
-var getTargetTagNames = (item) => (item.tag || "").split(",").map((tag) => tag.trim()).filter(Boolean);
-var matchesTargetTagFilter = (item, tagFilter) => {
+const getTargetTagNames = (item) => (item.tag || "").split(",").map((tag) => tag.trim()).filter(Boolean);
+const matchesTargetTagFilter = (item, tagFilter) => {
   if (tagFilter === "all") return true;
   const tags = getTargetTagNames(item);
   return tags.some((tag) => tag.includes(tagFilter) || tagFilter.includes(tag));
 };
-var TIER_MACHINE_ALIAS_MAP = {
+const TIER_MACHINE_ALIAS_MAP = {
   "\u6226\u30B3\u30EC6": ["\u6226\u56FD\u30B3\u30EC\u30AF\u30B7\u30E7\u30F3\uFF16", "\u6226\u30B3\u30EC\uFF16", "\u6226\u56FD\u30B3\u30EC\u30AF\u30B7\u30E7\u30F36"],
   "\u30EA\u30AA\u30A8\u30FC\u30B9\uFF12": ["\u30B9\u30DE\u30B9\u30ED\u30B9\u30FC\u30D1\u30FC\u30EA\u30AA\u30A8\u30FC\u30B92", "\u30EA\u30AA\u30A8\u30FC\u30B92", "\u30B9\u30FC\u30D1\u30FC\u30EA\u30AA\u30A8\u30FC\u30B92"],
   "\u30D0\u30A4\u30AA\u30CF\u30B6\u30FC\u30C9RE:3": ["\u30B9\u30DE\u30B9\u30ED \u30D0\u30A4\u30AA\u30CF\u30B6\u30FC\u30C9RE:3", "\u30D0\u30A4\u30AARE3", "\u30D0\u30A4\u30AARE:3"],
@@ -509,7 +508,7 @@ var TIER_MACHINE_ALIAS_MAP = {
   "\u5317\u6597\u306E\u62F3": ["\u30B9\u30DE\u30B9\u30ED\u5317\u6597\u306E\u62F3"],
   "\u6C96\u30C9\u30ADDUO\u30A2\u30F3\u30B3\u30FC\u30EB": ["\u30B9\u30DE\u30B9\u30ED \u6C96\u30C9\u30AD!DUO \u30A2\u30F3\u30B3\u30FC\u30EB", "\u6C96\u30C9\u30AD!DUO \u30A2\u30F3\u30B3\u30FC\u30EB"]
 };
-var SMART_SLOT_MACHINE_OPTIONS = [
+const SMART_SLOT_MACHINE_OPTIONS = [
   { name: "\uFF2C ULTRAMAN \u6700\u7D42\u6C7A\u6226", maker: "\u30AA\u30C3\u30B1\u30FC.", introducedAt: "2026.7.6", aliases: [] },
   { name: "L\u30D1\u30C1\u30B9\u30ED \u304B\u3089\u304F\u308A\u30B5\u30FC\u30AB\u30B92", maker: "\u30B8\u30A7\u30A4\u30D3\u30FC", introducedAt: "2026.7.6", aliases: ["\u304B\u3089\u304F\u308A\u30B5\u30FC\u30AB\u30B92", "\u304B\u3089\u304F\u308A2"] },
   { name: "L\u5357\u56FD\u80B2\u3061SPECIAL", maker: "\u30A2\u30E0\u30C6\u30C3\u30AF\u30B9", introducedAt: "2026.7.6", aliases: ["\u5357\u56FD\u80B2\u3061SPECIAL"] },
@@ -691,8 +690,8 @@ var SMART_SLOT_MACHINE_OPTIONS = [
   { name: "\u30B9\u30DE\u30B9\u30ED\u30EA\u30CE\u30D8\u30D6\u30F3", maker: "\u5C71\u4F50", introducedAt: "2022.11.21", aliases: ["\u30EA\u30CE\u30D8\u30D6\u30F3"] },
   { name: "\u30D1\u30C1\u30B9\u30ED \u9769\u547D\u6A5F\u30F4\u30A1\u30EB\u30F4\u30EC\u30A4\u30F4", maker: "SANKYO", introducedAt: "2022.11.21", aliases: ["\u30F4\u30A1\u30EB\u30F4\u30EC\u30A4\u30F4", "\u30F4\u30F4\u30F4"] }
 ];
-var normalizeMachineText = (value) => (value || "").toString().toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 65248)).replace(/[‐‑‒–—―ー－\-~〜～・･\s　!！?？()（）[\]【】「」『』™]/g, "");
-var uniqueValues = (values) => {
+const normalizeMachineText = (value) => (value || "").toString().toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 65248)).replace(/[‐‑‒–—―ー－\-~〜～・･\s　!！?？()（）[\]【】「」『』™]/g, "");
+const uniqueValues = (values) => {
   const seen = /* @__PURE__ */ new Set();
   return values.filter((value) => {
     const key = normalizeMachineText(value);
@@ -701,10 +700,10 @@ var uniqueValues = (values) => {
     return true;
   });
 };
-var SAMMY_MAKER_ALIASES = ["\u9280\u5EA7", "\u30ED\u30C7\u30AA", "\u30BF\u30A4\u30E8\u30FC\u30A8\u30EC\u30C3\u30AF"];
-var MACHINE_DISPLAY_PRIORITY = ["\u5317\u6597\u8EE2\u751F\uFF12", "\u6771\u4EAC\u55B0\u7A2E", "L\u30B4\u30C3\u30C9\u8ECC\u8DE1"];
-var CALENDAR_WEEKDAYS = ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"];
-var TARGET_PRESETS = [
+const SAMMY_MAKER_ALIASES = ["\u9280\u5EA7", "\u30ED\u30C7\u30AA", "\u30BF\u30A4\u30E8\u30FC\u30A8\u30EC\u30C3\u30AF"];
+const MACHINE_DISPLAY_PRIORITY = ["\u5317\u6597\u8EE2\u751F\uFF12", "\u6771\u4EAC\u55B0\u7A2E", "L\u30B4\u30C3\u30C9\u8ECC\u8DE1"];
+const CALENDAR_WEEKDAYS = ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"];
+const TARGET_PRESETS = [
   {
     id: "hokuto-tensei",
     machineMatchers: ["\u5317\u6597\u8EE2\u751F\uFF12", "\u5317\u6597\u8EE2\u751F2", "\u30B9\u30DE\u30B9\u30ED \u5317\u6597\u306E\u62F3 \u8EE2\u751F\u306E\u7AE02"],
@@ -721,12 +720,12 @@ var TARGET_PRESETS = [
     ]
   }
 ];
-var CURRENT_ENVIRONMENT_NOTE = {
+const CURRENT_ENVIRONMENT_NOTE = {
   updatedAt: "8\u67086\u65E5\u7248",
   title: "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
   body: "8\u6708\u306E\u5927\u91CF\u65B0\u53F0\u306B\u3088\u308A\u8EE2\u751F\u306E\u53F0\u6570\u304C\u76F8\u5F53\u6E1B\u3063\u3066\u3057\u307E\u3063\u305F\u3002\n\u305D\u308C\u3067\u3082\u62FE\u3063\u3066\u3057\u307E\u3048\u3070\u9577\u304F\u6253\u3066\u308B\u512A\u4F4D\u6027\u306F\u5909\u308F\u3089\u306A\u3044\u306E\u3067S\u3067\u636E\u3048\u7F6E\u304D\u3002\n\n\u5C11\u3057\u524D\u306E\u3088\u3046\u306BGOD\u3084\u8EE2\u751F\u3001\u55B0\u7A2E\u306E\u3088\u3046\u306A1\u6A5F\u7A2E\u306B\u7279\u5316\u3057\u3066\u8EF8\u306B\u7A3C\u50CD\u3059\u308B\u3068\u3044\u3046\u3088\u308A\u306F\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u3092\u96D1\u591A\u306B\u89E6\u308C\u306A\u3044\u3068\u3044\u3051\u306A\u3044\u74B0\u5883\u306B\u306A\u3063\u3066\u304D\u305F\u3002\n\n\u65B0\u53F0\u3092\u3057\u3063\u304B\u308A\u62FE\u3044\u305F\u3044\u3002"
 };
-var ENVIRONMENT_ARCHIVE_ENTRIES = [
+const ENVIRONMENT_ARCHIVE_ENTRIES = [
   {
     number: "01",
     title: "8\u67086\u65E5\u7248 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
@@ -740,37 +739,37 @@ var ENVIRONMENT_ARCHIVE_ENTRIES = [
     quote: "\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3002GOD\u306FA\u3078\u3001\u8EE2\u751F\u306FS\u7DAD\u6301\u3001\u6226\u30B3\u30EC6\u306B\u6CE8\u76EE\u3002"
   }
 ];
-var normalizeMachineMaker = (maker) => SAMMY_MAKER_ALIASES.includes(maker) ? "\u30B5\u30DF\u30FC" : maker || "";
-var machinePriority = (option) => {
+const normalizeMachineMaker = (maker) => SAMMY_MAKER_ALIASES.includes(maker) ? "\u30B5\u30DF\u30FC" : maker || "";
+const machinePriority = (option) => {
   const searchText = normalizeMachineText([option.name, ...option.aliases || []].join(" "));
   const index = MACHINE_DISPLAY_PRIORITY.findIndex((name) => searchText.includes(normalizeMachineText(name)));
   return index === -1 ? Number.MAX_SAFE_INTEGER : index;
 };
-var findTargetPreset = (machineName) => {
+const findTargetPreset = (machineName) => {
   const normalizedMachineName = normalizeMachineText(machineName);
   return TARGET_PRESETS.find((preset) => preset.machineMatchers.some((matcher) => normalizedMachineName.includes(normalizeMachineText(matcher))));
 };
-var calculateWorkValue = (payoutRate, playTime) => {
+const calculateWorkValue = (payoutRate, playTime) => {
   const rate = parseFloat(payoutRate) || 100;
   const time = parseFloat(playTime) || 0;
   const hourlyWage = (rate - 100) * 500;
   return Math.round(hourlyWage * (time / 60));
 };
-var estimatePlayCountFromTime = (playTime) => {
+const estimatePlayCountFromTime = (playTime) => {
   const time = parseFloat(playTime);
   return Number.isFinite(time) ? Math.round(time / 60 * 800).toString() : "";
 };
-var estimatePlayTimeFromCount = (playCount) => {
+const estimatePlayTimeFromCount = (playCount) => {
   const count = parseFloat(playCount);
   return Number.isFinite(count) ? Math.round(count / 800 * 60).toString() : "";
 };
-var parseClockTimeToMinutes = (time) => {
+const parseClockTimeToMinutes = (time) => {
   if (!time || !time.includes(":")) return null;
   const [hours, minutes] = time.split(":").map(Number);
   if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
   return hours * 60 + minutes;
 };
-var calculateTimeRangeMinutes = (startTime, endTime) => {
+const calculateTimeRangeMinutes = (startTime, endTime) => {
   const startMinutes = parseClockTimeToMinutes(startTime);
   const endMinutes = parseClockTimeToMinutes(endTime);
   if (startMinutes === null || endMinutes === null) return "";
@@ -778,8 +777,8 @@ var calculateTimeRangeMinutes = (startTime, endTime) => {
   if (duration < 0) duration += 24 * 60;
   return duration;
 };
-var formatClockTime = (date = /* @__PURE__ */ new Date()) => `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-var EMPTY_WORKLOAD_FORM = {
+const formatClockTime = (date = /* @__PURE__ */ new Date()) => `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+const EMPTY_WORKLOAD_FORM = {
   machineName: "",
   payoutRate: "105",
   startTime: "",
@@ -788,7 +787,7 @@ var EMPTY_WORKLOAD_FORM = {
   playCount: "800",
   memo: ""
 };
-var readLocalWorkloadBackup = () => {
+const readLocalWorkloadBackup = () => {
   try {
     const saved = localStorage.getItem(WORKLOAD_STORAGE_KEY);
     if (!saved) return {};
@@ -799,8 +798,8 @@ var readLocalWorkloadBackup = () => {
     return {};
   }
 };
-var hasLocalWorkloadBackup = () => Object.values(readLocalWorkloadBackup()).some((items) => Array.isArray(items) && items.length > 0);
-var normalizeWorkloadRow = (row) => ({
+const hasLocalWorkloadBackup = () => Object.values(readLocalWorkloadBackup()).some((items) => Array.isArray(items) && items.length > 0);
+const normalizeWorkloadRow = (row) => ({
   id: row.id,
   date: row.date,
   machineName: row.machine_name || "",
@@ -811,7 +810,7 @@ var normalizeWorkloadRow = (row) => ({
   workValue: Number(row.work_value) || 0,
   createdAt: row.created_at
 });
-var addMachineOption = (list, index, option) => {
+const addMachineOption = (list, index, option) => {
   const aliases = uniqueValues([...option.aliases || [], option.detail, option.tag].filter(Boolean));
   const dedupeAliases = uniqueValues(option.dedupeAliases || []);
   const keys = uniqueValues([option.name, ...dedupeAliases]);
@@ -836,7 +835,7 @@ var addMachineOption = (list, index, option) => {
   list.push(nextOption);
   keys.map(normalizeMachineText).forEach((key) => index.set(key, nextOption));
 };
-var buildMachineOptions = (rukoItems) => {
+const buildMachineOptions = (rukoItems) => {
   const list = [];
   const index = /* @__PURE__ */ new Map();
   rukoItems.filter((item) => item && item.name && item.tier !== "\u5185\u90E8\u4ED5\u69D8" && item.name !== "\u30B3\u30F3\u30D7\u5BFE\u7B56").forEach((item) => {
@@ -852,7 +851,7 @@ var buildMachineOptions = (rukoItems) => {
   SMART_SLOT_MACHINE_OPTIONS.forEach((option) => addMachineOption(list, index, option));
   return list.map((option, order) => ({ ...option, order })).sort((a, b) => machinePriority(a) - machinePriority(b) || a.order - b.order);
 };
-var STRATEGY_SECTION_DATA = [
+const STRATEGY_SECTION_DATA = [
   {
     id: "store",
     title: "\u5E97\u8217\u9078\u3073\u306B\u3064\u3044\u3066",
@@ -1022,7 +1021,7 @@ var STRATEGY_SECTION_DATA = [
     items: []
   }
 ];
-var STRATEGY_ACCENT_STYLES = {
+const STRATEGY_ACCENT_STYLES = {
   blue: {
     activeButton: "border-blue-500 bg-blue-50 text-blue-700 shadow-sm",
     inactiveButton: "border-gray-200 bg-white text-gray-700 active:bg-gray-50",
@@ -1066,17 +1065,17 @@ var STRATEGY_ACCENT_STYLES = {
     quote: "border-gray-200 bg-gray-50 text-gray-700"
   }
 };
-var normalizeShortcutUrl = (value) => {
+const normalizeShortcutUrl = (value) => {
   const trimmed = value.trim();
   if (!trimmed) return "";
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 };
-var mergeDefaultShortcutLinks = (links) => {
+const mergeDefaultShortcutLinks = (links) => {
   const existingUrls = new Set(links.map((link) => normalizeShortcutUrl(link.url).toLowerCase()));
   const missingDefaults = DEFAULT_STRATEGY_SHORTCUT_LINKS.filter((link) => !existingUrls.has(normalizeShortcutUrl(link.url).toLowerCase()));
   return [...missingDefaults, ...links];
 };
-var renderHighlightedText = (text, highlights = []) => {
+const renderHighlightedText = (text, highlights = []) => {
   const targets = highlights.filter(Boolean);
   if (!targets.length) return text;
   const parts = [];
@@ -1100,7 +1099,7 @@ var renderHighlightedText = (text, highlights = []) => {
   if (cursor < text.length) parts.push(text.slice(cursor));
   return parts;
 };
-var CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
+const CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
   const [error, setError] = useState(false);
   const [retryIndex, setRetryIndex] = useState(0);
   const variants = useMemo(() => {
@@ -1139,7 +1138,7 @@ var CardImage = ({ url, name, tag, tagColor, hasLink, compact = false }) => {
     ] })
   ] });
 };
-var App = () => {
+const App = () => {
   const [activeTab, setActiveTab] = useState("ruko");
   useEffect(() => {
     markAppBooted();
@@ -1386,6 +1385,13 @@ var App = () => {
     const safeValue = Number(value) || 0;
     const prefix = safeValue > 0 ? "+" : safeValue < 0 ? "" : "\xB1";
     return `${prefix}${safeValue.toLocaleString()}${withYen ? "\u5186" : ""}`;
+  };
+  const getCalendarWorkValueTextClass = (value) => {
+    const textLength = formatSignedAmount(value).length;
+    if (textLength >= 8) return "text-[7.5px]";
+    if (textLength >= 7) return "text-[8px]";
+    if (textLength >= 6) return "text-[9px]";
+    return "text-[10px]";
   };
   const changeDate = (days) => {
     const newDate = new Date(currentDate);
@@ -1771,8 +1777,8 @@ var App = () => {
       )
     ] })
   ] }) });
-  return /* @__PURE__ */ jsxs("div", { className: "w-full max-w-md mx-auto h-screen overflow-hidden bg-gray-100 flex flex-col select-none font-sans", children: [
-    /* @__PURE__ */ jsx("header", { className: "sticky top-0 z-50 bg-white shadow-md", children: /* @__PURE__ */ jsxs("div", { className: "bg-neutral-900 text-white px-4 py-3 flex flex-col gap-1", children: [
+  return /* @__PURE__ */ jsxs("div", { className: "w-full max-w-md mx-auto h-[100dvh] max-h-[100dvh] overflow-hidden bg-gray-100 flex flex-col select-none font-sans", children: [
+    /* @__PURE__ */ jsx("header", { className: "sticky top-0 z-50 bg-neutral-900 shadow-md pt-[env(safe-area-inset-top)]", children: /* @__PURE__ */ jsxs("div", { className: "bg-neutral-900 text-white px-4 py-3 flex flex-col gap-1", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-start", children: [
         /* @__PURE__ */ jsxs("h1", { className: "text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none flex items-center gap-2", children: [
           activeTab === "calc" ? "Calculator" : activeTab === "column" ? "Strategy Notes" : "Ruko App",
@@ -1788,7 +1794,7 @@ var App = () => {
         activeTab !== "workload" && activeTab !== "column" && /* @__PURE__ */ jsx("p", { className: "text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium", children: "\u62FE\u3044\u3084\u3059\u3055\xD7\u671F\u5F85\u5024" })
       ] })
     ] }) }),
-    /* @__PURE__ */ jsxs("main", { className: "flex-1 overflow-y-auto pb-24", style: { height: "calc(100vh - 130px)", scrollbarGutter: "stable" }, children: [
+    /* @__PURE__ */ jsxs("main", { className: "flex-1 min-h-0 overflow-y-auto pb-24", style: { scrollbarGutter: "stable" }, children: [
       activeTab === "column" && (session ? /* @__PURE__ */ jsxs("div", { className: "p-4 bg-gray-50 min-h-full flex flex-col", children: [
         /* @__PURE__ */ jsx("div", { className: "flex-1 space-y-4", children: !activeStrategySection ? /* @__PURE__ */ jsxs(Fragment, { children: [
           /* @__PURE__ */ jsxs("h2", { className: "text-lg font-black text-gray-800 flex items-center gap-2", children: [
@@ -2160,7 +2166,7 @@ var App = () => {
                       /* @__PURE__ */ jsx("span", { className: `text-base font-black leading-none ${isSelected ? "text-blue-700" : weekday === 0 ? "text-red-500" : weekday === 6 ? "text-blue-600" : "text-gray-800"}`, children: date.getDate() }),
                       isToday && /* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-yellow-400 mt-0.5 flex-shrink-0" })
                     ] }),
-                    hasWorkloads && /* @__PURE__ */ jsx("p", { className: `mt-1.5 text-[10px] font-black leading-none truncate ${dayTotal > 0 ? "text-blue-700" : dayTotal < 0 ? "text-red-500" : "text-gray-400"}`, children: formatSignedAmount(dayTotal) })
+                    hasWorkloads && /* @__PURE__ */ jsx("p", { className: `mt-1.5 w-full text-center ${getCalendarWorkValueTextClass(dayTotal)} font-black leading-none whitespace-nowrap ${dayTotal > 0 ? "text-blue-700" : dayTotal < 0 ? "text-red-500" : "text-gray-400"}`, children: formatSignedAmount(dayTotal) })
                   ]
                 },
                 dateKey
@@ -2723,7 +2729,7 @@ var App = () => {
     ] })
   ] });
 };
-var root = createRoot(document.getElementById("root"));
+const root = createRoot(document.getElementById("root"));
 root.render(
   /* @__PURE__ */ jsx(AppErrorBoundary, { children: /* @__PURE__ */ jsx(App, {}) })
 );
