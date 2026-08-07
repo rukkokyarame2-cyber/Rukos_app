@@ -1794,7 +1794,7 @@ const App = () => {
         activeTab !== "workload" && activeTab !== "column" && /* @__PURE__ */ jsx("p", { className: "text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium", children: "\u62FE\u3044\u3084\u3059\u3055\xD7\u671F\u5F85\u5024" })
       ] })
     ] }) }),
-    /* @__PURE__ */ jsxs("main", { className: "flex-1 min-h-0 overflow-y-auto pb-24", style: { scrollbarGutter: "stable" }, children: [
+    /* @__PURE__ */ jsxs("main", { className: "flex-1 min-h-0 overflow-y-auto pb-[calc(6.75rem+env(safe-area-inset-bottom))]", style: { scrollbarGutter: "stable" }, children: [
       activeTab === "column" && (session ? /* @__PURE__ */ jsxs("div", { className: "p-4 bg-gray-50 min-h-full flex flex-col", children: [
         /* @__PURE__ */ jsx("div", { className: "flex-1 space-y-4", children: !activeStrategySection ? /* @__PURE__ */ jsxs(Fragment, { children: [
           /* @__PURE__ */ jsxs("h2", { className: "text-lg font-black text-gray-800 flex items-center gap-2", children: [
@@ -2442,23 +2442,23 @@ const App = () => {
         ))
       ] })
     ] }),
-    /* @__PURE__ */ jsxs("nav", { className: "fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 flex justify-around items-center pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]", children: [
-      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("ruko"), className: `flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === "ruko" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
+    /* @__PURE__ */ jsxs("nav", { className: "fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md min-h-[calc(4.5rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200 flex justify-around items-start pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]", children: [
+      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("ruko"), className: `flex flex-col items-center justify-center w-full min-h-[3rem] gap-1 ${activeTab === "ruko" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
         /* @__PURE__ */ jsx(Trophy, { size: 20, className: activeTab === "ruko" ? "fill-blue-100" : "" }),
         /* @__PURE__ */ jsx("span", { className: "text-[10px] font-bold", children: "Tier\u8868" })
       ] }),
-      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("list"), className: `flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === "list" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
+      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("list"), className: `flex flex-col items-center justify-center w-full min-h-[3rem] gap-1 ${activeTab === "list" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
         /* @__PURE__ */ jsx(List, { size: 20 }),
         /* @__PURE__ */ jsx("span", { className: "text-[10px] font-bold", children: "\u72D9\u3044\u76EE\u4E00\u89A7" })
       ] }),
-      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("workload"), className: `flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === "workload" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
+      /* @__PURE__ */ jsxs("button", { onClick: () => setActiveTab("workload"), className: `flex flex-col items-center justify-center w-full min-h-[3rem] gap-1 ${activeTab === "workload" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
         /* @__PURE__ */ jsx(Coins, { size: 20, className: activeTab === "workload" ? "fill-blue-100" : "" }),
         /* @__PURE__ */ jsx("span", { className: "text-[10px] font-bold", children: "\u4ED5\u4E8B\u91CF" })
       ] }),
       /* @__PURE__ */ jsxs("button", { onClick: () => {
         setActiveTab("column");
         setActiveStrategySectionId(null);
-      }, className: `flex flex-col items-center justify-center w-full h-full gap-1 ${activeTab === "column" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
+      }, className: `flex flex-col items-center justify-center w-full min-h-[3rem] gap-1 ${activeTab === "column" ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`, children: [
         /* @__PURE__ */ jsx(BookOpen, { size: 20, className: activeTab === "column" ? "fill-blue-100" : "" }),
         /* @__PURE__ */ jsx("span", { className: "text-[10px] font-bold", children: "\u653B\u7565\u601D\u8003\u96C6" })
       ] })
@@ -2703,7 +2703,7 @@ const App = () => {
     IS_ADMIN_MODE && isEditing && /* @__PURE__ */ jsx("button", { onClick: () => {
       setFormData({ name: "", detail: "", tag: "", imageUrl: "", link: "", memo: DEFAULT_MEMO_TEMPLATE });
       setModalConfig({ isOpen: true, mode: "add", itemId: null });
-    }, className: "fixed bottom-24 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all z-50 border-[3px] border-white", children: /* @__PURE__ */ jsx(Plus, { size: 32 }) }),
+    }, className: "fixed bottom-[calc(6.25rem+env(safe-area-inset-bottom))] right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all z-50 border-[3px] border-white", children: /* @__PURE__ */ jsx(Plus, { size: 32 }) }),
     detailModalConfig.isOpen && detailModalConfig.item && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 backdrop-blur-sm", onClick: () => setDetailModalConfig({ isOpen: false, item: null }), children: /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]", onClick: (e) => e.stopPropagation(), children: [
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-start mb-4 flex-none", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-xl font-black text-gray-800 leading-tight pr-4", children: detailModalConfig.item.name }),

@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260807-safe-area-calendar';
+﻿const CACHE_NAME = 'ruko-slot-app-v20260807-safe-area-bottom';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260807-safe-area-calendar',
+  './app.js?v=20260807-safe-area-bottom',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
