@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260807-bottom-flush';
+const CACHE_NAME = 'ruko-slot-app-v20260809-newmachine-order';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260807-bottom-flush',
+  './app.js?v=20260809-newmachine-order',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
