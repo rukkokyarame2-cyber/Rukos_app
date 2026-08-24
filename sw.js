@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260810-yajikita-link';
+const CACHE_NAME = 'ruko-slot-app-v20260824-images-publish';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260810-yajikita-link',
+  './app.js?v=20260824-images-publish',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
