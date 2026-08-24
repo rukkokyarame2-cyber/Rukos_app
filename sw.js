@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20260824-images-publish';
+const CACHE_NAME = 'ruko-slot-app-v20260824-toaru-sao-republish';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20260824-images-publish',
+  './app.js?v=20260824-toaru-sao-republish',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
