@@ -809,6 +809,10 @@ const CURRENT_ENVIRONMENT_NOTE = {
   title: "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
   body: "\u7A3C\u50CD\u304C\u5206\u6563\u3057\u3066\u304A\u308A\u30011\u6A5F\u7A2E\u30FB2\u6A5F\u7A2E\u3092\u8EF8\u306B\u3067\u304D\u308B\u74B0\u5883\u3067\u306F\u306A\u3044\u305F\u3081\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u306E\u4ED5\u69D8\u3092\u899A\u3048\u3066\u304A\u304F\u5FC5\u8981\u304C\u3042\u308B\u3002\n\n\u3068\u3042\u308B\u306E\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u72D9\u3044\u3084\u3001\u771F\u6253\u5409\u5B97\u306E\u512A\u9047\u72D9\u3044\u306A\u3069\u3001\u5F53\u65E5\u591A\u304F\u56DE\u3057\u3066\u3082\u3089\u308F\u306A\u3044\u3068\u62FE\u3048\u306A\u3044\u72D9\u3044\u65B9\u304C\u591A\u304F\u3001\u5E73\u65E5\u306F\u3057\u3093\u3069\u3044\u72B6\u6CC1\u306B\u306A\u3063\u3066\u3044\u308B\u3002\n\n\u571F\u65E5\u3067\u3042\u308C\u3070GOD\u306A\u3069\u3082\u52D5\u304F\u7E41\u76DB\u5E97\u3092\u4F7F\u3048\u3070\u554F\u984C\u306A\u304F1\u65E5\u7A3C\u50CD\u3067\u304D\u308B\u304C\u3001\u5E73\u65E5\uFF08\u7279\u306B\u5348\u524D\u306F\uFF09\u55B0\u7A2E\u30EA\u30BB\u3050\u3089\u3044\u3057\u304B\u306A\u3044\u306E\u3067\u3001\u8A2D\u5B9A\u72D9\u3044\u30B9\u30BF\u30FC\u30C8\u3057\u305F\u65B9\u304C\u7121\u96E3\u305D\u3046\u3067\u306F\u3042\u308B\u72B6\u6CC1\u3002"
 };
+const CURRENT_NOTICE = {
+  title: "\u304A\u77E5\u3089\u305B",
+  body: "\u73FE\u5728\u30AB\u30D0\u30CD\u30EA\u6D77\u9580\u306E\u304A\u307F\u304F\u3058\u72D9\u3044\u306B\u3064\u3044\u3066\u5927\u91CF\u306E\u76EE\u8996\u30C7\u30FC\u30BF\u53CE\u96C6\u3092\u884C\u3063\u3066\u304A\u308A\u3001\u4ED6\u6A5F\u7A2E\u306E\u653B\u7565\u304C\u9045\u308C\u3066\u304A\u308A\u307E\u3059\u3002\n\n\u3053\u3061\u3089\u304C\u5B8C\u6210\u3057\u305F\u3089\u76F8\u5F53\u5F37\u3044\u72D9\u3044\u76EE\u306B\u306A\u308B\u306E\u3067\u304A\u5F85\u3061\u3044\u305F\u3060\u3051\u308B\u3068\u5E78\u3044\u3067\u3059\u3002"
+};
 const ENVIRONMENT_ARCHIVE_ENTRIES = [
   {
     number: "01",
@@ -1612,10 +1616,6 @@ const App = () => {
   const goToShortcutLinks = () => {
     setActiveTab("column");
     setActiveStrategySectionId("links");
-  };
-  const goToAugustNewMachineNotes = () => {
-    setActiveTab("column");
-    setActiveStrategySectionId("augustNewMachines");
   };
   const migrateLocalWorkloads = async () => {
     if (!supabase || !session) return;
@@ -2431,6 +2431,13 @@ const App = () => {
         "\u30ED\u30B0\u30A4\u30F3\u3059\u308B\u3068\u3001\u6A5F\u7A2E\u5225\u306E\u72D9\u3044\u76EE\u4E00\u89A7\u3092\u95B2\u89A7\u3067\u304D\u307E\u3059\u3002"
       )),
       activeTab === "ruko" && /* @__PURE__ */ jsxs("div", { className: "p-2 space-y-3", children: [
+        /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-amber-500", children: [
+          /* @__PURE__ */ jsxs("h2", { className: "text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5", children: [
+            /* @__PURE__ */ jsx(MessageSquare, { size: 14, className: "text-amber-500" }),
+            CURRENT_NOTICE.title
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: "text-[11px] text-gray-600 font-medium leading-snug whitespace-pre-wrap", children: CURRENT_NOTICE.body })
+        ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-blue-500", children: [
           /* @__PURE__ */ jsxs("h2", { className: "text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5", children: [
             /* @__PURE__ */ jsx(MessageSquare, { size: 14, className: "text-blue-500" }),
@@ -2450,21 +2457,6 @@ const App = () => {
               /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-2 min-w-0", children: [
                 /* @__PURE__ */ jsx("span", { className: "w-6 h-6 rounded-md bg-gray-700 text-white flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsx(LinkIcon, { size: 13 }) }),
                 /* @__PURE__ */ jsx("span", { className: "min-w-0 text-left", children: /* @__PURE__ */ jsx("span", { className: "block text-xs font-black leading-tight truncate", children: "\u30B7\u30E7\u30FC\u30C8\u30AB\u30C3\u30C8\u30EA\u30F3\u30AF" }) })
-              ] }),
-              /* @__PURE__ */ jsx(ChevronRight, { size: 14, className: "flex-shrink-0 text-gray-400" })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxs(
-          "button",
-          {
-            type: "button",
-            onClick: goToAugustNewMachineNotes,
-            className: "w-full bg-gray-100 text-gray-700 rounded-lg px-3 py-1.5 shadow-sm border border-gray-200 flex items-center justify-between gap-3 active:bg-gray-200 transition-colors",
-            children: [
-              /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-2 min-w-0", children: [
-                /* @__PURE__ */ jsx("span", { className: "w-6 h-6 rounded-md bg-red-600 text-white flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsx(Calendar, { size: 13 }) }),
-                /* @__PURE__ */ jsx("span", { className: "min-w-0 text-left", children: /* @__PURE__ */ jsx("span", { className: "block text-xs font-black leading-tight truncate", children: "8\u6708\u65B0\u53F0\u306E\u72D9\u3044\u76EE\u8003\u5BDF" }) })
               ] }),
               /* @__PURE__ */ jsx(ChevronRight, { size: 14, className: "flex-shrink-0 text-gray-400" })
             ]
