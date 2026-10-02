@@ -109,10 +109,21 @@ class AppErrorBoundary extends React.Component {
 }
 const RUKO_OFFICIAL_DATA = [
   {
+    "id": "r_kabaneri_omikuji",
+    "name": "\u30AB\u30D0\u30CD\u30EA\u6D77\u9580\u6C7A\u6226",
+    "detail": "\u304A\u307F\u304F\u3058\u793A\u5506\u72D9\u3044",
+    "tier": "A",
+    "tag": "\u793A\u5506",
+    "tagColor": "bg-purple-500",
+    "imageUrl": "image_kabaneri.jpg",
+    "link": "https://note.com/ruko7613/n/n334a9cf4b37e?app_launch=false",
+    "memo": "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB30\u5206\u653E\u7F6E\u3055\u308C\u308B\u3053\u3068\u3067\u518D\u8868\u793A\u3055\u308C\u308B\u304A\u307F\u304F\u3058\u3092\u898B\u308B\u305F\u3081\u306B1G\u56DE\u3057\u3001\u7D9A\u884C\u6761\u4EF6\u304C\u9014\u5207\u308C\u308B\u307E\u3067\u6253\u3064\u3002\n\u30FB\u6253\u3061\u65B9\u304C\u8907\u96D1\u306A\u306E\u3067\u8A73\u3057\u304F\u306F\u8A18\u4E8B\u53C2\u7167\u3002\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n\u8A73\u3057\u304F\u306F\u8A18\u4E8B\u53C2\u7167\u3002"
+  },
+  {
     "id": "r_sengoku6",
     "name": "\u6226\u30B3\u30EC6",
     "detail": "\u793A\u5506\uFF061\u5468\u671F\u72D9\u3044",
-    "tier": "B",
+    "tier": "C",
     "tag": "\u30BE\u30FC\u30F3, \u512A\u9047",
     "tagColor": "bg-cyan-400, bg-red-500",
     "imageUrl": "image_sengoku6.jpg",
@@ -123,7 +134,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_yabachiyo",
     "name": "\u30E4\u30D0\u30C1\u30E8",
     "detail": "\u51F9\u307F\u72D9\u3044",
-    "tier": "B",
+    "tier": "C",
     "tag": "\u5929\u4E95",
     "tagColor": "bg-cyan-400",
     "imageUrl": "image_yabachiyo.jpg",
@@ -167,7 +178,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_sao2_upper_mode",
     "name": "SAO2",
     "detail": "\u4E0A\u4F4D\u5F8C\u30FB\u30E2\u30FC\u30C9\u72D9\u3044",
-    "tier": "A",
+    "tier": "B",
     "tag": "\u30BE\u30FC\u30F3",
     "tagColor": "bg-cyan-400",
     "imageUrl": "image_sao2.jpg",
@@ -189,7 +200,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_toaru2_privilege",
     "name": "\u3068\u3042\u308B\u9B54\u8853\u306E\u7981\u66F8\u76EE\u9332\uFF12",
     "detail": "\u512A\u9047\u72D9\u3044",
-    "tier": "B",
+    "tier": "C",
     "tag": "\u512A\u9047",
     "tagColor": "bg-red-500",
     "imageUrl": "image_toaru2.png",
@@ -255,7 +266,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_streetfighter6",
     "name": "\u30B9\u30C8\u30D5\u30A1\u30A46",
     "detail": "2\u30B9\u30EB\u30FC0G\uFF5E",
-    "tier": "B",
+    "tier": "C",
     "tag": "\u30B9\u30EB\u30FC",
     "tagColor": "bg-purple-600",
     "imageUrl": "image_streetfighter6.png",
@@ -266,7 +277,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_yajikita",
     "name": "\u3084\u3058\u304D\u305F\u9053\u4E2D\u8A18\u53C2\u308B",
     "detail": "\u524D\u56DE\u5B9FG600\u8D85\u3048\u72D9\u3044",
-    "tier": "B",
+    "tier": "C",
     "tag": "\u30BE\u30FC\u30F3, \u7A62\u308C",
     "tagColor": "bg-cyan-400, bg-purple-500",
     "imageUrl": "image_yajikita.png",
@@ -441,7 +452,9 @@ const RUKO_OFFICIAL_DATA = [
 ];
 const HIDDEN_TARGET_ITEM_IDS = /* @__PURE__ */ new Set(["r_comp"]);
 const REFRESH_OFFICIAL_TARGET_ITEM_IDS = /* @__PURE__ */ new Set([
+  "r_kabaneri_omikuji",
   "r_sengoku6",
+  "r_yabachiyo",
   "r_kabaneri",
   "r_sao2_upper_mode",
   "r_otome5_miko_zone",
@@ -452,6 +465,8 @@ const REFRESH_OFFICIAL_TARGET_ITEM_IDS = /* @__PURE__ */ new Set([
   "r_yajikita",
   "r4"
 ]);
+const OFFICIAL_TARGET_ORDER_BY_ID = new Map(RUKO_OFFICIAL_DATA.map((item, index) => [item.id, index]));
+const getOfficialTargetOrder = (item) => OFFICIAL_TARGET_ORDER_BY_ID.has(item.id) ? OFFICIAL_TARGET_ORDER_BY_ID.get(item.id) : Number.MAX_SAFE_INTEGER;
 const TARGET_TIER_ORDER = ["S", "A", "B", "C", "\u305D\u306E\u4ED6\u72D9\u3044\u76EE"];
 const TARGET_TAG_FILTER_OPTIONS = [
   { id: "all", label: "\u5168\u30BF\u30B0" },
@@ -493,9 +508,10 @@ const refreshOfficialTargetItems = (items) => {
   REFRESH_OFFICIAL_TARGET_ITEM_IDS.forEach((id) => {
     if (!seen.has(id) && officialById.has(id)) refreshedItems.push(officialById.get(id));
   });
-  return refreshedItems;
+  return refreshedItems.sort((a, b) => getOfficialTargetOrder(a) - getOfficialTargetOrder(b));
 };
 const TARGET_TIME_SLOT_MAP = {
+  r_kabaneri_omikuji: ["afternoon", "evening", "late"],
   r_sengoku6: ["afternoon", "evening"],
   r_yabachiyo: ["afternoon", "evening"],
   r_rioace2: [],
@@ -805,23 +821,25 @@ const TARGET_PRESETS = [
 ];
 const ENVIRONMENT_NOTE_20260806_BODY = "8\u6708\u306E\u5927\u91CF\u65B0\u53F0\u306B\u3088\u308A\u8EE2\u751F\u306E\u53F0\u6570\u304C\u76F8\u5F53\u6E1B\u3063\u3066\u3057\u307E\u3063\u305F\u3002\n\u305D\u308C\u3067\u3082\u62FE\u3063\u3066\u3057\u307E\u3048\u3070\u9577\u304F\u6253\u3066\u308B\u512A\u4F4D\u6027\u306F\u5909\u308F\u3089\u306A\u3044\u306E\u3067S\u3067\u636E\u3048\u7F6E\u304D\u3002\n\n\u5C11\u3057\u524D\u306E\u3088\u3046\u306BGOD\u3084\u8EE2\u751F\u3001\u55B0\u7A2E\u306E\u3088\u3046\u306A1\u6A5F\u7A2E\u306B\u7279\u5316\u3057\u3066\u8EF8\u306B\u7A3C\u50CD\u3059\u308B\u3068\u3044\u3046\u3088\u308A\u306F\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u3092\u96D1\u591A\u306B\u89E6\u308C\u306A\u3044\u3068\u3044\u3051\u306A\u3044\u74B0\u5883\u306B\u306A\u3063\u3066\u304D\u305F\u3002\n\n\u65B0\u53F0\u3092\u3057\u3063\u304B\u308A\u62FE\u3044\u305F\u3044\u3002";
 const CURRENT_ENVIRONMENT_NOTE = {
-  updatedAt: "8\u670824\u65E5\u7248",
+  updatedAt: "10\u67082\u65E5\u7248",
   title: "\u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
-  body: "\u7A3C\u50CD\u304C\u5206\u6563\u3057\u3066\u304A\u308A\u30011\u6A5F\u7A2E\u30FB2\u6A5F\u7A2E\u3092\u8EF8\u306B\u3067\u304D\u308B\u74B0\u5883\u3067\u306F\u306A\u3044\u305F\u3081\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u306E\u4ED5\u69D8\u3092\u899A\u3048\u3066\u304A\u304F\u5FC5\u8981\u304C\u3042\u308B\u3002\n\n\u3068\u3042\u308B\u306E\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u72D9\u3044\u3084\u3001\u771F\u6253\u5409\u5B97\u306E\u512A\u9047\u72D9\u3044\u306A\u3069\u3001\u5F53\u65E5\u591A\u304F\u56DE\u3057\u3066\u3082\u3089\u308F\u306A\u3044\u3068\u62FE\u3048\u306A\u3044\u72D9\u3044\u65B9\u304C\u591A\u304F\u3001\u5E73\u65E5\u306F\u3057\u3093\u3069\u3044\u72B6\u6CC1\u306B\u306A\u3063\u3066\u3044\u308B\u3002\n\n\u571F\u65E5\u3067\u3042\u308C\u3070GOD\u306A\u3069\u3082\u52D5\u304F\u7E41\u76DB\u5E97\u3092\u4F7F\u3048\u3070\u554F\u984C\u306A\u304F1\u65E5\u7A3C\u50CD\u3067\u304D\u308B\u304C\u3001\u5E73\u65E5\uFF08\u7279\u306B\u5348\u524D\u306F\uFF09\u55B0\u7A2E\u30EA\u30BB\u3050\u3089\u3044\u3057\u304B\u306A\u3044\u306E\u3067\u3001\u8A2D\u5B9A\u72D9\u3044\u30B9\u30BF\u30FC\u30C8\u3057\u305F\u65B9\u304C\u7121\u96E3\u305D\u3046\u3067\u306F\u3042\u308B\u72B6\u6CC1\u3002"
-};
-const CURRENT_NOTICE = {
-  title: "\u304A\u77E5\u3089\u305B",
-  body: "\u73FE\u5728\u30AB\u30D0\u30CD\u30EA\u6D77\u9580\u306E\u304A\u307F\u304F\u3058\u72D9\u3044\u306B\u3064\u3044\u3066\u5927\u91CF\u306E\u76EE\u8996\u30C7\u30FC\u30BF\u53CE\u96C6\u3092\u884C\u3063\u3066\u304A\u308A\u3001\u4ED6\u6A5F\u7A2E\u306E\u653B\u7565\u304C\u9045\u308C\u3066\u304A\u308A\u307E\u3059\u3002\n\n\u3053\u3061\u3089\u304C\u5B8C\u6210\u3057\u305F\u3089\u76F8\u5F53\u5F37\u3044\u72D9\u3044\u76EE\u306B\u306A\u308B\u306E\u3067\u304A\u5F85\u3061\u3044\u305F\u3060\u3051\u308B\u3068\u5E78\u3044\u3067\u3059\u3002"
+  body: "9\u6708\u306E\u65B0\u53F0\u30EA\u30B3\u30EA\u30B3\u3001\u9752\u30D6\u30BF\u3001\u30E2\u30B0\u30E2\u30B0\u306A\u3069\u304C\u30A8\u30CA\u53F0\u3067\u306F\u7121\u304F\u53B3\u3057\u3044\u74B0\u5883\u7D99\u7D9A\u3002\n\n\u305F\u3060\u3057\u3001\u65B0\u898F\u72D9\u3044\u76EE\u306E\u30AB\u30D0\u30CD\u30EA\u306E\u793A\u5506\u6253\u3061\u304C\u5F37\u3044\u305F\u3081\u3053\u308C\u3092\u8EF8\u306B\u6B21\u306E\u30D0\u30D6\u30EB\u307E\u3067\u51CC\u3050\u5F62\u3002\n\nB\u306B\u3042\u3063\u305F\u6226\u30B3\u30EC\u3001\u30B9\u30C8\u30D5\u30A1\u30A4\u3001\u3084\u3058\u304D\u305F\u306A\u3069\u306F\u4E00\u6C17\u306B\u7A3C\u50CD\u304C\u7121\u304F\u306A\u3063\u305F\u306E\u3067C\u306B\u79FB\u52D5\u3057\u305F\u3002"
 };
 const ENVIRONMENT_ARCHIVE_ENTRIES = [
   {
     number: "01",
+    title: "8\u670824\u65E5\u7248 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
+    body: "\u7A3C\u50CD\u304C\u5206\u6563\u3057\u3066\u304A\u308A\u30011\u6A5F\u7A2E\u30FB2\u6A5F\u7A2E\u3092\u8EF8\u306B\u3067\u304D\u308B\u74B0\u5883\u3067\u306F\u306A\u3044\u305F\u3081\u3001\u591A\u304F\u306E\u6A5F\u7A2E\u306E\u4ED5\u69D8\u3092\u899A\u3048\u3066\u304A\u304F\u5FC5\u8981\u304C\u3042\u308B\u3002\n\n\u3068\u3042\u308B\u306E\u9006\u8EE2\u30C6\u30FC\u30D6\u30EB\u72D9\u3044\u3084\u3001\u771F\u6253\u5409\u5B97\u306E\u512A\u9047\u72D9\u3044\u306A\u3069\u3001\u5F53\u65E5\u591A\u304F\u56DE\u3057\u3066\u3082\u3089\u308F\u306A\u3044\u3068\u62FE\u3048\u306A\u3044\u72D9\u3044\u65B9\u304C\u591A\u304F\u3001\u5E73\u65E5\u306F\u3057\u3093\u3069\u3044\u72B6\u6CC1\u306B\u306A\u3063\u3066\u3044\u308B\u3002\n\n\u571F\u65E5\u3067\u3042\u308C\u3070GOD\u306A\u3069\u3082\u52D5\u304F\u7E41\u76DB\u5E97\u3092\u4F7F\u3048\u3070\u554F\u984C\u306A\u304F1\u65E5\u7A3C\u50CD\u3067\u304D\u308B\u304C\u3001\u5E73\u65E5\uFF08\u7279\u306B\u5348\u524D\u306F\uFF09\u55B0\u7A2E\u30EA\u30BB\u3050\u3089\u3044\u3057\u304B\u306A\u3044\u306E\u3067\u3001\u8A2D\u5B9A\u72D9\u3044\u30B9\u30BF\u30FC\u30C8\u3057\u305F\u65B9\u304C\u7121\u96E3\u305D\u3046\u3067\u306F\u3042\u308B\u72B6\u6CC1\u3002",
+    quote: "\u591A\u304F\u306E\u6A5F\u7A2E\u3092\u96D1\u591A\u306B\u89E6\u308B\u5FC5\u8981\u304C\u3042\u308A\u3001\u5E73\u65E5\u306F\u3057\u3093\u3069\u3044\u74B0\u5883\u3002"
+  },
+  {
+    number: "02",
     title: "8\u67086\u65E5\u7248 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
     body: ENVIRONMENT_NOTE_20260806_BODY,
     quote: "\u8EE2\u751F\u306FS\u7DAD\u6301\u30021\u6A5F\u7A2E\u7279\u5316\u3088\u308A\u3082\u3001\u65B0\u53F0\u3092\u542B\u3081\u3066\u5E83\u304F\u89E6\u308B\u74B0\u5883\u3078\u3002"
   },
   {
-    number: "02",
+    number: "03",
     title: "7/15\u66F4\u65B0 \u73FE\u74B0\u5883\u306B\u3064\u3044\u3066",
     body: "GOD\u304C\u6025\u6FC0\u306B\u62FE\u3048\u306A\u304F\u306A\u3063\u305F\u306E\u3067S\u2192A\u306B\u3002\n\u8EE2\u751F\u3082\u76F8\u5F53\u53F0\u6570\u6E1B\u3063\u305F\u304C1\u53F0\u9577\u304F\u6253\u3066\u308B\u306E\u3067S\u7DAD\u6301\u3002\n\n\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3068\u306A\u3063\u305F\u3002\n\n\u4ECA\u306F\u6226\u30B3\u30EC\uFF16\u304C\u6CE8\u76EE\u682A\u3002\n4\u6708\u4EE5\u964D\u306E\u30B3\u30F3\u30D7\u898F\u5236\u5F37\u5316\u3092\u5BFE\u7B56\u3092\u3057\u305F\u6B6A\u3093\u3060\u7206\u88C2\u6A5F\u304C\u3053\u308C\u304B\u3089\u3044\u308D\u3044\u308D\u51FA\u305D\u3046\u3067\u306F\u3042\u308B\u306E\u3067\u671F\u5F85\u3002",
     quote: "\u5148\u6708\u3088\u308A\u53B3\u3057\u3044\u74B0\u5883\u3002GOD\u306FA\u3078\u3001\u8EE2\u751F\u306FS\u7DAD\u6301\u3001\u6226\u30B3\u30EC6\u306B\u6CE8\u76EE\u3002"
@@ -1879,7 +1897,7 @@ const App = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-end mt-1", children: [
-        /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base font-black italic leading-tight", children: activeTab === "ruko" ? "8\u670824\u65E5\u7248\u3000\u6700\u65B0\u72D9\u3044\u76EETier\u8868" : activeTab === "list" ? "\u72D9\u3044\u76EE\u4E00\u89A7" : activeTab === "column" ? "\u653B\u7565\u601D\u8003\u96C6" : "\u4ED5\u4E8B\u91CF\u7BA1\u7406" }),
+        /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base font-black italic leading-tight", children: activeTab === "ruko" ? "10\u67082\u65E5\u7248\u3000\u6700\u65B0\u72D9\u3044\u76EETier\u8868" : activeTab === "list" ? "\u72D9\u3044\u76EE\u4E00\u89A7" : activeTab === "column" ? "\u653B\u7565\u601D\u8003\u96C6" : "\u4ED5\u4E8B\u91CF\u7BA1\u7406" }),
         activeTab !== "workload" && activeTab !== "column" && /* @__PURE__ */ jsx("p", { className: "text-[9px] text-red-500 whitespace-nowrap ml-2 pb-0.5 font-medium", children: "\u62FE\u3044\u3084\u3059\u3055\xD7\u671F\u5F85\u5024" })
       ] })
     ] }) }),
@@ -2431,13 +2449,6 @@ const App = () => {
         "\u30ED\u30B0\u30A4\u30F3\u3059\u308B\u3068\u3001\u6A5F\u7A2E\u5225\u306E\u72D9\u3044\u76EE\u4E00\u89A7\u3092\u95B2\u89A7\u3067\u304D\u307E\u3059\u3002"
       )),
       activeTab === "ruko" && /* @__PURE__ */ jsxs("div", { className: "p-2 space-y-3", children: [
-        /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-amber-500", children: [
-          /* @__PURE__ */ jsxs("h2", { className: "text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5", children: [
-            /* @__PURE__ */ jsx(MessageSquare, { size: 14, className: "text-amber-500" }),
-            CURRENT_NOTICE.title
-          ] }),
-          /* @__PURE__ */ jsx("p", { className: "text-[11px] text-gray-600 font-medium leading-snug whitespace-pre-wrap", children: CURRENT_NOTICE.body })
-        ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-xl p-3 shadow-sm border-l-4 border-l-blue-500", children: [
           /* @__PURE__ */ jsxs("h2", { className: "text-xs font-black text-gray-800 mb-1.5 flex items-center gap-1.5", children: [
             /* @__PURE__ */ jsx(MessageSquare, { size: 14, className: "text-blue-500" }),
