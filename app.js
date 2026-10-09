@@ -189,7 +189,7 @@ const RUKO_OFFICIAL_DATA = [
     "id": "r_otome5_miko_zone",
     "name": "\u4E59\u5973\uFF15",
     "detail": "\u5DEB\u5973\xD7\u30BE\u30FC\u30F3\u72D9\u3044",
-    "tier": "A",
+    "tier": "B",
     "tag": "\u30BE\u30FC\u30F3, \u793A\u5506",
     "tagColor": "bg-cyan-400, bg-purple-500",
     "imageUrl": "image_otome5.jpg",

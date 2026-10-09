@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20261002-tier';
+const CACHE_NAME = 'ruko-slot-app-v20261010-otome-b';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20261002-tier',
+  './app.js?v=20261010-otome-b',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
