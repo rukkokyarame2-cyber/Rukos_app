@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20261016-tier';
+const CACHE_NAME = 'ruko-slot-app-v20261016-sunbreak-difference';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20261016-tier',
+  './app.js?v=20261016-sunbreak-difference',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
