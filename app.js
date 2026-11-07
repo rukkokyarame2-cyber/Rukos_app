@@ -138,7 +138,7 @@ const RUKO_OFFICIAL_DATA = [
     tag: "\u5929\u4E95, \u512A\u9047",
     tagColor: "bg-cyan-400, bg-red-500",
     imageUrl: "image_juoh.png",
-    link: "https://note.com/preview/n5b37f8302d63?prev_access_key=3b63fcdd94b527a359e762b362e451b2",
+    link: "https://note.com/preview/n6a2081d81784?prev_access_key=d9a56be862f42c41d571f6d2240b9cd5",
     memo: "\u3010\u4E00\u8A00\u30E1\u30E2\u3011\n\u30FB\u7A3C\u50CD\u304C\u601D\u3063\u305F\u3088\u308A\u3082\u5F37\u304F\u6253\u3064\u5C64\u304B\u3089\u3057\u3066\u3082\u62FE\u3048\u308B\u6A5F\u4F1A\u304C\u591A\u3044\n\u30FB\u512A\u9047\u72D9\u3044\u3057\u304B\u307B\u307C\u62FE\u3048\u306A\u3044\n\n\u3010\u72D9\u3044\u76EE\u30DC\u30FC\u30C0\u30FC\u3011\n\u30FB\u5DEE\u679A\uFF0D3000\u679A\u4EE5\u4E0B\uFF06\u30B5\u30D0\u9023\u95931500G\u4EE5\u4E0A\u5F8C\n\u3000320G\uFF5E\n\u30FB\u8A73\u7D30\u306F\u8A18\u4E8B\u3092\u53C2\u7167"
   },
   {
