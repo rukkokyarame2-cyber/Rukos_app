@@ -1,8 +1,8 @@
-const CACHE_NAME = 'ruko-slot-app-v20261109-juoh-link-fix';
+const CACHE_NAME = 'ruko-slot-app-v20261117-lycoris';
 const APP_SHELL_URLS = [
   './',
   './index.html',
-  './app.js?v=20261109-juoh-link-fix',
+  './app.js?v=20261117-lycoris',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './ruko-app-loading.png',
